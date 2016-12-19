@@ -1,10 +1,7 @@
 #INSTALL
 
  - Clone this.
- - Run ./bin/prep.sh  This give you a copy of all the config files you would want to edit for your needs.
- - cd src
- - git clone git@github.com:BisonLab/CrewCallBundle.git
- - cd ..
+ - Run ./bin/prep.sh  This give you a copy of all the config files you would want to edit for your needs. It will also clone the CrewCallBundle into src/.
  - composer update (Yes, you need composer.) https://getcomposer.org/
 
 # Customization.
