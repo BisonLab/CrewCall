@@ -1,0 +1,72 @@
+parameters:
+    app.states:
+        # user_chooseable is for deciding if ROLE_USER is allowed to change
+        # from and to this state.
+        CrewCallBundle:
+            Person:
+                states: 
+                    ACTIVE:
+                        user_chooseable: true
+                    VACATION:
+                        user_chooseable: true
+                    QUIT:
+                        user_chooseable: false
+                    LOCKED:
+                        user_chooseable: false
+                    # Meant for contact persons and so on.
+                    EXTERNAL:
+                        user_chooseable: false
+                active_states: ['ACTIVE']
+                enable_login: ['ACTIVE', 'VACATION']
+            Event:
+                states: 
+                    PROSPECT:
+                        user_chooseable: false
+                    ORDERED:
+                        user_chooseable: false
+                    FINISHED:
+                        user_chooseable: false
+                    CANCELLED:
+                        user_chooseable: false
+                active_states: ['PROSPECT', 'ORDERED']
+            Location:
+                states: 
+                    OPEN:
+                        user_chooseable: false
+                    CLOSED:
+                        user_chooseable: false
+                active_states: ['OPEN']
+            Function:
+                states: 
+                    VISIBLE:
+                        user_chooseable: false
+                    INVISIBLE:
+                        user_chooseable: false
+                active_states: ['VISIBLE']
+            Shift:
+                states: 
+                    CONFIRMED:
+                        user_chooseable: false
+                    REGISTERED:
+                        user_chooseable: false
+                    FULLY_BOOKED:
+                        user_chooseable: false
+                active_states: ['VISIBLE', 'REGISTERED']
+            Interest:
+                states: 
+                    CONFIRMED:
+                        user_chooseable: false
+                    REGISTERED:
+                        user_chooseable: false
+                    DENIED:
+                        user_chooseable: false
+                active_states: ['VISIBLE', 'REGISTERED']
+            Organization:
+                states: 
+                    ACTIVE:
+                        user_chooseable: false
+                    CLOSED:
+                        user_chooseable: false
+                    BLOCKED:
+                        user_chooseable: false
+                active_states: ['ACTIVE']

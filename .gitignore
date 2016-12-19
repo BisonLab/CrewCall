@@ -1,23 +1,28 @@
-# Cache and logs (Symfony2)
-/app/cache/*
-/app/logs/*
-!app/cache/.gitkeep
-!app/logs/.gitkeep
+/app/config/parameters.yml
+/app/AppKernelCustomTrait.php
+/app/config/states.yml
+/app/config/contexts.yml
+/app/config/types.yml
+/app/config/config_custom.yml
+/src/*
+!/src/AppBundle
+/build/
+/phpunit.xml
 
 # Email spool folder
 /app/spool/*
 
-# Cache, session files and logs (Symfony3)
+/var/*
+!/var/cache
 /var/cache/*
-/var/logs/*
-/var/sessions/*
 !var/cache/.gitkeep
+!/var/logs
+/var/logs/*
 !var/logs/.gitkeep
+!/var/sessions
+/var/sessions/*
 !var/sessions/.gitkeep
-
-# Parameters
-/app/config/parameters.yml
-/app/config/parameters.ini
+!var/SymfonyRequirements.php
 
 # Managed by Composer
 /app/bootstrap.php.cache
@@ -29,6 +34,7 @@
 
 # Assets and user uploads
 /web/bundles/
+/web/public/
 /web/uploads/
 
 # Assets managed by Bower
@@ -46,3 +52,5 @@
 
 # Backup entities generated with doctrine:generate:entities command
 */Entity/*~
+# vim swap files
+*.swp

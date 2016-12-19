@@ -1,0 +1,13 @@
+parameters:
+    app.contexts:
+        BisonLabSakonninBundle:
+            Message:
+                sakonnin:
+                  -
+                    label: "User"
+                    object_name: user
+                    type: master
+                    url_template: "/web/user/{{external_id}}/show"
+                    url_from_method: template
+                    default: false
+

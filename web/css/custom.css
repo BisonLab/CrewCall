@@ -1,0 +1,41 @@
+/* Overriding bootstrap.css */
+body {
+    line-height: 1.3;
+}
+
+.form-control {
+    width: auto;
+} 
+
+.nav > li > a {
+  display: block;
+  padding: 5px 8px;
+}
+
+.showTable {
+    margin:10px 0pt 15px;
+    border-spacing: 100px;
+}
+.showTable th {
+    margin:10px 0pt 15px;
+    vertical-align: top;
+    text-align: right;
+    padding: 5px 8px;
+}
+.showTable td {
+    margin:10px 0pt 15px;
+    padding: 5px 8px;
+}
+
+/* Nicked from http://stackoverflow.com/questions/18325779/bootstrap-3-collapse-show-state-with-chevron-icon */
+.panel-heading .accordion-toggle:after {
+    /* symbol for "opening" panels */
+    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+    content: "\e114";    /* adjust as needed, taken from bootstrap.css */
+    float: left;        /* adjust as needed */
+    color: grey;         /* adjust as needed */
+}
+.panel-heading .accordion-toggle.collapsed:after {
+    /* symbol for "collapsed" panels */
+    content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+}

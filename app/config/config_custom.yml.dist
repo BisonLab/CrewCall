@@ -1,0 +1,18 @@
+# This is made for your config stuff not common with CrewCall Base.
+# parameters.yml is for the instance-specific config (DB username and password
+# better not be common between dev and prod for example) , this is for the
+# application specific.
+
+# http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: en
+
+    bisonlab_reports.report_classes:
+    bisonlab_reports.default_filestore: /tmp
+
+    sakonnin.function_factories:
+        - BisonLab\SakonninBundle\Lib\Sakonnin\SakonninFunctions
+
+stof_doctrine_extensions:
+# Better change this I guess :=)
+    default_locale: nb_NO

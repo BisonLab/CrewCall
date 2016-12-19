@@ -1,0 +1,69 @@
+# To get started with security, check out the documentation:
+# http://symfony.com/doc/current/book/security.html
+security:
+    encoders:
+        FOS\UserBundle\Model\UserInterface: bcrypt
+
+    # Shouuld probably be enhanced and more flexible.
+    role_hierarchy:
+        ROLE_USER_RW:     ROLE_USER
+        ROLE_ADMIN:       ROLE_USER, ROLE_USER_RW, ROLE_REST
+        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH, ROLE_REST_USER]
+
+    providers:
+        fos_userbundle:
+            id: fos_user.user_provider.username
+
+    firewalls:
+        ajax_calls:
+            pattern:    ^/_wdt
+            anonymous:  ~
+        login_firewall:
+            pattern:    ^/login$
+            anonymous:  true
+        ping:
+            pattern:    ^/ping$
+            anonymous:  true
+        publicfiles:
+            pattern:    ^/bundles
+            anonymous:  true
+        rest:
+            # TODO: Add some IP validation or something.
+            pattern: ^/rest
+            anonymous:  false
+            http_basic: 
+                realm: "REST API"
+            stateless:  true
+        main:
+            pattern: ^/
+            form_login:
+                provider: fos_userbundle
+                csrf_token_generator: security.csrf.token_manager
+                # login_path:  /login
+                # check_path:  /login_check
+                default_target_path: /
+            logout:       true
+            anonymous:    false
+        # disables authentication for assets and the profiler, adapt it according to your needs
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+    access_control:
+        #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        #- { path: ^/_internal, roles: IS_AUTHENTICATED_ANONYMOUSLY, ip: 127.0.0.1 }
+        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/_wdt, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/bundles, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin/, role: ROLE_ADMIN }
+        - { path: ^/user/, role: ROLE_ADMIN }
+        - { path: ^/reports/, role: ROLE_ADMIN }
+        - { path: ^/rest/, role: ROLE_REST }
+        - { path: ^/web, role: ROLE_USER }
+        - { path: ^/ajax, role: ROLE_USER }
+        - { path: /show, role: ROLE_USER }
+        - { path: /edit, role: ROLE_USER_RW }
+        - { path: /new, role: ROLE_USER_RW }
+

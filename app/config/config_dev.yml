@@ -1,0 +1,51 @@
+imports:
+    - { resource: config.yml }
+
+framework:
+    router:
+        resource: "%kernel.root_dir%/config/routing_dev.yml"
+        strict_requirements: true
+    profiler: { only_exceptions: false }
+
+web_profiler:
+    toolbar: true
+    intercept_redirects: false
+
+monolog:
+    handlers:
+        main:
+            type:  rotating_file
+            path:   "%kernel.logs_dir%/%kernel.environment%.log"
+            level:  debug
+            channels: ["!security","!event", "!doctrine"]
+            max_files: 5
+        applog:
+            type:   stream
+            path:   "%kernel.logs_dir%/%kernel.environment%-error.log"
+            level:  error
+        console:
+            type:   console
+            bubble: false
+            verbosity_levels:
+                verbosity_verbose: info
+                verbosity_very_verbose: debug
+            channels: ["!event", "!doctrine"]
+        console_very_verbose:
+            type:   console
+            bubble: false
+            verbosity_levels:
+                verbosity_verbose: notice
+                verbosity_very_verbose: notice
+                verbosity_debug: debug
+            channels: ["doctrine"]
+        # uncomment to get logging in your browser
+        # you may have to allow bigger header sizes in your Web server configuration
+        #firephp:
+        #    type:   firephp
+        #    level:  info
+        #chromephp:
+        #    type:   chromephp
+        #    level:  info
+
+#swiftmailer:
+#    delivery_address: me@example.com

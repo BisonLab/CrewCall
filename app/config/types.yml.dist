@@ -1,0 +1,11 @@
+parameters:
+    app.types:
+        BisonLabSakonninBundle:
+            Message:
+                AddressType:
+                    EMAIL:
+                        chooseable: true
+                    INTERNAL:
+                        chooseable: true
+                    SMS:
+                        chooseable: true

@@ -1,0 +1,34 @@
+<script type="text/javascript">
+$(document).ready(function()
+    {
+        $('#sortable_table').dataTable({
+            "pageLength": 200,
+            "lengthMenu": [[ 50, 100, 200, 500 -1], [50, 100, 200, 500, "All"]]
+            });
+{# Cannot use, it will trigger most tables twice because of sortable_table
+        $('#sortable_datatable').dataTable();
+        $("#sortable_table").tablesorter( {sortList: [[0,0]]} );
+        $(".records_list").tablesorter( {sortList: [[0,0]]} );
+#}
+    }
+);
+
+function popmeup(url)
+{
+    var newwindow;
+    newwindow = window.open(url,'name','height=800,width=700,resizeable,scrollbars=yes');
+    if (window.focus) {newwindow.focus()};
+    return newwindow;
+}
+function form_post_popup(form) {
+    window.open('','form_popup','height=800,width=700,resizeable,scrollbars=yes');
+    form.target = 'form_popup';
+}
+function confirm_post_pop(form, text) {
+    if (confirm(text)) {
+        return form_post_popup(form);
+    } else {
+        return false;
+    }
+}
+</script>
