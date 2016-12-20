@@ -4,7 +4,7 @@ files="app/AppKernelCustomTrait.php app/config/states.yml app/config/contexts.ym
 
 for f in $files
  do
-  echo "cp ${f}.dist $f"
+  cp ${f}.dist $f
  done
 
 cd src
