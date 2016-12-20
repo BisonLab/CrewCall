@@ -30,6 +30,7 @@
 /bin/*
 !bin/console
 !bin/prep.sh
+!bin/reload.sh
 !bin/symfony_requirements
 /vendor/
 

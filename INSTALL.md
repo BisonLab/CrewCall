@@ -1,8 +1,12 @@
 #INSTALL
 
  - Clone this.
+ - Create the database. I've been using postgresql for development.
  - Run ./bin/prep.sh  This give you a copy of all the config files you would want to edit for your needs. It will also clone the CrewCallBundle into src/.
  - composer update (Yes, you need composer.) https://getcomposer.org/
+ - ./bin/console assetic:dump
+
+Optionally, run ./bin/reload.sh for preparing the database, insert some fixtures and create the cerewcall user with the too easy "cc" password.
 
 # Customization.
 
