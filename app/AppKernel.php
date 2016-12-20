@@ -7,7 +7,7 @@ class AppKernel extends Kernel
 {
     // I could be extending and make a chain, but I kinda like traits these
     // days.
-    use AppKernelCustomTrait;
+    use \AppKernelCustomTrait;
 
     public function registerBundles()
     {
@@ -41,7 +41,6 @@ class AppKernel extends Kernel
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
         }
-
         return $this->registerCustomBundles($bundles);
     }
 
