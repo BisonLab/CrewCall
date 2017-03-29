@@ -3,6 +3,7 @@
 /app/config/states.yml
 /app/config/contexts.yml
 /app/config/types.yml
+/app/config/services.yml
 /app/config/config_custom.yml
 /src/*
 !/src/AppBundle
@@ -57,3 +58,7 @@
 */Entity/*~
 # vim swap files
 *.swp
+
+# I tend to have quite a few helper shell scripts in my project root.
+# No need for those in the project.
+/*.sh

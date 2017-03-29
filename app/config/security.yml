@@ -12,7 +12,9 @@ security:
 
     providers:
         fos_userbundle:
-            id: fos_user.user_provider.username
+            # id: fos_user.user_provider.username
+            # Attempting this one.
+            id: fos_user.user_provider.username_email
 
     firewalls:
         ajax_calls:
@@ -20,6 +22,12 @@ security:
             anonymous:  ~
         login_firewall:
             pattern:    ^/login$
+            anonymous:  true
+        registration:
+            pattern:    ^/register/
+            anonymous:  true
+        resetting:
+            pattern:    ^/resetting/
             anonymous:  true
         ping:
             pattern:    ^/ping$
@@ -31,7 +39,7 @@ security:
             # TODO: Add some IP validation or something.
             pattern: ^/rest
             anonymous:  false
-            http_basic: 
+            http_basic:
                 realm: "REST API"
             stateless:  true
         main:
@@ -39,10 +47,11 @@ security:
             form_login:
                 provider: fos_userbundle
                 csrf_token_generator: security.csrf.token_manager
-                # login_path:  /login
-                # check_path:  /login_check
+                login_path:  /login
+                check_path:  /login_check
                 default_target_path: /
             logout:       true
+            # anonymous:    false
             anonymous:    false
         # disables authentication for assets and the profiler, adapt it according to your needs
         dev:
@@ -58,11 +67,11 @@ security:
         - { path: ^/_wdt, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/bundles, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/admin/, role: ROLE_ADMIN }
-        - { path: ^/user/, role: ROLE_ADMIN }
+        - { path: ^/useradmin/, role: ROLE_ADMIN }
         - { path: ^/reports/, role: ROLE_ADMIN }
-        - { path: ^/rest/, role: ROLE_REST }
-        - { path: ^/web, role: ROLE_USER }
-        - { path: ^/ajax, role: ROLE_USER }
+        - { path: /rest/, role: ROLE_REST }
+        - { path: /web/, role: ROLE_USER }
+        - { path: /ajax/, role: ROLE_USER }
         - { path: /show, role: ROLE_USER }
         - { path: /edit, role: ROLE_USER_RW }
         - { path: /new, role: ROLE_USER_RW }

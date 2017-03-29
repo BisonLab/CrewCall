@@ -6,7 +6,12 @@ imports:
     - { resource: services.yml }
     - { resource: "@BisonLabCommonBundle/Resources/config/services.yml" }
     - { resource: "@CrewCallBundle/Resources/config/services.yml" }
-    - { resource: config_custom.yml }
+    - { resource: "@MigBundle/Resources/config/services.yml" }
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: en
 
 framework:
     #esi:             ~
@@ -40,8 +45,9 @@ twig:
     strict_variables: "%kernel.debug%"
     globals:
         sakonnin:         "@sakonnin.messages"
+        cc_jobs:          "@crewcall.jobs"
         states:           "%app.states%"
-        types:            "app.types%"
+        types:            "%app.types%"
 
 # Doctrine Configuration
 doctrine:
@@ -92,8 +98,18 @@ fos_user:
     firewall_name: main
     user_class: CrewCallBundle\Entity\Person
     change_password: true
+    from_email:
+        address:        erik@zelow.no
+        sender_name:    CrewCall
+    registration:
+        form:
+            type: CrewCallBundle\Form\RegistrationType
+        confirmation:
+            enabled:    true # change to true for required email confirmation
+            template:   '@FOSUser/Registration/email.txt.twig'
 
 stof_doctrine_extensions:
+    default_locale: nb_NO
     orm:
         crewcall:
             loggable: true

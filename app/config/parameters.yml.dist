@@ -18,6 +18,8 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
 
-    sakonnin.sms:
-        sender: pswincom_mail
-        receiver: pswincom_web_xml
+    bisonlab_reports.report_classes:
+    bisonlab_reports.default_filestore: /tmp
+
+    sakonnin.function_factories:
+        - BisonLab\SakonninBundle\Lib\Sakonnin\SakonninFunctions

@@ -6,9 +6,13 @@
         <h1>Welcome to CrewCall</h1>
     </div>
 
+{% for message in sakonnin.messagetype('Front page logged in').messages if message.state == "SHOW" %}
     <div id="status">
+<h3>{{ message.subject }}</h3>
         <p>
+{{ message.body }}
         </p>
     </div>
+{% endfor %}
 </div>
 {% endblock %}

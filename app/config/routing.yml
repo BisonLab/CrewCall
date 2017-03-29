@@ -1,3 +1,8 @@
+#bison_lab_takardun:
+#    resource: "@BisonLabTakardunBundle/Controller/"
+#    type:     annotation
+#    prefix:   /
+
 crew_call:
     resource: "@CrewCallBundle/Controller/"
     type:     annotation
@@ -41,6 +46,6 @@ fos_user_change_password:
     resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
     prefix: /change-password
 
-# Uncomment this one if you have something to add.
-#_main:
-#    resource: routing_custom.yml
+migration:
+    resource: "@MigBundle/Controller/"
+    type:     annotation

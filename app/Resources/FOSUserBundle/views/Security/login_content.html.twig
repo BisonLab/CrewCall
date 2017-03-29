@@ -22,3 +22,13 @@
     <input type="submit" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}" />
     {{ bootstrap_set_style('') }}
 </form>
+<a href="{{ path("fos_user_registration_register") }}">{{ 'layout.register'|trans }}</a>
+
+{% for message in sakonnin.messagetype('Front page not logged in').messages if message.state == "SHOW" %}
+    <div id="status">
+<h3>{{ message.subject }}</h3>
+        <p>
+{{ message.body }}
+        </p>
+    </div>
+{% endfor %}

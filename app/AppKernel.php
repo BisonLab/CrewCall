@@ -5,10 +5,6 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
 {
-    // I could be extending and make a chain, but I kinda like traits these
-    // days.
-    use \AppKernelCustomTrait;
-
     public function registerBundles()
     {
         $bundles = [
@@ -33,15 +29,21 @@ class AppKernel extends Kernel
             new BisonLab\ReportsBundle\BisonLabReportsBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new CrewCallBundle\CrewCallBundle(),
+            new MigBundle\MigBundle(),
+//            new BisonLab\TakardunBundle\BisonLabTakardunBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
-            $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
+            if ('dev' === $this->getEnvironment()) {
+                $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
+                $bundles[] = new Symfony\Bundle\WebServerBundle\WebServerBundle();
+            }
         }
-        return $this->registerCustomBundles($bundles);
+
+        return $bundles;
     }
 
     public function getRootDir()
