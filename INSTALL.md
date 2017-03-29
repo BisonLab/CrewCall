@@ -1,4 +1,4 @@
-#INSTALL
+# INSTALL
 
  - Clone this.
  - Create the database. I've been using postgresql for development.
