@@ -4,9 +4,10 @@
  - Create the database. I've been using postgresql for development.
  - Run ./bin/prep.sh  This give you a copy of all the config files you would want to edit for your needs. It will also clone the CrewCallBundle into src/.
  - composer update (Yes, you need composer.) https://getcomposer.org/
+ - Run composer update again and again and again while installing whatever the packages needs for installing themselves.
  - ./bin/console assetic:dump
 
-Optionally, run ./bin/reload.sh for preparing the database, insert some fixtures and create the cerewcall user with the too easy "cc" password.
+Optionally, run ./bin/reload.sh for preparing the database, insert some fixtures and create the crewcall user with the too simple "cc" password.
 
 # Customization.
 
