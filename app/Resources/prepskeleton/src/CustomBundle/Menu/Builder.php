@@ -18,15 +18,6 @@ class Builder implements ContainerAwareInterface
         $container = $options['container'];
 
         if ($container->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
-            // This is not really for the base. But will fix later.
-            $menu->addChild("Migration");
-
-            $router = $options['container']->get('router');
-
-            foreach (\MigBundle\Controller\MigrationController::getMigTables() as $t => $d) {
-                $route = $router->generate('migration_list', array('table' => $t));
-                $menu["Migration"]->addChild($d['model'], array('uri' => $route));
-            }
         }
         return $menu;
     }

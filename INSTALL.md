@@ -22,3 +22,5 @@ Your own configuration can be put in the app/config/\*custom.yml files and they 
 But don't do this unless you really want to, since if you want to have this in a git repo it has to be a fork from "my" tree and you will have to sync between your new fork and upstream from time to time like with Symfony-Standard, which this is an extension of.
 
 I will try to make it possible for you to just merge from upstream when you feel like it. But each time you do you should check the .dist files for new stuff. You can bet composer.json has been updated at least.
+
+The reason CustomBundle is in the appResources/prepskeleton/ while the dist-files are not is questionable. I decided to do like this for now, but may change my opinion on it. Should they be easier to diff or not in the way for the daily work? Feel free to answer me what you think.
