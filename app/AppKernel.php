@@ -5,6 +5,7 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
 {
+    use AppKernelCustomTrait;
     public function registerBundles()
     {
         $bundles = [
@@ -39,8 +40,7 @@ class AppKernel extends Kernel
                 $bundles[] = new Symfony\Bundle\WebServerBundle\WebServerBundle();
             }
         }
-
-        return $bundles;
+        return $this->registerCustomBundles($bundles);
     }
 
     public function getRootDir()

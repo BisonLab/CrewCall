@@ -7,7 +7,7 @@
 /app/config/routing_custom.yml
 /app/config/config_custom.yml
 /src/*
-!/src/CustomBundle
+!/src/.gitkeep
 /build/
 /phpunit.xml
 

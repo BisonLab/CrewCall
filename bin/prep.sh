@@ -9,6 +9,6 @@ for f in $files
   cp ${f}.dist $f
  done
 
-cp -a app/Resources/prekskeleton/* .
+cp -a app/Resources/prepskeleton/* .
 cd src
 git clone git@github.com:BisonLab/CrewCallBundle.git
