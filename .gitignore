@@ -56,6 +56,8 @@
 /composer
 # We're using the distfile.
 /composer.json
+# And then this is no use.
+/composer.lock
 
 # Backup entities generated with doctrine:generate:entities command
 */Entity/*~
