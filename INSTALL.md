@@ -11,8 +11,14 @@ Optionally, run ./bin/reload.sh for preparing the database, insert some fixtures
 
 # Customization.
 
-The reason I've split the application into a base and a bundle is that you now have the option to customize the base (almost) as much as you want while staying up to date with the main application.
+This is a work in progress. The goal is to give you the option to just use this "base" and the CrewCallBundle straight from github or fork it for your own customization while keeping up to date with the main application which is the CrewCallBundle.
 
-This means your own base design, reports, menu options and so on by extending or editing the content in app/Resources and src/CustomBundle. You can also add new bundles in app/AppKernelCustomTrait.php without conflicts.
+(And for me (The main author, Thomas Lndquist) it is to use this base as my base so I don't have to sync it with my development which would end up being way too irregular.)
 
-But don't do this unless you really want to, since you will have to sync between your new fork and upstream from time to time like with Symfony-Standard, which this is an extension of.
+This means you can hack your own base design, reports, menu options and so on by extending or editing the content in app/Resources and src/CustomBundle. You can also add new bundles in app/AppKernelCustomTrait.php without conflicts.
+
+Your own configuration can be put in the app/config/\*custom.yml files and they will not be messed up by a merge with upstream. 
+
+But don't do this unless you really want to, since if you want to have this in a git repo it has to be a fork from "my" tree and you will have to sync between your new fork and upstream from time to time like with Symfony-Standard, which this is an extension of.
+
+I will try to make it possible for you to just merge from upstream when you feel like it. But each time you do you should check the .dist files for new stuff. You can bet composer.json has been updated at least.
