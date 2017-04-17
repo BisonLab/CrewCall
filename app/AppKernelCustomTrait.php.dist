@@ -7,7 +7,7 @@ trait AppKernelCustomTrait
 {
     public function registerCustomBundles($bundles)
     {
-        $bundles[] = new MigBundle\MigBundle();
+        // $bundles[] = new ExampleBundle\ExampleBundle();
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
         }
