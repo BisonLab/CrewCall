@@ -6,7 +6,7 @@
 /app/config/services.yml
 /app/config/config_custom.yml
 /src/*
-!/src/.gitkeep
+!/src/CustomBundle
 /build/
 /phpunit.xml
 
@@ -53,6 +53,8 @@
 # Composer PHAR
 /composer.phar
 /composer
+# We're using the distfile.
+/composer.json
 
 # Backup entities generated with doctrine:generate:entities command
 */Entity/*~

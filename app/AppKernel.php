@@ -15,7 +15,6 @@ class AppKernel extends Kernel
             new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new CustomBundle\CustomBundle(),
             new Braincrafted\Bundle\BootstrapBundle\BraincraftedBootstrapBundle(),
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),
@@ -23,14 +22,12 @@ class AppKernel extends Kernel
             new JMS\AopBundle\JMSAopBundle(),
             new JMS\SecurityExtraBundle\JMSSecurityExtraBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle($this),
+            new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             new BisonLab\SakonninBundle\BisonLabSakonninBundle(),
             new BisonLab\CommonBundle\BisonLabCommonBundle(),
             new BisonLab\ReportsBundle\BisonLabReportsBundle(),
-            new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
-            new CrewCallBundle\CrewCallBundle(),
-            new MigBundle\MigBundle(),
-//            new BisonLab\TakardunBundle\BisonLabTakardunBundle(),
+            new CrewCallBundle\CrewCallBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
