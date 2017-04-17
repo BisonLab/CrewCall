@@ -46,6 +46,6 @@ fos_user_change_password:
     resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
     prefix: /change-password
 
-migration:
-    resource: "@MigBundle/Controller/"
-    type:     annotation
+# Wonder if this overrides the one in config_dev.yml, but how could it?
+_main:
+    resource: routing_custom.yml
