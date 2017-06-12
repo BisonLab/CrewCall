@@ -2,12 +2,18 @@ parameters:
     app.contexts:
         BisonLabSakonninBundle:
             Message:
-                sakonnin:
+                crewcall:
                   -
-                    label: "User"
-                    object_name: user
+                    label: "Person"
+                    object_name: person
                     type: master
-                    url_template: "/web/user/{{external_id}}/show"
+                    url_template: "/web/person/{{external_id}}"
                     url_from_method: template
                     default: false
-
+                  -
+                    label: "Front page"
+                    object_name: frontpage
+                    type: master
+                    url_template: "/"
+                    url_from_method: template
+                    default: false
