@@ -26,7 +26,6 @@
        <script src="{{ asset('public/jquery/jquery.js') }}"></script>
        <script src="{{ asset('public/js/bootstrap.js') }}"></script>
        <script src="{{ asset('public/jquery-ui/jquery-ui.js') }}"></script>
-       <script src="{{ asset('js/jquery.datetimepicker.full.js') }}"></script>
        <script src="{{ asset('bundles/bisonlabcommon/datatables/jquery.dataTables.min.js') }}"></script>
        <script src="{{ asset('bundles/bisonlabcommon/datatables/dataTables.bootstrap.min.js') }}"></script>
        <script src="{{ asset('bundles/bisonlabcommon/datatables/dataTables.fixedHeader.min.js') }}"></script>
@@ -35,8 +34,8 @@
 </head>
 
 <body>
-{% include '::scripts.html.twig' %}
 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+{% include '::scripts.html.twig' %}
 {% include 'BisonLabSakonninBundle::scripts.html.twig' %}
 {% include 'BisonLabSakonninBundle:Message:_message_log_popup.html.twig' %}
 {% endif %}
