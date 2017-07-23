@@ -2,9 +2,12 @@ parameters:
     app.states:
         # user_chooseable is for deciding if ROLE_USER is allowed to change
         # from and to this state.
+        # (It's mainly for the Person state, but I'll keep it for now so it's
+        # some consitency around how states are handled in the Entities).
+        # (And then I can consider making a trait out of it.)
         CrewCallBundle:
             Person:
-                states: 
+                states:
                     ACTIVE:
                         user_chooseable: true
                     VACATION:
@@ -16,53 +19,81 @@ parameters:
                     # Meant for contact persons and so on.
                     EXTERNAL:
                         user_chooseable: false
+                    DENIED:
+                        user_chooseable: false
                 active_states: ['ACTIVE']
                 enable_login: ['ACTIVE', 'VACATION']
             Event:
-                states: 
+                states:
                     PROSPECT:
                         user_chooseable: false
-                    ORDERED:
-                        user_chooseable: false
-                    FINISHED:
+                    CONFIRMED:
                         user_chooseable: false
                     CANCELLED:
                         user_chooseable: false
-                active_states: ['PROSPECT', 'ORDERED']
+                    # Finished, but not invoiced and so on.
+                    DONE:
+                        user_chooseable: false
+                    # Everything handled, all OK and done.
+                    COMPLETED:
+                        user_chooseable: false
+                active_states: ['PROSPECT', 'CONFIRMED']
             Location:
-                states: 
+                states:
                     OPEN:
                         user_chooseable: false
                     CLOSED:
                         user_chooseable: false
                 active_states: ['OPEN']
             Function:
-                states: 
+                states:
                     VISIBLE:
                         user_chooseable: false
                     INVISIBLE:
                         user_chooseable: false
                 active_states: ['VISIBLE']
             Shift:
-                states: 
-                    CONFIRMED:
-                        user_chooseable: false
+                states:
                     REGISTERED:
+                        user_chooseable: false
+                    CONFIRMED:
                         user_chooseable: false
                     FULLY_BOOKED:
                         user_chooseable: false
-                active_states: ['VISIBLE', 'REGISTERED']
-            Interest:
-                states: 
+                    COMPLETED:
+                        user_chooseable: false
+                    CANCELLED:
+                        user_chooseable: false
+                active_states: ['FULLY_BOOKED', 'CONFIRMED', 'REGISTERED']
+            ShiftFunctionOrganization:
+                states:
+                    REGISTERED:
+                        user_chooseable: false
+                    CONFIRMED:
+                        user_chooseable: false
+                    BOOKED:
+                        user_chooseable: false
+                    COMPLETED:
+                        user_chooseable: false
+                booked_states: ['BOOKED']
+            Job:
+                states:
+                    INTERESTED:
+                        user_chooseable: false
                     CONFIRMED:
                         user_chooseable: false
                     REGISTERED:
                         user_chooseable: false
                     DENIED:
                         user_chooseable: false
-                active_states: ['VISIBLE', 'REGISTERED']
+                    BOOKED:
+                        user_chooseable: false
+                    COMPLETED:
+                        user_chooseable: false
+                booked_states: ['BOOKED', 'CONFIRMED']
+                wishlist_states: ['INTERESTED', 'DENIED']
             Organization:
-                states: 
+                states:
                     ACTIVE:
                         user_chooseable: false
                     CLOSED:
@@ -70,3 +101,12 @@ parameters:
                     BLOCKED:
                         user_chooseable: false
                 active_states: ['ACTIVE']
+            default:
+                states:
+                    NONE:
+                        user_chooseable: false
+                    DEFAULT:
+                        user_chooseable: false
+                active_states: []
+                booked_states: []
+                wishlist_states: []
