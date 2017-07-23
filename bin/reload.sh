@@ -7,6 +7,7 @@ rm -rf var/cache/*
 ./bin/console --em=sakonnin doctrine:schema:create
 ./bin/console fos:user:create --super-admin crewcall crewcall@localhost cc
 ./bin/console cache:clear --no-warmup
-./bin/console sakonnin:insert:basedata
+./bin/console sakonnin:insert-basedata
+./bin/console once:create-base-data
 ./bin/console once:create-base-function
 rm -rf var/cache/*
