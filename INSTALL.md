@@ -13,7 +13,7 @@ Optionally, run ./bin/reload.sh for preparing the database, insert some fixtures
 
 This is a work in progress. The goal is to give you the option to just use this "base" and the CrewCallBundle straight from github or fork it for your own customization while keeping up to date with the main application which is the CrewCallBundle.
 
-(And for me (The main author, Thomas Lndquist) it is to use this base as my base so I don't have to sync it with my development which would end up being way too irregular.)
+(And for me (The main author, Thomas Lundquist) it is to use this base as my base so I don't have to sync it with my development which would end up being way too irregular.)
 
 This means you can hack your own base design, reports, menu options and so on by extending or editing the content in app/Resources and src/CustomBundle. You can also add new bundles in app/AppKernelCustomTrait.php without conflicts.
 
