@@ -1,6 +1,6 @@
 # INSTALL
 
- - Clone this.
+ - Fork this. That way you can have your own git repo with your changes and config files while being able to compare with upstream when you feel like.
  - Create the database. I've been using postgresql for development.
  - Run ./bin/prep.sh  This give you a copy of all the config files you would want to edit for your needs. It will also clone the CrewCallBundle into src/.
  - composer update (Yes, you need composer.) https://getcomposer.org/
