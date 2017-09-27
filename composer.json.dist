@@ -11,11 +11,19 @@
         }
     ],
     "autoload": {
-        "psr-4": { "": "src/" },
-        "classmap": [ "app/AppKernelCustomTrait.php", "app/AppKernel.php", "app/AppCache.php" ]
+        "psr-4": {
+            "": "src/"
+        },
+        "classmap": [
+            "app/AppKernelCustomTrait.php",
+            "app/AppKernel.php",
+            "app/AppCache.php"
+        ]
     },
     "autoload-dev": {
-        "psr-4": { "Tests\\": "tests/" }
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
     },
     "require": {
         "php": "^7.0",
@@ -89,7 +97,7 @@
             "keep-outdated": true
         },
         "branch-alias": {
-            "dev-master": "3.3-dev"
+            "dev-master": "3.4-dev"
         }
     }
 }

@@ -1,15 +1,124 @@
-# INSTALL
+CrewCall - Installation.
+======================
+
+This is a howto for installing and setting up CrewCall on a Debian/Ubuntu server. Installing on other Linux/Unix distributions is no problem, just find the right packages.
+
+The application runs nicely on php7 which is also recommended. Debian 9 Jessie  and Ubuntu above 16.04 has it.
+
+
+OS Packages
+-----------
+
+ * git
+ * postgresql (Other DBMSes should work since we do use Doctrine, but they are not tested)
+
+ * php-cli php-apcu php-gearman php-pgsql php-json php-curl php-dev pkg-config php-gmp
+
+I'm using apache, but nginx should work aswell. Feel free to try. Please send a report on how it went.
+
+ * apache2 libapache2-mod-php apache2-utils
+
+And I'm sorry, but I did end up with Bootstrap and studd that need LESS. So, you've gotta install node.js and friends.
+
+ * node-less
+
+CrewCall base
+-----------
+
+The base is basically a customized version of Symfony Standard and should be handled the same way. But, for now it does not have a composer or symfony install routine. Alas, we're doing it the good old way.
 
  - Fork this. That way you can have your own git repo with your changes and config files while being able to compare with upstream when you feel like.
- - Create the database. I've been using postgresql for development.
- - Run ./bin/prep.sh  This give you a copy of all the config files you would want to edit for your needs. It will also clone the CrewCallBundle into src/.
- - composer update (Yes, you need composer.) https://getcomposer.org/
- - Run composer update again and again and again while installing whatever the packages needs for installing themselves.
- - ./bin/console assetic:dump
+
+ - git clone the fork to wherever you want it.
+
+ - Run ./bin/prep.sh  This give you a copy of all the config files you would want to edit for your needs. It will also clone the CrewCall main application Bundle into src/.
+
+You may want to follow the upstream CrewCall Base, if so, do this:
+
+$ git remote add upstream git@git.nteb.no:inventory/CrewCall.git 
+$ git fetch upstream
+
+Then, to pull from master, which should be safe since it should only be messing with distfiles and the skeleton unless there are bugs in other places.
+
+$ git pull upstream master
+
+
+
+Symfony and friends
+-------------------
+
+The composer binary is not a part of the base, but you need it. It is suggested that you add this to /usr/local/bin but I tend to put it in the root directory of the project.
+
+https://getcomposer.org/download/
+
+$ <wherever>/composer.phar update
+
+Run composer update again and again and again while installing whatever the packages needs for installing themselves.
+
+$ ./bin/console assetic:dump
+
+
+Parameters
+----------
+
+Edit app/config/parameters.yml
+
+ * secret (Just hit random keys. 16'ish of'em.)
+ * database_name
+ * database_user
+ * database_password
+
+
+Database
+--------
+
+You gotta create the database user and databases.
+
+The database can be created by Doctrine later, but it still needs a user:
+
+(You'd probably have to do this as the postgres user or root. It will create the user with database creation granted.))
+
+$ createuser --createdb --login --pwprompt <DBUSER>
+
+Back to the user with the project:
+
+Default (CrewCall) and the database itself
+$ ./bin/console doctrine:database:create
+$ ./bin/console doctrine:schema:create
+
+Sakonnin (the message/log/file handling system)
+$ ./bin/console doctrine:schema:create --em=sakonnin
+
+Add Sakonnin message types and prep a little.
+
+$ ./bin/console sakonnin:insert-basedata
 
 Optionally, run ./bin/reload.sh for preparing the database, insert some fixtures and create the crewcall user with the too simple "cc" password.
 
-# Customization.
+
+And yes, we have to set up the web server.
+-----------------------------------------
+
+This you probably know already and if not, go here:
+
+http://symfony.com/doc/current/setup/web_server_configuration.html
+
+And also decide how to solve file permissions issues:
+
+http://symfony.com/doc/current/setup/file_permissions.html
+
+The ACL method is the preferrable:
+
+$ sudo apt-get install acl
+
+$ HTTPDUSER=www-data
+$ APPOWNER=<your username>
+$ sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:"$APPOWNER":rwX var
+$ sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:"$APPOWNER":rwX var
+
+
+Customization
+-------------
 
 This is a work in progress. The goal is to give you the option to just use this "base" and the CrewCallBundle straight from github or fork it for your own customization while keeping up to date with the main application which is the CrewCallBundle.
 
