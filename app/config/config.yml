@@ -22,9 +22,9 @@ framework:
     form:            ~
     csrf_protection: ~
     validation:      { enable_annotations: true }
-    #serializer:      { enable_annotations: true }
     templating:
         engines: ['twig']
+    #serializer:      { enable_annotations: true }
     default_locale:  "%locale%"
     trusted_hosts:   ~
     session:
@@ -42,10 +42,11 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
     globals:
-        sakonnin:         "@sakonnin.messages"
-        cc_jobs:          "@crewcall.jobs"
-        states:           "%app.states%"
-        types:            "%app.types%"
+        sakonnin_messages: "@sakonnin.messages"
+        sakonnin_files:    "@sakonnin.files"
+        cc_jobs:           "@crewcall.jobs"
+        states:            "%app.states%"
+        types:             "%app.types%"
 
 # Doctrine Configuration
 doctrine:
@@ -175,3 +176,12 @@ braincrafted_bootstrap:
         variables_file: ~
         bootstrap_output: "%kernel.root_dir%/Resources/less/bootstrap.less"
         bootstrap_template: BraincraftedBootstrapBundle:Bootstrap:bootstrap.less.twig
+
+vich_uploader:
+    db_driver: orm
+    mappings:
+        sakonnin_file:
+            upload_destination: '%file_storage%'
+            namer:
+                service: vich_uploader.namer_property
+                options: { property: 'fileId'}

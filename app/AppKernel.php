@@ -26,6 +26,7 @@ class AppKernel extends Kernel
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             new BisonLab\SakonninBundle\BisonLabSakonninBundle(),
+            new Vich\UploaderBundle\VichUploaderBundle(),
             new BisonLab\CommonBundle\BisonLabCommonBundle(),
             new BisonLab\ReportsBundle\BisonLabReportsBundle(),
             new CrewCallBundle\CrewCallBundle()
