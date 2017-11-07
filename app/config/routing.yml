@@ -8,10 +8,6 @@ crew_call:
     type:     annotation
     prefix:   /
 
-app:
-    resource: "@CustomBundle/Controller/"
-    type:     annotation
-
 bison_lab_sakonnin:
     resource: "@BisonLabSakonninBundle/Controller/"
     type:     annotation
