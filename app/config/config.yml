@@ -45,6 +45,7 @@ twig:
         sakonnin_messages: "@sakonnin.messages"
         sakonnin_files:    "@sakonnin.files"
         cc_jobs:           "@crewcall.jobs"
+        cc_formcreator:    "@crewcall.formcreator"
         states:            "%app.states%"
         types:             "%app.types%"
 
