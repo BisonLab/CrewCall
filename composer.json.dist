@@ -48,6 +48,7 @@
         "bisonlab/common-bundle": "dev-master",
         "bisonlab/noorm-bundle": "dev-master",
         "fullcalendar/fullcalendar": "^3.8",
+        "eluceo/ical": "^0.13.0",
         "commerceguys/addressing": "dev-master"
     },
     "require-dev": {
