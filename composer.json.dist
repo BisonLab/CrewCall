@@ -43,7 +43,6 @@
         "knplabs/knp-menu-bundle": "^2.0",
         "friendsofsymfony/user-bundle": "2.0.*@dev",
         "bisonlab/sakonnin-bundle": "dev-master",
-        "bisonlab/takardun-bundle": "dev-master",
         "bisonlab/reports-bundle": "master@dev",
         "bisonlab/common-bundle": "dev-master",
         "bisonlab/noorm-bundle": "dev-master",
