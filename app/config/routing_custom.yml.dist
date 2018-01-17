@@ -1,3 +1,7 @@
 #example:
 #    resource: "@ExampleBundle/Controller/"
 #    type:     annotation
+
+custom:
+    resource: "@CustomBundle/Controller/"
+    type:     annotation

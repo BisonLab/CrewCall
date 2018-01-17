@@ -9,7 +9,7 @@ The application runs nicely on php7 which is also recommended. Debian 9 Jessie  
 OS Packages
 -----------
 
- * git
+ * git zip unzip
  * postgresql (Other DBMSes should work since we do use Doctrine, but they are not tested)
 
  * php-cli php-apcu php-gearman php-pgsql php-json php-curl php-dev pkg-config php-gmp php-intl php-symfony-polyfill-intl-icu
@@ -43,6 +43,21 @@ Then, to pull from master, which should be safe since it should only be messing 
 $ git pull upstream master
 
 
+Parameters
+----------
+
+During the composer update (See below) you will be asked for these amongst others:
+
+ * secret (Just hit random keys. 16'ish of'em.)
+ * database_host (default localhost)
+ * database_port  (default 5432)
+ * database_name
+ * database_user
+ * database_password
+
+The database do not have to be ready, but here you have to plan or know what to use.
+How to create the database and user comes after the next section.
+
 
 Symfony and friends
 -------------------
@@ -58,17 +73,6 @@ Run composer update again and again and again while installing whatever the pack
 $ ./bin/console assetic:dump
 
 
-Parameters
-----------
-
-Edit app/config/parameters.yml
-
- * secret (Just hit random keys. 16'ish of'em.)
- * database_name
- * database_user
- * database_password
-
-
 Database
 --------
 
@@ -82,8 +86,15 @@ $ createuser --createdb --login --pwprompt <DBUSER>
 
 Back to the user with the project:
 
-Default (CrewCall) and the database itself
+The database.
 $ ./bin/console doctrine:database:create
+
+And the ones below can be run separately or with  ..
+
+$ ./bin/reload.sh
+
+.. for preparing the database, insert some fixtures and create the crewcall user with the too simple "cc" password.
+
 $ ./bin/console doctrine:schema:create
 
 Sakonnin (the message/log/file handling system)
@@ -92,8 +103,6 @@ $ ./bin/console doctrine:schema:create --em=sakonnin
 Add Sakonnin message types and prep a little.
 
 $ ./bin/console sakonnin:insert-basedata
-
-Optionally, run ./bin/reload.sh for preparing the database, insert some fixtures and create the crewcall user with the too simple "cc" password.
 
 
 And yes, we have to set up the web server.
@@ -115,6 +124,14 @@ $ HTTPDUSER=www-data
 $ APPOWNER=<your username>
 $ sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:"$APPOWNER":rwX var
 $ sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:"$APPOWNER":rwX var
+
+
+Config files
+-------------
+
+In app/config you will find alot of yaml - files. Some of these are meant to be edited, some you should leave as they are. parameters.yml is for every instance you run, like dev and prod and config_custom.yml is meant for stuff that are alike on both of tese.
+
+The other files should usually not need to be edited unless you go the "I need customization" path. Which it's about in the next section.
 
 
 Customization

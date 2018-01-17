@@ -12,10 +12,14 @@ parameters:
     locale: en
 
     bisonlab_reports.report_classes:
-    bisonlab_reports.default_filestore: /tmp
+    # For generated reports, usuaslly uuseful to be able to grab from the web.
+    bisonlab_reports.default_filestore: '%kernel.root_dir%/../web/reports'
 
     sakonnin.function_factories:
         - BisonLab\SakonninBundle\Lib\Sakonnin\SakonninFunctions
+    # For the up/download of files attached to objects. This should not be
+    # available from the web.
+    sakonnin.file_storage: '%kernel.root_dir%/../var/files'
 
 stof_doctrine_extensions:
 # You'd better change this I guess :=)
