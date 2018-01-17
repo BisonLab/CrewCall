@@ -26,7 +26,9 @@
     {{ bootstrap_set_style('') }}
 #}
 </form>
+{% if allow_registration %}
 <a href="{{ path("fos_user_registration_register") }}">{{ 'layout.register'|trans }}</a>
+{% endif %}
 
 {% for message in sakonnin_messages.messagetype('Front page not logged in').messages if message.state == "SHOW" %}
     <div id="status">

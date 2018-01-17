@@ -42,12 +42,13 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
     globals:
-        sakonnin_messages: "@sakonnin.messages"
-        sakonnin_files:    "@sakonnin.files"
-        cc_jobs:           "@crewcall.jobs"
-        cc_formcreator:    "@crewcall.formcreator"
-        states:            "%app.states%"
-        types:             "%app.types%"
+        allow_registration: "%allow_registration%"
+        sakonnin_messages:  "@sakonnin.messages"
+        sakonnin_files:     "@sakonnin.files"
+        cc_jobs:            "@crewcall.jobs"
+        cc_formcreator:     "@crewcall.formcreator"
+        states:             "%app.states%"
+        types:              "%app.types%"
 
 # Doctrine Configuration
 doctrine:

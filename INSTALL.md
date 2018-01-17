@@ -131,6 +131,8 @@ Config files
 
 In app/config you will find alot of yaml - files. Some of these are meant to be edited, some you should leave as they are. parameters.yml is for every instance you run, like dev and prod and config_custom.yml is meant for stuff that are alike on both of tese.
 
+In config_custom.yml you will have a config option "allow_registration" which should decide if registration is alowed or not. It's not the only place unfortunately. You have to comment out the "fos_user_register" section in routing_custom.yml since it cannot be set based on the first parameter.
+
 The other files should usually not need to be edited unless you go the "I need customization" path. Which it's about in the next section.
 
 

@@ -9,7 +9,12 @@
 #    - { resource: "@ExampleBundle/Resources/config/services.yml" }
 
 parameters:
-    locale: en
+    # You may want to change this.
+    locale: en_UK
+
+    # This basically says itself - Maybe false should be default, but at least
+    # it'll show that registration is possible.
+    allow_registration: true
 
     bisonlab_reports.report_classes:
     # For generated reports, usuaslly uuseful to be able to grab from the web.
@@ -22,5 +27,8 @@ parameters:
     sakonnin.file_storage: '%kernel.root_dir%/../var/files'
 
 stof_doctrine_extensions:
-# You'd better change this I guess :=)
-    default_locale: nb_NO
+    default_locale: %locale%
+    # Old one, which may be needed instead of using the locale set above. This
+    # is because the database locale may have to differ from the application
+    # itself (because of languages)
+    # default_locale: nb_NO

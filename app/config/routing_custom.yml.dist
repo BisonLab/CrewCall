@@ -2,6 +2,10 @@
 #    resource: "@ExampleBundle/Controller/"
 #    type:     annotation
 
+fos_user_register:
+    resource: "@FOSUserBundle/Resources/config/routing/registration.xml"
+    prefix: /register
+
 custom:
     resource: "@CustomBundle/Controller/"
     type:     annotation
