@@ -12,6 +12,8 @@ parameters:
                         user_chooseable: true
                     VACATION:
                         user_chooseable: true
+                    INACTIVE:
+                        user_chooseable: false
                     QUIT:
                         user_chooseable: false
                     LOCKED:
@@ -19,6 +21,7 @@ parameters:
                     # Meant for contact persons and so on.
                     EXTERNAL:
                         user_chooseable: false
+                    # Denied in registration.
                     DENIED:
                         user_chooseable: false
                 active_states: ['ACTIVE']
@@ -37,7 +40,7 @@ parameters:
                     # Everything handled, all OK and done.
                     COMPLETED:
                         user_chooseable: false
-                active_states: ['PROSPECT', 'CONFIRMED']
+                active_states: ['CONFIRMED']
             Location:
                 states:
                     OPEN:
@@ -65,7 +68,7 @@ parameters:
                     CANCELLED:
                         user_chooseable: false
                 active_states: ['FULLY_BOOKED', 'CONFIRMED', 'REGISTERED']
-            ShiftFunctionOrganization:
+            ShiftOrganization:
                 states:
                     REGISTERED:
                         user_chooseable: false
