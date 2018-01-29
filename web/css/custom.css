@@ -43,3 +43,40 @@ body {
     /* symbol for "collapsed" panels */
     content: "\e080";    /* adjust as needed, taken from bootstrap.css */
 }
+
+table.records_list {
+    font-family: arial;
+    margin: 10px 0pt 15px;
+    font-size: 8pt;
+    width: 100%;
+    text-align: left;
+}
+table.records_list thead tr th, table.records_list tfoot tr th {
+    background: lightgrey;
+    border: 1px solid #FFFFFF;
+    font-size: 12pt;
+    padding: 4px;
+}
+table.records_list thead tr .header {
+    background-repeat: no-repeat;
+    background-position: center right;
+    cursor: pointer;
+}
+table.records_list tbody tr.attrtitle {
+    background-color: #e6EEEE;
+    border: 1px solid #FFF;
+    padding: 4px;
+    vertical-align: top;
+    text-align: center;
+}
+table.records_list tbody td {
+    padding: 4px;
+    vertical-align: top;
+}
+/* From another standard.css I've used: */
+table.records_list tbody tr:nth-child(odd) {
+    background: white;
+}
+table.records_list tbody tr:nth-child(even) {
+    background: lightgrey;
+}
