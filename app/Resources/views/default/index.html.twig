@@ -2,10 +2,8 @@
 
 {% block body %}
 <div id="container">
-    <div id="welcome">
-        <h1>Welcome to CrewCall</h1>
-    </div>
-
+<div class="col-sm-6">
+{% set got_nothing = true %}
 {% for message in sakonnin_messages.messagetype('Front page logged in').messages if message.state == "SHOW" %}
     <div id="status">
 <h3>{{ message.subject }}</h3>
@@ -13,6 +11,23 @@
 {{ message.body }}
         </p>
     </div>
+{% set got_nothing = false %}
 {% endfor %}
+{% if got_nothing == true %}
+    <div id="welcome">
+        <h1>Welcome to CrewCall</h1>
+    </div>
+{% endif %}
+</div>
+<div class="col-sm-6">
+{% for message in sakonnin_messages.messagetype('PersonNote').messages %}
+    <div id="status">
+<h3>{{ message.subject }}</h3>
+        <p>
+{{ message.body }}
+        </p>
+{% endfor %}
+</div>
+
 </div>
 {% endblock %}
