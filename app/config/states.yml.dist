@@ -70,31 +70,32 @@ parameters:
                 active_states: ['FULLY_BOOKED', 'CONFIRMED', 'REGISTERED']
             ShiftOrganization:
                 states:
-                    REGISTERED:
+                    ASSIGNED:
                         user_chooseable: false
                     CONFIRMED:
                         user_chooseable: false
-                    BOOKED:
-                        user_chooseable: false
                     COMPLETED:
                         user_chooseable: false
-                booked_states: ['BOOKED']
+                booked_states: ['CONFIRMED']
             Job:
                 states:
+                    # I want the job!
                     INTERESTED:
                         user_chooseable: false
+                    # You can have it if you confirm
+                    ASSIGNED:
+                        user_chooseable: false
+                    # OK, I confirm!
                     CONFIRMED:
                         user_chooseable: false
-                    REGISTERED:
-                        user_chooseable: false
+                    # Sorry, won't give you
                     DENIED:
                         user_chooseable: false
-                    BOOKED:
-                        user_chooseable: false
+                    # Job done
                     COMPLETED:
                         user_chooseable: false
-                booked_states: ['BOOKED', 'CONFIRMED']
-                wishlist_states: ['INTERESTED', 'DENIED']
+                booked_states: ['CONFIRMED']
+                wishlist_states: ['INTERESTED', 'ASSIGNED', 'DENIED']
             Organization:
                 states:
                     ACTIVE:
