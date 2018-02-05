@@ -8,9 +8,9 @@
 {% if is_granted('show', message) %}
     <div id="status">
 <h3>{{ message.subject }}</h3>
-    <p>
+    <pre>
     {{ message.body }}
-    </p>
+    </pre>
     </div>
 {% set got_nothing = false %}
 {% endif %}

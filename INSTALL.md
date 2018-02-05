@@ -104,6 +104,20 @@ Add Sakonnin message types and prep a little.
 
 $ ./bin/console sakonnin:insert-basedata
 
+Add some CC specific base data for an easier start
+
+$ ./bin/console once:create-base-data
+
+$ ./bin/console once:create-base-function
+
+Add the crewcall user, and yes, replace the password at the end.
+
+$ ./bin/console fos:user:create crewcall crewcall@localhost <PASSWORD>
+
+Better be an admin.
+
+$ ./bin/console fos:user:promote crewcall ROLE_ADMIN
+
 
 And yes, we have to set up the web server.
 -----------------------------------------
