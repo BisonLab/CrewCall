@@ -10,7 +10,10 @@ parameters:
                 states:
                     ACTIVE:
                         user_chooseable: true
-                    VACATION:
+                    # If the person can't work, set OCCUPIED. They can set it
+                    # themselves. Not sure if we need to set to and from in
+                    # CrewCall or handle that somewhere else.
+                    OCCUPIED:
                         user_chooseable: true
                     INACTIVE:
                         user_chooseable: false
@@ -25,7 +28,7 @@ parameters:
                     DENIED:
                         user_chooseable: false
                 active_states: ['ACTIVE']
-                enable_login: ['ACTIVE', 'VACATION']
+                enable_login: ['ACTIVE', 'OCCUPIED']
             Event:
                 states:
                     PROSPECT:
