@@ -31,8 +31,10 @@ parameters:
                 enable_login: ['ACTIVE', 'OCCUPIED']
             Event:
                 states:
+                    # We have an order, and are preparing.
                     PROSPECT:
                         user_chooseable: false
+                    # They signed the contract.
                     CONFIRMED:
                         user_chooseable: false
                     CANCELLED:
@@ -43,7 +45,16 @@ parameters:
                     # Everything handled, all OK and done.
                     COMPLETED:
                         user_chooseable: false
-                active_states: ['CONFIRMED']
+                # This is for the function "isBooked" and searching for booked
+                # events. This is so you can decide if "PROSPECT" is a booked
+                # stated or not. If it is booked, people will be able to
+                # register interest, if not they will not see it before it's
+                # CONFIRMED
+                # And when it's DONE, it's kinda booked, but not in that way.
+                booked_states: ['CONFIRMED']
+                # Yes, not the same as booked, since a PROSPECT is active aswell.
+                active_states: ['PROSPECT', 'CONFIRMED']
+                done_states: ['CANCELLED', 'DONE', 'COMPLETED']
             Location:
                 states:
                     OPEN:
@@ -70,7 +81,7 @@ parameters:
                         user_chooseable: false
                     CANCELLED:
                         user_chooseable: false
-                active_states: ['FULLY_BOOKED', 'CONFIRMED', 'REGISTERED']
+                booked_states: ['FULLY_BOOKED', 'CONFIRMED']
             ShiftOrganization:
                 states:
                     ASSIGNED:
@@ -99,6 +110,16 @@ parameters:
                         user_chooseable: false
                 booked_states: ['CONFIRMED']
                 wishlist_states: ['INTERESTED', 'ASSIGNED', 'DENIED']
+            JobLog:
+                states:
+                    # I just can't some up with any good name for this. It's
+                    # the default value and means it has been entered.
+                    ENTERED:
+                        default: true
+                    # Neither this, but this is "Invoiced and person eventually
+                    # paid."
+                    COMPLETED:
+                        default: false
             Organization:
                 states:
                     ACTIVE:
