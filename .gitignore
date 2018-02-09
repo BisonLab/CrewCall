@@ -33,6 +33,7 @@
 !bin/console
 !bin/prep.sh
 !bin/reload.sh
+!bin/db.sh
 !bin/symfony_requirements
 /vendor/
 
