@@ -18,7 +18,7 @@ I'm using apache, but nginx should work aswell. Feel free to try. Please send a 
 
  * apache2 libapache2-mod-php apache2-utils
 
-And I'm sorry, but I did end up with Bootstrap and studd that need LESS. So, you've gotta install node.js and friends.
+And I'm sorry, but I did end up with Bootstrap and stuff that need LESS. So, you've gotta install node.js and friends.
 
  * node-less
 
