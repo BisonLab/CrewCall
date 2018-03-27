@@ -9,7 +9,7 @@ framework:
     profiler:
         only_exceptions: false
         matcher:
-            path: "/(web|ajax)/"
+            path: "/(web|ajax|admin)/"
 
 web_profiler:
     toolbar: true

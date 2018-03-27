@@ -19,21 +19,27 @@ security:
     firewalls:
         ajax_calls:
             pattern:    ^/_wdt
+            logout_on_user_change: true
             anonymous:  ~
         login_firewall:
             pattern:    ^/login$
+            logout_on_user_change: true
             anonymous:  true
         registration:
             pattern:    ^/register/
+            logout_on_user_change: true
             anonymous:  true
         resetting:
             pattern:    ^/resetting/
+            logout_on_user_change: true
             anonymous:  true
         ping:
             pattern:    ^/ping$
+            logout_on_user_change: true
             anonymous:  true
         publicfiles:
             pattern:    ^/bundles
+            logout_on_user_change: true
             anonymous:  true
         rest:
             # TODO: Add some IP validation or something.
@@ -44,6 +50,7 @@ security:
             stateless:  true
         main:
             pattern: ^/
+            logout_on_user_change: true
             form_login:
                 provider: fos_userbundle
                 csrf_token_generator: security.csrf.token_manager
@@ -75,4 +82,3 @@ security:
         - { path: /show, role: ROLE_USER }
         - { path: /edit, role: ROLE_USER_RW }
         - { path: /new, role: ROLE_USER_RW }
-
