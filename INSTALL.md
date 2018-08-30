@@ -166,3 +166,16 @@ But don't do this unless you really want to, since if you want to have this in a
 I will try to make it possible for you to just merge from upstream when you feel like it. But each time you do you should check the .dist files for new stuff. You can bet composer.json has been updated at least.
 
 The reason CustomBundle is in the appResources/prepskeleton/ while the dist-files are not is questionable. I decided to do like this for now, but may change my opinion on it. Should they be easier to diff or not in the way for the daily work? Feel free to answer me what you think.
+
+
+Just a note about migrations.
+-----------------------------
+
+Using doctrine:migrations:diff is easy and very useful after you are into production or don't want to reload all the schemas and data.
+
+But it will look bad, and be even worse if you do not care about the entity managers and by that also table prefixes.
+
+Which is totally possible like this:
+
+$ ./bin/console doctrine:migrations:diff  --em=crewcall --filter-expression='/crewcall_/'
+$ ./bin/console doctrine:migrations:diff  --em=sakonnin --filter-expression='/sakonnin_/'
