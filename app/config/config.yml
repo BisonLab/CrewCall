@@ -77,7 +77,7 @@ doctrine:
                     CustomBundle: ~
                     CrewCallBundle: ~
                     # No need for this one here, will use the Person entity.
-                    # BisonLabCommonBundle: ~
+                    BisonLabCommonBundle: ~
                     FOSUserBundle: ~
                     gedmo_loggable:
                         type: annotation
