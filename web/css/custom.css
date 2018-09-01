@@ -80,3 +80,16 @@ table.records_list tbody tr:nth-child(odd) {
 table.records_list tbody tr:nth-child(even) {
     background: lightgrey;
 }
+
+ul {
+    list-style-type: none
+}
+
+.blbutton {
+    border-radius: 4px;
+    text-align: center;
+    border: 2px solid #e7e7e7;
+    background-color: white;
+    color: black;
+    width: 150px;
+}
