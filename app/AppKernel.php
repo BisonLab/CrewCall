@@ -28,6 +28,7 @@ class AppKernel extends Kernel
             new FOS\UserBundle\FOSUserBundle(),
             new BisonLab\SakonninBundle\BisonLabSakonninBundle(),
             new Vich\UploaderBundle\VichUploaderBundle(),
+            new Norzechowicz\AceEditorBundle\NorzechowiczAceEditorBundle(),
             new BisonLab\CommonBundle\BisonLabCommonBundle(),
             new BisonLab\ReportsBundle\BisonLabReportsBundle(),
             new CrewCallBundle\CrewCallBundle()

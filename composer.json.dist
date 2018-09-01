@@ -17,6 +17,12 @@
     "autoload-dev": {
         "psr-4": { "Tests\\": "tests/" }
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/thomasez/aceeditor-bundle"
+        }
+    ],
     "require": {
         "php": "^7.0",
         "doctrine/doctrine-bundle": "^1.8",
@@ -28,7 +34,7 @@
         "symfony/polyfill-apcu": "^1.0",
         "symfony/swiftmailer-bundle": "^2.3.10",
         "symfony/symfony": "3.4.*",
-        "twig/twig": "^1.0||^2.0",
+        "twig/twig": "^2.4",
         "stof/doctrine-extensions-bundle": "^1.3",
         "doctrine/doctrine-migrations-bundle": "^1.3",
         "jms/di-extra-bundle": "^1.9",
@@ -36,19 +42,19 @@
         "jms/serializer-bundle": "^2.3",
         "braincrafted/bootstrap-bundle": "dev-master",
         "twbs/bootstrap": "^3.3",
-        "components/jquery": "^3.1",
-        "components/jquery": "^3.1",
+        "components/jquery": "^3.2",
         "components/jqueryui": "^1.12",
         "symfony/assetic-bundle": "^2.8",
-        "robloach/component-installer": "^0.2",
+        "robloach/component-installer": "dev-master",
         "knplabs/knp-menu-bundle": "^2.2",
-        "friendsofsymfony/user-bundle": "^2.0",
+        "friendsofsymfony/user-bundle": "^2.1",
         "bisonlab/sakonnin-bundle": "dev-master",
         "bisonlab/reports-bundle": "master@dev",
         "bisonlab/common-bundle": "dev-master",
         "bisonlab/noorm-bundle": "dev-master",
         "fullcalendar/fullcalendar": "^3.8",
         "eluceo/ical": "^0.13.0",
+        "norzechowicz/aceeditor-bundle": "dev-dev-thomasez",
         "commerceguys/addressing": "dev-master"
     },
     "require-dev": {
