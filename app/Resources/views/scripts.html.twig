@@ -40,4 +40,27 @@ function confirm_post_pop(form, text) {
         return false;
     }
 }
+
+function popSummary(entity, entity_id, placement = 'top') {
+    url = "{{ path('summary_show_get', { 'access': 'ajax' }) }}?entity=" + entity + "&entity_id=" + entity_id;
+    var popelement = "#popSummary_" + entity + "_" + entity_id;;
+    console.log(popelement);
+       $.ajax({
+            url: url,
+            dataType: 'html'
+       }).done( function( content, textStatus, xhr ) {
+        $( popelement ).popover({
+            html: true,
+            placement: placement,
+            title: 'Summary <a href="#" class="close" data-dismiss="alert">&times;</a>',
+            content: content
+        });
+        $( popelement ).popover("show");
+        $(document).on("click", ".popover .close" , function(){
+            $(this).parents(".popover").popover('hide');
+        });
+    });
+    return false;
+}
+
 </script>
