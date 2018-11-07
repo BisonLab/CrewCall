@@ -1,5 +1,28 @@
 parameters:
     app.types:
+        CrewCallBundle:
+            Person:
+                Diet:
+                    ANY:
+                        label: "Whatever"
+                        default: true
+                        chooseable: true
+                    VEGAN:
+                        label: "Vegan"
+                        default: false
+                        chooseable: true
+                    VEGETARIAN:
+                        label: "Vegetarian"
+                        default: false
+                        chooseable: true
+                    LACTOSE:
+                        label: "Lactose intolerant"
+                        default: false
+                        chooseable: true
+                    GLUTEN:
+                        label: "Gluten intolerant"
+                        default: false
+                        chooseable: true
         BisonLabSakonninBundle:
             Message:
                 AddressType:
