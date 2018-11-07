@@ -6,6 +6,7 @@ security:
 
     # Shouuld probably be enhanced and more flexible.
     role_hierarchy:
+        ROLE_PERSON:      []
         ROLE_USER_RW:     ROLE_USER
         ROLE_ADMIN:       ROLE_USER, ROLE_USER_RW, ROLE_REST
         ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH, ROLE_REST_USER]
