@@ -93,3 +93,18 @@ ul {
     color: black;
     width: 150px;
 }
+
+.record_properties {
+    margin:10px 0pt 15px;
+    border-spacing: 100px;
+}
+.record_properties th {
+    margin:10px 0pt 15px;
+    vertical-align: top;
+    text-align: right;
+    padding: 5px 8px;
+}
+.record_properties td {
+    margin:10px 0pt 15px;
+    padding: 5px 8px;
+}
