@@ -41,10 +41,25 @@ function confirm_post_pop(form, text) {
     }
 }
 
-function popSummary(entity, entity_id, placement = 'top') {
+function popSummary(entity, entity_id, placement = 'auto top') {
     url = "{{ path('summary_show_get', { 'access': 'ajax' }) }}?entity=" + entity + "&entity_id=" + entity_id;
-    var popelement = "#popSummary_" + entity + "_" + entity_id;;
-    console.log(popelement);
+    var popelement = "#popSummary_" + entity + "_" + entity_id;
+/* This seems not to be needed, I hope.
+ * Which is why I default placement argument to "auto top".
+    if (placement == "best") {
+        placement = function (context, source) {
+            var position = $(source).position();
+            if (position.left < 280) {
+                return "right";
+            }
+            if (position.top < 180){
+                return "bottom";
+            } else {
+                return "top";
+            }
+        }
+    }
+ */ 
        $.ajax({
             url: url,
             dataType: 'html'
