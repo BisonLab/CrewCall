@@ -26,6 +26,27 @@ parameters:
     # available from the web.
     sakonnin.file_storage: '%kernel.root_dir%/../var/files'
 
+    #
+    # Configure the dashboard elements each role needs.
+    # TODO: Consider using functions aswell.
+    #
+    crewcall.dashboarder:
+        #
+        # Going backwards through the roles. The one hitting the user first,
+        # is used.
+        roles:
+            ROLE_ADMIN:
+                - Announcements
+                - PublicMessages
+                - PersonalMessages
+                - AdminMessages
+                - AdminUpcomingShifts
+            ROLE_USER:
+                - Announcements
+                - PersonalMessages
+                - UpcomingJobs
+                - PublicMessages
+
 stof_doctrine_extensions:
     default_locale: %locale%
     # Old one, which may be needed instead of using the locale set above. This
