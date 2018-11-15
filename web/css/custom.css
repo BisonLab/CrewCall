@@ -31,6 +31,24 @@ body {
     padding: 5px 8px;
 }
 
+.summaryLogTable {
+    margin:10px 10px 15px;
+    border-spacing: 100px;
+}
+.summaryLogTable th {
+    margin:10px 0pt 15px;
+    vertical-align: top;
+    padding: 5px 8px;
+}
+.summaryLogTable td {
+    margin:10px 10px 15px;
+    padding: 5px 8px;
+}
+ 
+.popover{
+    max-width: 60%;
+}
+
 /* Nicked from http://stackoverflow.com/questions/18325779/bootstrap-3-collapse-show-state-with-chevron-icon */
 .panel-heading .accordion-toggle:after {
     /* symbol for "opening" panels */

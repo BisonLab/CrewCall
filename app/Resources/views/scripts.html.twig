@@ -78,4 +78,26 @@ function popSummary(entity, entity_id, placement = 'auto top') {
     return false;
 }
 
+function popLogSummary(entity, entity_id, placement = 'auto top') {
+    url = "{{ path('summary_show_log', { 'access': 'ajax' }) }}?entity=" + entity + "&entity_id=" + entity_id;
+    var popelement = "#popLogSummary_" + entity + "_" + entity_id;
+    $.ajax({
+            url: url,
+            dataType: 'html'
+      }).done( function( content, textStatus, xhr ) {
+        $( popelement ).popover({
+            container: 'body',
+            html: true,
+            placement: placement,
+            title: 'Log summary <a href="#" class="close" data-dismiss="alert">&times;</a>',
+            content: content
+        });
+        $( popelement ).popover("show");
+        $(document).on("click", ".popover .close" , function(){
+            $(this).parents(".popover").popover('hide');
+        });
+    });
+    return false;
+}
+
 </script>
