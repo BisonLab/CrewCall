@@ -26,6 +26,7 @@
     {{ bootstrap_set_style('') }}
 #}
 </form>
+<a href="{{ path('fos_user_resetting_request') }}">Forgot password?</a>
 {% if allow_registration %}
 <a href="{{ path("fos_user_registration_register") }}">{{ 'layout.register'|trans }}</a>
 {% endif %}
