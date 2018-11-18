@@ -15,6 +15,9 @@ parameters:
     mailer_user:       ~
     mailer_password:   ~
 
+    # Who is sending the automated mails?
+    system_emails_address: crewcall@localhost
+
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
 

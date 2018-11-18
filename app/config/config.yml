@@ -100,7 +100,7 @@ fos_user:
     user_class: CrewCallBundle\Entity\Person
     change_password: true
     from_email:
-        address:        erik@zelow.no
+        address:        '%system_emails_address%'
         sender_name:    CrewCall
     registration:
         form:
