@@ -42,6 +42,7 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
     globals:
+        enable_personal_messaging: "%enable_personal_messaging%"
         allow_registration: "%allow_registration%"
         sakonnin_messages:  "@sakonnin.messages"
         sakonnin_files:     "@sakonnin.files"

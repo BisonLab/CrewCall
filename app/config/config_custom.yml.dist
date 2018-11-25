@@ -15,6 +15,8 @@ parameters:
     # This basically says itself - Maybe false should be default, but at least
     # it'll show that registration is possible.
     allow_registration: true
+    # This also basically says itself
+    enable_personal_messaging: false
 
     bisonlab_reports.report_classes:
     # For generated reports, usuaslly uuseful to be able to grab from the web.
