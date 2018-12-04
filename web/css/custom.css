@@ -103,6 +103,18 @@ ul {
     list-style-type: none
 }
 
+.cc_notice {
+    background-color: yellow;
+}
+
+.cc_warn {
+    background-color: orange;
+}
+
+.cc_error {
+    background-color: red;
+}
+
 .blbutton {
     border-radius: 4px;
     text-align: center;
