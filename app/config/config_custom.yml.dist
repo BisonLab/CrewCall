@@ -49,6 +49,13 @@ parameters:
                 - UpcomingJobs
                 - PublicMessages
 
+    crewcall.functiongroups:
+        Shift:
+            - Worker
+        Organization:
+            - Organization
+            - Employee
+
 stof_doctrine_extensions:
     default_locale: %locale%
     # Old one, which may be needed instead of using the locale set above. This
