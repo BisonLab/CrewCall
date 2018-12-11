@@ -1,0 +1,58 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+<div class="col-sm-4" id="userLeft">
+    <h1>{{ user.fullname }}</h1>
+
+    <table class="showTable">
+        <tbody>
+            <tr>
+                <th>Username</th>
+                <td>{{ user.username }}</td>
+            </tr>
+            <tr>
+                <th>First name</th>
+                <td>{{ user.firstname }}</td>
+            </tr>
+            <tr>
+                <th>Last name</th>
+                <td>{{ user.lastname }}</td>
+            </tr>
+            <tr>
+                <th>Date of birth</th>
+                <td>{% if user.dateofbirth %}{{ user.dateofbirth|date('Y-m-d') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Diets</th>
+                <td>{{ user.dietslabels | join(", ")}}</td>
+            </tr>
+            <tr>
+                <th>E-Mail</th>
+                <td>{{ user.email }}</td>
+            </tr>
+            <tr>
+                <th>Mobile phone number</th>
+                <td>{{ user.mobilephonenumber }}</td>
+            </tr>
+            <tr>
+                <th>Functions</th>
+                <td>
+                {% for f in user.personfunctions %}
+                {{ f }}<br>
+                {% endfor %}
+                </td>
+            </tr>
+{% if user.personfunctionorganizations | length > 0 %}
+            <tr>
+                <th>Organizations</th>
+                <td>
+                {% for pfo in user.personfunctionorganizations %}
+                {{ pfo.organization }} ({{ pfo.function }})<br>
+                {% endfor %}
+                </ul>
+                </td>
+            </tr>
+{% endif %}
+                <td>&nbsp;</td>
+        </tbody>
+    </table>
+</div>
