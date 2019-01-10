@@ -143,3 +143,58 @@ pre {
     white-space: pre-wrap;
     word-break: keep-all;
 }
+
+/*
+ * Nicked from
+ * http://www.themaninblue.com/experiment/InForm/horizontal.htm
+ */
+.ccCompactForm fieldset
+{
+    display: block;
+    margin: 0 0 3em 0;
+    padding: 0 1em 1em 1em;
+    font-size: 10px;
+}
+
+.ccCompactForm fieldset.radio
+{
+    margin: 1em 0 2em 0;
+}
+
+.ccCompactForm fieldset.radio input
+{
+    clear: both;
+    float: left;
+    width: auto;
+}
+
+.ccCompactForm fieldset.radio label
+{
+    font-weight: normal;
+}
+
+.ccCompactForm input
+{
+    display: block;
+/*    width: 15em; */
+    font-weight: normal;
+}
+
+.ccCompactForm input.submit
+{
+    clear: both;
+}
+
+.ccCompactForm label
+{
+    float: left;
+    display: block;
+    margin: 1em 1em 0 0;
+    font-weight: bold;
+}
+
+.ccCompactForm select
+{
+    font-weight: normal;
+    display: block;
+}

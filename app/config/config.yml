@@ -45,6 +45,11 @@ sensio_framework_extra:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
+    # This messes up, aka plainly removes, the bootstrapbundle 'style' concept.
+    # But until I've found out how to set a default form template for
+    # bootstrapbundle, I have to keep this.
+    #form_themes:
+    #    - 'form_div_layout.html.twig'
     globals:
         enable_personal_messaging: "%enable_personal_messaging%"
         allow_registration: "%allow_registration%"

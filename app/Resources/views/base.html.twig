@@ -32,9 +32,10 @@
 <body>
 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
 {% include '::scripts.html.twig' %}
-{% if enable_personal_messaging %}
 {% include 'BisonLabSakonninBundle::scripts.html.twig' %}
 {% include 'BisonLabSakonninBundle:Message:_message_log_popup.html.twig' %}
+{% if enable_personal_messaging %}
+{% include 'BisonLabSakonninBundle:Message:_pm_handling.html.twig' %}
 {% endif %}
 {% endif %}
 <header class="navbar navbar-default navbar-fixed-top">
