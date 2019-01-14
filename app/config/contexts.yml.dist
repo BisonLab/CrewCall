@@ -17,3 +17,31 @@ parameters:
                     url_template: "/"
                     url_from_method: template
                     default: false
+                  -
+                    label: "Event"
+                    object_name: event
+                    type: master
+                    url_template: "/web/event/{{external_id}}"
+                    url_from_method: template
+                    default: false
+                  -
+                    label: "Location"
+                    object_name: location
+                    type: master
+                    url_template: "/web/location/{{external_id}}"
+                    url_from_method: template
+                    default: false
+                  -
+                    label: "Organization"
+                    object_name: organization
+                    type: master
+                    url_template: "/web/organization/{{external_id}}"
+                    url_from_method: template
+                    default: false
+                  -
+                    label: "Shift"
+                    object_name: shift
+                    type: master
+                    url_template: "/web/shift/{{external_id}}"
+                    url_from_method: template
+                    default: false

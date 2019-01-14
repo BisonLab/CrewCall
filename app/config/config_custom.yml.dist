@@ -41,6 +41,7 @@ parameters:
                 - Announcements
                 - PublicMessages
                 - PersonalMessages
+                - AdminWall
                 - AdminMessages
                 - AdminUpcomingShifts
             ROLE_USER:

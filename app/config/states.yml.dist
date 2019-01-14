@@ -15,6 +15,10 @@ parameters:
                     # CrewCall or handle that somewhere else.
                     OCCUPIED:
                         user_chooseable: true
+                    VACATION:
+                        user_chooseable: true
+                    SICKLEAVE:
+                        user_chooseable: false
                     INACTIVE:
                         user_chooseable: false
                     QUIT:
@@ -27,8 +31,10 @@ parameters:
                     # Denied in registration.
                     DENIED:
                         user_chooseable: false
+                # After the end of known states, this is the one to use.
+                default_state: 'ACTIVE'
                 active_states: ['ACTIVE']
-                enable_login: ['ACTIVE', 'OCCUPIED']
+                enable_login: ['ACTIVE', 'OCCUPIED', 'VACATCION', 'SICKLEAVE']
             Event:
                 states:
                     # We have an order, and are preparing.
