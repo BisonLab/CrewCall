@@ -42,7 +42,6 @@
         "fullcalendar/fullcalendar": "^3.8",
         "incenteev/composer-parameter-handler": "^2.0",
         "jms/di-extra-bundle": "^1.9",
-        "jms/security-extra-bundle": "^1.6",
         "jms/serializer-bundle": "^2.3",
         "knplabs/knp-menu-bundle": "dev-master",
         "norzechowicz/aceeditor-bundle": "dev-dev-thomasez",
