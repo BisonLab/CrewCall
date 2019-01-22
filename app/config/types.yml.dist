@@ -18,6 +18,31 @@ parameters:
                     GLUTEN:
                         label: "Gluten intolerant"
                         chooseable: true
+            # FunctionType The types themselves are used in the menu (or not)
+            # and the groups are what they are to be connected with.
+            # I guess most would consider more than these two.
+            # I do not like "groups" but can't come up with any better right
+            # now. Feel free to suggest a better word.
+            FunctionEntity:
+                FunctionType:
+                    WORKER:
+                        label: "Worker"
+                        groups: ['Shift']
+                        chooseable: true
+                        menueable: true
+                    # Not really useful for most setups, but very useful for
+                    # those using this to handle their .. employees.
+                    # Feel free to remove.
+                    EMPLOYEE:
+                        label: "Employee"
+                        groups: ['Organization']
+                        chooseable: true
+                        menueable: true
+                    OTHER:
+                        label: "Other"
+                        groups: ['Organization', 'Event', 'Location']
+                        chooseable: true
+                        menueable: true
         BisonLabSakonninBundle:
             Message:
                 AddressType:
