@@ -43,12 +43,3 @@ parameters:
                         groups: ['Organization', 'Event', 'Location']
                         chooseable: true
                         menueable: true
-        BisonLabSakonninBundle:
-            Message:
-                AddressType:
-                    EMAIL:
-                        chooseable: true
-                    INTERNAL:
-                        chooseable: true
-                    SMS:
-                        chooseable: true
