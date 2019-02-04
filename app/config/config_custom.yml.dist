@@ -58,7 +58,7 @@ parameters:
             - Employee
 
 stof_doctrine_extensions:
-    default_locale: %locale%
+    default_locale: '%locale%'
     # Old one, which may be needed instead of using the locale set above. This
     # is because the database locale may have to differ from the application
     # itself (because of languages)
