@@ -26,10 +26,6 @@ security:
             pattern:    ^/_wdt
             logout_on_user_change: true
             anonymous:  ~
-        uflogin_firewall:
-            pattern:    ^/uf/login$
-            logout_on_user_change: true
-            anonymous:  true
         login_firewall:
             pattern:    ^/login$
             logout_on_user_change: true
@@ -75,19 +71,18 @@ security:
             security: false
 
     access_control:
-        #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
         #- { path: ^/_internal, roles: IS_AUTHENTICATED_ANONYMOUSLY, ip: 127.0.0.1 }
+        # - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/uf/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/_wdt, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/bundles, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/uf/, role: ROLE_USER }
         - { path: ^/admin/, role: ROLE_ADMIN }
         - { path: ^/useradmin/, role: ROLE_ADMIN }
         - { path: ^/reports/, role: ROLE_ADMIN }
         - { path: ^/rest/sms/, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/uf/, role: ROLE_USER }
         - { path: /rest/, role: ROLE_REST }
         - { path: /web/, role: ROLE_USER }
         - { path: /ajax/, role: ROLE_USER }
