@@ -9,24 +9,20 @@
        <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}" />
 {% block stylesheets %}
        <link rel="stylesheet" href="{{ asset('public/jquery-ui/themes/smoothness/jquery-ui.min.css') }}" type="text/css" media="all" />
-        <!-- Datatables stuff -->
-       <link rel="stylesheet" href="{{ asset('bundles/bisonlabcommon/datatables/jquery.dataTables.min.css') }}" type="text/css" media="all" />
-       <link rel="stylesheet" href="{{ asset('bundles/bisonlabcommon/datatables/dataTables.bootstrap.min.css') }}" type="text/css" media="all" />
-       <link rel="stylesheet" href="{{ asset('bundles/bisonlabcommon/datatables/fixedHeader.bootstrap.min.css') }}" type="text/css" media="all" />
-        <!-- End datatables stuff -->
-       <link rel="stylesheet" href="{{ asset('public/css/bootstrap.css') }}" type="text/css" media="all" />
 <!--  Or you can pick some other themes from https://bootswatch.com/ - Like this one
        <link rel="stylesheet" href="{{ asset('css/bootstrap-simplex.min.css') }}" type="text/css" media="all" />
 -->
+       <link rel="stylesheet" href="{{ asset('public/css/bootstrap.css') }}" type="text/css" media="all" />
+
+       <link rel="stylesheet" href="{{ asset('bundles/bisonlabcommon/datatables/datatables.css') }}" type="text/css" media="all" />
+
+        <!-- The last one, our customizations -->
        <link rel="stylesheet" href="{{ asset('css/custom.css') }}" type="text/css" media="all" />
 {% endblock %}
        <script src="{{ asset('public/jquery/jquery.js') }}"></script>
        <script src="{{ asset('public/js/bootstrap.js') }}"></script>
        <script src="{{ asset('public/jquery-ui/jquery-ui.js') }}"></script>
-       <script src="{{ asset('bundles/bisonlabcommon/datatables/jquery.dataTables.min.js') }}"></script>
-       <script src="{{ asset('bundles/bisonlabcommon/datatables/dataTables.bootstrap.min.js') }}"></script>
-       <script src="{{ asset('bundles/bisonlabcommon/datatables/dataTables.fixedHeader.min.js') }}"></script>
-       <script src="{{ asset('bundles/bisonlabcommon/datatables/dataTables.responsive.min.js') }}"></script>
+       <script src="{{ asset('bundles/bisonlabcommon/datatables/datatables.min.js') }}"></script>
        <script src="{{ asset('bundles/bisonlabcommon/js/multiselect.min.js') }}"></script>
 </head>
 
@@ -43,7 +39,7 @@
   {% block navbar %}
      <div class="container-fluid">
      <div class="navbar-header">
-     <a class="navbar-brand" href="{{ path('homepage')}}">CrewCall</a>
+     <a class="navbar-brand" href="{{ path('homepage')}}"><img src="{{ asset('images/logo.gif') }}" border="0" height="40"></a>
      </div>
      {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
        {{ knp_menu_render('CrewCallBundle:Builder:userMenu', { 'style': 'navbar-right' }) }}

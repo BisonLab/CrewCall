@@ -38,17 +38,24 @@ parameters:
         # is used.
         roles:
             ROLE_ADMIN:
-                - Announcements
-                - PublicMessages
-                - PersonalMessages
-                - AdminWall
-                - AdminMessages
-                - AdminUpcomingShifts
+                # Should this be PublicMessages or PublicWall?
+                Announcements:
+                    cols: 3
+                PersonalMessages:
+                    cols: 3
+                AdminWall:
+                    cols: 3
+                EventsCalendar:
+                    cols: 12
+                AdminUpcomingShifts:
+                    cols: 9
             ROLE_USER:
-                - Announcements
-                - PersonalMessages
-                - UpcomingJobs
-                - PublicMessages
+                Announcements:
+                    cols: 3
+                PersonalMessages:
+                    cols: 3
+                UpcomingJobs:
+                    cols: 6
 
     crewcall.functiongroups:
         Shift:

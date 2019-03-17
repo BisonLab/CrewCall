@@ -1,6 +1,11 @@
 /* Overriding bootstrap.css */
 body {
-    line-height: 1.3;
+    line-height: 1.15;
+    background-color:#f2f2f2!important;
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    color:#212529;
+    text-align:leftg
 }
 
 h1 {
@@ -53,56 +58,6 @@ h1 {
     max-width: 60%;
 }
 
-/* Nicked from http://stackoverflow.com/questions/18325779/bootstrap-3-collapse-show-state-with-chevron-icon */
-.panel-heading .accordion-toggle:after {
-    /* symbol for "opening" panels */
-    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
-    content: "\e114";    /* adjust as needed, taken from bootstrap.css */
-    float: left;        /* adjust as needed */
-    color: grey;         /* adjust as needed */
-}
-.panel-heading .accordion-toggle.collapsed:after {
-    /* symbol for "collapsed" panels */
-    content: "\e080";    /* adjust as needed, taken from bootstrap.css */
-}
-
-table.records_list {
-    font-family: arial;
-    margin: 10px 0pt 15px;
-    font-size: 8pt;
-    width: 100%;
-    text-align: left;
-}
-table.records_list thead tr th, table.records_list tfoot tr th {
-    background: lightgrey;
-    border: 1px solid #FFFFFF;
-    font-size: 12pt;
-    padding: 4px;
-}
-table.records_list thead tr .header {
-    background-repeat: no-repeat;
-    background-position: center right;
-    cursor: pointer;
-}
-table.records_list tbody tr.attrtitle {
-    background-color: #e6EEEE;
-    border: 1px solid #FFF;
-    padding: 4px;
-    vertical-align: top;
-    text-align: center;
-}
-table.records_list tbody td {
-    padding: 4px;
-    vertical-align: top;
-}
-/* From another standard.css I've used: */
-table.records_list tbody tr:nth-child(odd) {
-    background: white;
-}
-table.records_list tbody tr:nth-child(even) {
-    background: lightgrey;
-}
-
 ul {
     list-style-type: none
 }
@@ -128,24 +83,69 @@ ul {
     width: 150px;
 }
 
-.record_properties {
-    margin:10px 0pt 15px;
-    border-spacing: 100px;
-}
-.record_properties th {
-    margin:10px 0pt 15px;
-    vertical-align: top;
-    text-align: right;
-    padding: 5px 8px;
-}
-.record_properties td {
-    margin:10px 0pt 15px;
-    padding: 5px 8px;
-}
-
 pre {
     white-space: pre-wrap;
     word-break: keep-all;
+}
+
+/*
+ * (Data)tables customizing
+ */
+table {
+    border-top: 0px;
+    border-bottom: 0px;
+    border-left: 0px;
+    border-right: 0px;
+}
+
+table thead,
+table tbody,
+table tr,
+table td,
+table th {
+    border-top: 0px;
+    border-bottom: 0px;
+    border-left: 0px;
+    border-right: 0px;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #e8e8e8;
+}
+
+.table-striped > tbody > tr:nth-of-type(even) {
+  background-color: #fff;
+}
+
+.table-striped > tbody > tr:hover {
+  background-color: #F6CCD1;
+}
+
+
+/*
+
+Hover:
+#F6CCD1
+
+Dark stripe: 
+background-color: #e8e8e8;
+
+Light stripe
+background-color: #fff;
+
+ 
+
+ */
+
+/*
+ * Custom classes
+ */
+
+/* Not in the bootstrap css I have here, odd. */
+.btn-dark {
+    color: #fff;
+    background-color: #343a40;
+    border-color: #343a40;
 }
 
 /*
@@ -201,4 +201,43 @@ pre {
 {
     font-weight: normal;
     display: block;
+}
+
+.ccAmount
+{
+    box-sizing: border-box; 
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 7px;
+    padding-right: 7px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.ccNeeded
+{
+    background-color: grey;
+    border-color: grey;
+    color: black;
+}
+
+.ccConfirmed
+{
+    background-color: green;
+    border-color: green;
+    color: white;
+}
+
+.ccAssigned
+{
+    background-color: orange;
+    border-color: orange;
+    color: white;
+}
+
+.ccInterested
+{
+    background-color: red;
+    border-color: red;
+    color: white;
 }

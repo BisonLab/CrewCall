@@ -25,8 +25,8 @@ parameters:
             # now. Feel free to suggest a better word.
             FunctionEntity:
                 FunctionType:
-                    WORKER:
-                        label: "Worker"
+                    CREW:
+                        label: "Crew"
                         groups: ['Shift']
                         chooseable: true
                         menueable: true
