@@ -19,7 +19,7 @@ security:
 
     firewalls:
         sms:
-            pattern:    ^/sms
+            pattern:    ^/sms/
             logout_on_user_change: true
             anonymous:  true
         ajax_calls:
@@ -82,11 +82,11 @@ security:
         - { path: ^/admin/, role: ROLE_ADMIN }
         - { path: ^/useradmin/, role: ROLE_ADMIN }
         - { path: ^/reports/, role: ROLE_ADMIN }
-        - { path: ^/rest/sms/, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/sms/, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/uf/, role: ROLE_USER }
-        - { path: /rest/, role: ROLE_REST }
-        - { path: /web/, role: ROLE_USER }
-        - { path: /ajax/, role: ROLE_USER }
+        - { path: ^/rest/, role: ROLE_REST }
+        - { path: ^/web/, role: ROLE_USER }
+        - { path: ^/ajax/, role: ROLE_USER }
         - { path: /show, role: ROLE_USER }
         - { path: /edit, role: ROLE_USER_RW }
         - { path: /new, role: ROLE_USER_RW }
