@@ -24,9 +24,14 @@ parameters:
 
     sakonnin.function_factories:
         - BisonLab\SakonninBundle\Lib\Sakonnin\SakonninFunctions
+        - CrewCallBundle\Lib\Sakonnin\SakonninFunctions
     # For the up/download of files attached to objects. This should not be
     # available from the web.
     sakonnin.file_storage: '%kernel.root_dir%/../var/files'
+    # When a message has "expires at" and reaches the expire date, do:
+    sakonnin.expire_method: "Archive"
+    # And when the message type expunge hits:
+    sakonnin.expunge_method: "Delete"
 
     #
     # Configure the dashboard elements each role needs.
@@ -36,19 +41,22 @@ parameters:
         #
         # Going backwards through the roles. The one hitting the user first,
         # is used.
+        # cols is the bootstrap grid columns.
         roles:
             ROLE_ADMIN:
                 # Should this be PublicMessages or PublicWall?
                 Announcements:
-                    cols: 3
+                    cols: 4
                 PersonalMessages:
-                    cols: 3
+                    cols: 4
                 AdminWall:
-                    cols: 3
+                    cols: 4
+                ToDo:
+                    cols: 2
                 EventsCalendar:
-                    cols: 12
-                AdminUpcomingShifts:
                     cols: 9
+                #AdminUpcomingShifts:
+                #    cols: 9
             ROLE_USER:
                 Announcements:
                     cols: 3
@@ -63,6 +71,21 @@ parameters:
         Organization:
             - Organization
             - Employee
+
+    # The simplest file types.
+    sakonnin.file_types:
+        ProfilePicture:
+            chooseable: true
+            thumbnailable: true
+        CV:
+            chooseable: true
+            thumbnailable: false
+        Map:
+            chooseable: true
+            thumbnailable: false
+        DOCUMENT:
+            chooseable: true
+            thumbnailable: false
 
 stof_doctrine_extensions:
     default_locale: '%locale%'
