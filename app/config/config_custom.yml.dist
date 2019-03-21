@@ -9,8 +9,24 @@
 #    - { resource: "@ExampleBundle/Resources/config/services.yml" }
 
 parameters:
-    # You may want to change this.
-    locale: en_UK
+    # You may want to change these.
+    # Languange - No translations yet, so this is mere sugar.
+    locale: en_DK
+
+    # This is for setting up the address fields. Different countries has
+    # different needs, so we need somewhere for defining those needs.
+    # Fields you can use is in Entity/EmbeddableAddress in the CrewCallBundle
+    # code.
+    # Country differs that it will not be showwn if it is the default country.
+    # The values here is the ones shown in the input and edit forms.
+    addressing:
+        default_country_code: NO
+        default_country_name: Norway
+        format:
+            - ['addressLine1']
+            - ['addressLine2']
+            - ['postalCode', 'postalName']
+            - ['country']
 
     # This basically says itself - Maybe false should be default, but at least
     # it'll show that registration is possible.

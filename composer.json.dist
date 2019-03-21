@@ -31,7 +31,6 @@
         "bisonlab/reports-bundle": "master@dev",
         "bisonlab/sakonnin-bundle": "dev-master",
         "braincrafted/bootstrap-bundle": "dev-master",
-        "commerceguys/addressing": "dev-master",
         "components/jquery": "^3.2",
         "components/jqueryui": "^1.12",
         "doctrine/doctrine-bundle": "^1.8",
