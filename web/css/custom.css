@@ -1,5 +1,6 @@
 /* Overriding bootstrap.css */
 body {
+    padding-top: 55px;
     line-height: 1.15;
     background-color:#f2f2f2!important;
     margin:0;
@@ -13,17 +14,11 @@ h1 {
 }
 
 .contentblock {
-    margin-top: 50px;
 } 
 
 .form-control {
     width: auto;
 } 
-
-.nav > li > a {
-  display: block;
-  padding: 5px 8px;
-}
 
 .showTable {
     margin:10px 0pt 15px;
@@ -117,7 +112,7 @@ table th {
   background-color: #fff;
 }
 
-.table-striped > tbody > tr:hover {
+.tableOverlap {
   background-color: #F6CCD1;
 }
 
