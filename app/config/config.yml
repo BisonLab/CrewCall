@@ -48,8 +48,10 @@ twig:
     # This messes up, aka plainly removes, the bootstrapbundle 'style' concept.
     # But until I've found out how to set a default form template for
     # bootstrapbundle, I have to keep this.
-    #form_themes:
+    form_themes:
     #    - 'form_div_layout.html.twig'
+    # Need ckeditor anyway
+        - '@FOSCKEditor/Form/ckeditor_widget.html.twig'
     globals:
         enable_personal_messaging: "%enable_personal_messaging%"
         allow_registration: "%allow_registration%"
@@ -198,3 +200,12 @@ vich_uploader:
             namer:
                 service: vich_uploader.namer_property
                 options: { property: 'fileId'}
+
+fos_ck_editor:
+    default_config: my_config
+    configs:
+        # Straight outta docs
+        my_config:
+            # toolbar: [ ["Source", "-", "Save"], "/", ["Anchor"], "/", ["Maximize"] ]
+            toolbar: "basic"
+            uiColor:                "#000000"

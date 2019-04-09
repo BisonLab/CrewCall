@@ -92,12 +92,15 @@ parameters:
     crewcall.system_roles:
             ROLE_USER:
                 short_name: 'Crewmember'
+                label: 'Crewmember'
                 decription: 'User able to use this application (log in)'
             ROLE_ADMIN:
                 short_name: 'Admin'
+                label: 'Admin'
                 decription: 'Admin user'
             ROLE_PERSON:
                 short_name: 'Other'
+                label: 'Other'
                 decription: 'Person with other roles, like contact for an organization. Not able to log in.'
 
     # The simplest file types.

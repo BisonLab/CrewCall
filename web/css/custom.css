@@ -13,6 +13,35 @@ h1 {
     font-size: 24px;
 }
 
+@media (min-width: 1200px) {
+  .container {
+    width: 1195px;
+  }
+}
+
+@media (min-width: 1300px) {
+  .container {
+    width: 1295px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .container {
+    width: 1395px;
+  }
+}
+
+@media (min-width: 1500px) {
+  .container {
+    width: 1495px;
+  }
+}
+
+.container {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
 .contentblock {
 } 
 

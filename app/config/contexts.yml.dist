@@ -45,3 +45,10 @@ parameters:
                     url_template: "/web/shift/{{external_id}}"
                     url_from_method: template
                     default: false
+                  -
+                    label: "Job"
+                    object_name: job
+                    type: master
+                    url_template: "/web/job/{{external_id}}"
+                    url_from_method: template
+                    default: false
