@@ -35,7 +35,7 @@ The base is basically a customized version of Symfony Standard and should be han
 
 You may want to follow the upstream CrewCall Base, if so, do this:
 
-$ git remote add upstream git@git.nteb.no:inventory/CrewCall.git 
+$ git remote add upstream git@git.github.com:bisonlab/CrewCall.git 
 $ git fetch upstream
 
 Then, to pull from master, which should be safe since it should only be messing with distfiles and the skeleton unless there are bugs in other places.
