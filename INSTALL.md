@@ -181,4 +181,5 @@ But it will look bad, and be even worse if you do not care about the entity mana
 Which is totally possible like this:
 
 $ ./bin/console doctrine:migrations:diff  --em=crewcall --filter-expression='/crewcall_/'
+
 $ ./bin/console doctrine:migrations:diff  --em=sakonnin --filter-expression='/sakonnin_/'
