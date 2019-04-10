@@ -12,7 +12,7 @@ OS Packages
  * git zip unzip
  * postgresql (Other DBMSes should work since we do use Doctrine, but they are not tested)
 
- * php-cli php-apcu php-gearman php-pgsql php-json php-curl php-dev pkg-config php-gmp php-intl php-symfony-polyfill-intl-icu php-zip php-bz2
+ * php-cli php-apcu php-gearman php-pgsql php-json php-curl php-dev pkg-config php-gmp php-intl php-symfony-polyfill-intl-icu php-zip php-bz2 php-xml
 
 I'm using apache, but nginx should work aswell. Feel free to try. Please send a report on how it went.
 
@@ -66,7 +66,7 @@ The composer binary is not a part of the base, but you need it. It is suggested 
 
 https://getcomposer.org/download/
 
-$ <wherever>/composer.phar update
+$ composer.phar update
 
 Run composer update again and again and again while installing whatever the packages needs for installing themselves.
 
@@ -135,8 +135,11 @@ The ACL method is the preferrable:
 $ sudo apt-get install acl
 
 $ HTTPDUSER=www-data
+
 $ APPOWNER=<your username>
+
 $ sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:"$APPOWNER":rwX var
+
 $ sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:"$APPOWNER":rwX var
 
 
