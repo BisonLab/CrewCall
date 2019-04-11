@@ -325,6 +325,30 @@ background-color: #fff;
     color: white;
 }
 
+/*
+ * The ugly version, based on the saved STATE which is in CAPS
+ */
+.ccCONFIRMED
+{
+    background-color: green;
+    border-color: green;
+    color: white;
+}
+
+.ccASSIGNED
+{
+    background-color: orange;
+    border-color: orange;
+    color: white;
+}
+
+.ccINTERESTED
+{
+    background-color: red;
+    border-color: red;
+    color: white;
+}
+
 .ccNotesText
 {
     background-color: #fefcc7;
