@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash -e
 
 rm -rf var/cache/*
 ./bin/console --force  doctrine:schema:drop
