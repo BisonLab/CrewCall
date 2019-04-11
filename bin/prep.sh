@@ -11,4 +11,4 @@ for f in $files
 
 cp -a app/Resources/prepskeleton/* .
 cd src
-git clone https://github.com/BisonLab/CrewCallBundle.git
+[ -d CrewCallBundle ] || git clone https://github.com/BisonLab/CrewCallBundle.git
