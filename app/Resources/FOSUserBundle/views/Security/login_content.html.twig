@@ -4,14 +4,13 @@
     <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
 {% endif %}
 
-<form class="form-horizontal" action="{{ path("fos_user_security_check") }}" method="post">
-{#
-    {{ bootstrap_set_style('horizontal') }}
-#}
+<div class="row"> <div class="col-xs-10 col-xs-offset-1 col-md-4 col-md-offset-4">
+    <form class="form-horizontal" action="{{ path("fos_user_security_check") }}" method="post">
     {% if csrf_token %}
         <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
     {% endif %}
 
+{#
     <label for="username">{{ 'security.login.username'|trans }}</label>
     <input type="text" id="username" name="_username" value="{{ last_username }}" required="required" />
 
@@ -20,13 +19,23 @@
     <label for="password">{{ 'security.login.password'|trans }}</label>
     <input type="password" id="password" name="_password" required="required" />
     <br>
-
-    <input type="hidden" id="remember_me" name="_remember_me" value="on" />
-    <input type="submit" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}" />
-{#
-    {{ bootstrap_set_style('') }}
 #}
-</form>
+
+ <div class="form-group input-group">
+     <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+     <input class="form-control" type="text" name="_username" placeholder="username" required="required">
+</div>
+     <div class="form-group input-group">
+     <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+     <input class="form-control" id="password" type="password" name="_password" placeholder="password" required="required">
+</div>
+<div class="form-group">
+     <button id="_submit" type="submit" name="_submit" class="btn btn-dark btn-block">{{ 'security.login.submit'|trans }}</button>
+     </div>
+     </div>
+     <input type="hidden" id="remember_me" name="_remember_me" value="on">
+    </form>
+</div>
 <a href="{{ path('fos_user_resetting_request') }}">Forgot password?</a>
 {% if allow_registration %}
 <a href="{{ path("fos_user_registration_register") }}">{{ 'layout.register'|trans }}</a>
