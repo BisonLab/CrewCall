@@ -21,6 +21,8 @@
     <br>
 #}
 
+    <br>
+    <br>
  <div class="form-group input-group">
      <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
      <input class="form-control" type="text" name="_username" placeholder="username" required="required">
@@ -32,11 +34,11 @@
 <div class="form-group">
      <button id="_submit" type="submit" name="_submit" class="btn btn-dark btn-block">{{ 'security.login.submit'|trans }}</button>
      </div>
+    <a href="{{ path('fos_user_resetting_request') }}">Forgot password?</a>
      </div>
      <input type="hidden" id="remember_me" name="_remember_me" value="on">
     </form>
 </div>
-<a href="{{ path('fos_user_resetting_request') }}">Forgot password?</a>
 {% if allow_registration %}
 <a href="{{ path("fos_user_registration_register") }}">{{ 'layout.register'|trans }}</a>
 {% endif %}
