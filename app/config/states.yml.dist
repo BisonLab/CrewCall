@@ -33,7 +33,11 @@ parameters:
                         user_chooseable: false
                 # After the end of known states, this is the one to use.
                 default_state: 'ACTIVE'
-                active_states: ['ACTIVE']
+                # Active states is all those that is used on a person still a
+                # member of the crew (or contact)
+                active_states: ['ACTIVE', 'OCCUPIED', 'VACATCION', 'SICKLEAVE', 'LOCKED']
+                # This is what enabled the user to log in. Basically, the ones
+                # above except LOCKED.
                 enable_login: ['ACTIVE', 'OCCUPIED', 'VACATCION', 'SICKLEAVE']
             Event:
                 states:
