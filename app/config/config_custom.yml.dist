@@ -82,13 +82,6 @@ parameters:
                 UpcomingJobs:
                     cols: 6
 
-    crewcall.functiongroups:
-        Shift:
-            - Worker
-        Organization:
-            - Organization
-            - Employee
-
     crewcall.system_roles:
             ROLE_USER:
                 label: 'Crewmember'
