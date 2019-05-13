@@ -11,7 +11,13 @@
 parameters:
     # You may want to change these.
     # Languange - No translations yet, so this is mere sugar.
-    locale: en_DK
+    locale: en_GB
+    # Fullcalendar also use locale, but it may not have what you set above.
+    # Check https://github.com/fullcalendar/fullcalendar/tree/master/locales
+    # Use the filename without .js
+    # If you set "all" it will load the all.js file instead. It's close to 200K
+    # where the separate files are 3K.
+    fullcalendar_locale: en-gb
 
     # This is for setting up the address fields. Different countries has
     # different needs, so we need somewhere for defining those needs.

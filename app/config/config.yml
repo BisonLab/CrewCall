@@ -55,6 +55,7 @@ twig:
     globals:
         enable_personal_messaging: "%enable_personal_messaging%"
         allow_registration: "%allow_registration%"
+        fullcalendar_locale: "%fullcalendar_locale%"
         sakonnin_messages:  "@sakonnin.messages"
         sakonnin_files:     "@sakonnin.files"
         cc_jobs:            "@crewcall.jobs"
