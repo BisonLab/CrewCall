@@ -70,14 +70,17 @@ parameters:
                 # Too much, the Todo will be able to handle most.
                 Announcements:
                     cols: 4
-                PersonalMessages:
-                    cols: 4
                 AdminWall:
+                    cols: 4
+                # Just to be able to place stuff where you want to.
+                Dummy:
                     cols: 4
                 ToDo:
                     cols: 2
                 EventsCalendar:
                     cols: 9
+                #PersonalMessages:
+                #    cols: 4
                 #ComboWall:
                 #    cols: 3
                 #AdminUpcomingShifts:
