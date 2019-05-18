@@ -38,40 +38,30 @@ function confirm_post_pop(form, text) {
     }
 }
 
-function popSummary(entity, entity_id, placement = 'auto top') {
+function popSummary(entity, entity_id, uid = '') {
     url = "{{ path('summary_show_get', { 'access': 'ajax' }) }}?entity=" + entity + "&entity_id=" + entity_id;
-    var popelement = "#popSummary_" + entity + "_" + entity_id;
-/* This seems not to be needed, I hope.
- * Which is why I default placement argument to "auto top".
-    if (placement == "best") {
-        placement = function (context, source) {
-            var position = $(source).position();
-            if (position.left < 280) {
-                return "right";
-            }
-            if (position.top < 180){
-                return "bottom";
-            } else {
-                return "top";
-            }
-        }
-    }
- */ 
-       $.ajax({
+    var popelement = "#popSummary_" + entity + "_" + entity_id + uid;
+    ename = entity.charAt(0).toUpperCase() + entity.slice(1);
+
+    res = $.ajax({
             url: url,
+            type: 'GET',
             dataType: 'html'
-       }).done( function( content, textStatus, xhr ) {
+      }).done( function( contenthtml, textStatus, xhr ) {
         $( popelement ).popover({
+            delay: 500,
             html: true,
-            placement: placement,
-            title: 'Summary <a href="#" class="close" data-dismiss="alert">&times;</a>',
-            content: content
+            placement: "auto top",
+            content: contenthtml,
+            title: ename + 'summary <a href="#" class="close" data-dismiss="alert"><span style="font-size: 15px" class="glyphicon glyphicon-remove-circle"></span></a>'
         });
         $( popelement ).popover("show");
         $(document).on("click", ".popover .close" , function(){
             $(this).parents(".popover").popover('hide');
         });
-    });
+      }).fail( function( ) {
+        alert("Error grabbing summary");
+      });
     return false;
 }
 
@@ -86,7 +76,7 @@ function popLogSummary(entity, entity_id, placement = 'auto top') {
             container: 'body',
             html: true,
             placement: placement,
-            title: 'Log summary <a href="#" class="close" data-dismiss="alert">&times;</a>',
+            title: 'Log Summary <a href="#" class="close" data-dismiss="alert"><span style="font-size: 15px" class="glyphicon glyphicon-remove-circle"></span></a>',
             content: content
         });
         $( popelement ).popover("show");
