@@ -56,7 +56,30 @@ During the composer update (See below) you will be asked for these amongst other
  * database_password
 
 The database do not have to be ready, but here you have to plan or know what to use.
-How to create the database and user comes after the next section.
+How to create the database and user comes later.
+
+
+Config files
+-------------
+
+In app/config you will find alot of yaml - files. Some of these are meant to be edited, some you should leave as they are. parameters.yml is for every instance you run, like dev and prod and config_custom.yml is meant for stuff that are alike on both of tese.
+
+config_custom.yml is the main config file for your use of the application. Here are some of the options you should edit before creating the database and inserting the base data.
+
+ * locale - Locale you are in. Leaving as is will mostly work.
+
+ * fullcalendar_locale - Uses a different naming convention and does not have
+   any available locale which is why it's separate. "all" is a possibility here.
+
+ * internal_organization - Here you set the name of the organization you want as the base for the system. Want a different role, change that aswell. These will be created automatically later in tis process
+
+ * allow_external_crew  - If you want a tad more complexity. This is if you want to put crew members in a variety of organizations and not just the default one with the default role. Usually, try without it.
+
+ * "allow_registration" which should decide if registration is alowed or not. It's not the only place unfortunately. You have to comment out the "fos_user_register" section in routing_custom.yml since it cannot be set based on the first parameter.
+
+ * addressing - Addresses are so much. Alas, I made it configureable. Here you define which address elements you want to use and the order they are used. It's for both input and output.
+
+The other files should usually not need to be edited unless you go the "I need customization" path.
 
 
 Symfony and friends
@@ -141,16 +164,6 @@ $ APPOWNER=<your username>
 $ sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:"$APPOWNER":rwX var
 
 $ sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:"$APPOWNER":rwX var
-
-
-Config files
--------------
-
-In app/config you will find alot of yaml - files. Some of these are meant to be edited, some you should leave as they are. parameters.yml is for every instance you run, like dev and prod and config_custom.yml is meant for stuff that are alike on both of tese.
-
-In config_custom.yml you will have a config option "allow_registration" which should decide if registration is alowed or not. It's not the only place unfortunately. You have to comment out the "fos_user_register" section in routing_custom.yml since it cannot be set based on the first parameter.
-
-The other files should usually not need to be edited unless you go the "I need customization" path. Which it's about in the next section.
 
 
 Customization
