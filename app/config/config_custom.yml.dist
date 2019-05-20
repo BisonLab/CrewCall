@@ -89,14 +89,14 @@ parameters:
                 # Just to be able to place stuff where you want to.
                 Dummy:
                     cols: 4
-                ToDo:
-                    cols: 2
+                #ToDo:
+                #    cols: 2
                 EventsCalendar:
                     cols: 9
                 #PersonalMessages:
                 #    cols: 4
-                #ComboWall:
-                #    cols: 3
+                ComboWall:
+                    cols: 3
                 #AdminUpcomingShifts:
                 #    cols: 9
             ROLE_USER:
