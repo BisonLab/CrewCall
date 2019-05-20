@@ -14,36 +14,24 @@ class CreateBaseFunctionCommand extends ContainerAwareCommand
 {
     private $functions = array(
         array(
+            'name' => 'Crewmember',
+            'function_type' => 'ROLE',
+            'description' => 'Base role',
+        ),
+        array(
             'name' => 'Admin',
+            'function_type' => 'ROLE',
             'description' => 'Admin Functions',
         ),
         array(
-            'name' => 'Organizations',
-            'description' => 'Organization Functions',
-        ),
-        array(
             'name' => 'Contact',
+            'function_type' => 'ROLE',
             'description' => 'Contact Person',
-            'parent' => 'Organizations',
         ),
         array(
-            'name' => 'Employee',
-            'description' => 'Employee types',
-        ),
-        array(
-            'name' => 'Freelance',
-            'description' => 'Freelance',
-            'parent' => 'Employee',
-        ),
-        array(
-            'name' => 'Part-time',
-            'description' => 'Paid per job',
-            'parent' => 'Employee',
-        ),
-        array(
-            'name' => 'Fulltime',
-            'description' => 'Full time employee',
-            'parent' => 'Employee',
+            'name' => 'Gaffer',
+            'function_type' => 'SKILL',
+            'description' => 'Gotta have it',
         ),
     );
 
@@ -58,17 +46,17 @@ class CreateBaseFunctionCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
-        $this->function_repo = $em->getRepository('CrewCallBundle:FunctionEntity');
+        $function_repo = $em->getRepository('CrewCallBundle:FunctionEntity');
 
         foreach ($this->functions as $fd) {
+            // It may have been made already, if config_custom is untouched.
+            if ($function_repo->findOneByName($fd['name']))
+                continue;
             $func = new FunctionEntity();
             $func->setState("VISIBLE");
             $func->setName($fd['name']);
             $func->setDescription($fd['description']);
-            if (isset($fd['parent'])) {
-                $parent = $this->function_repo->findOneByName($fd['parent']);
-                $func->setParent($parent);
-            }
+            $func->setFunctionType($fd['function_type']);
             $em->persist($func);
             $em->flush();
             $em->clear();

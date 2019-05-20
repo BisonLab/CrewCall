@@ -116,7 +116,11 @@ And the ones below can be run separately or with  ..
 
 $ ./bin/reload.sh
 
-.. for preparing the database, insert some fixtures and create the crewcall user with the too simple "cc" password.
+The argument "with-user" will create the crewcall user with the not very good password "cc":
+
+$ ./bin/reload.sh with-user
+
+.. for preparing the database, insert some fixtures and optionally create the crewcall user with the too simple "cc" password.
 
 $ ./bin/console doctrine:schema:create
 
@@ -127,9 +131,11 @@ Add Sakonnin message types and prep a little.
 
 $ ./bin/console sakonnin:insert-basedata
 
-Add some CC specific base data for an easier start
+Add some CC specific base data for an easier start, it will create the first role and internal organization.
 
 $ ./bin/console once:create-base-data
+
+You can choose not to run this one or edit it before you do.
 
 $ ./bin/console once:create-base-function
 

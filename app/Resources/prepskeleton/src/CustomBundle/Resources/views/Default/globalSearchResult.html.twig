@@ -49,6 +49,7 @@
         <thead class="thead-inverse">
         <tr>
             <th>Name</th>
+            <th>Username</th>
             <th>Mobile Phone Number</th>
         </tr>
     </thead>
@@ -57,6 +58,9 @@
         <tr>
             <td>
                 <a href="{{ path('person_show', { 'id': person.id }) }}">{{ person.fullname }}</a>
+            </td>
+            <td>
+                <a href="{{ path('person_show', { 'id': person.id }) }}">{{ person.username }}</a>
             </td>
             <td>
                 {{ person.mobilephonenumber }}
