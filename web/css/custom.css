@@ -413,3 +413,32 @@ input:checked + .cc_slider:before {
 .cc_slider.round:before {
   border-radius: 50%;
 }
+
+.panel-heading .accordion-toggle:after {
+    /* symbol for "opening" panels */
+    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+    content: "\2212";
+    float: right;        /* adjust as needed */
+    color: grey;         /* adjust as needed */
+}
+.panel-heading .accordion-toggle.collapsed:after {
+    /* symbol for "collapsed" panels */
+    content: "\002b";
+}
+.panel-default > .panel-heading {
+    background-color: #e8e8e8;
+    border-color: transparent;
+    padding-right: 10px; /* adjust as needed */
+    padding-left: 10px; /* adjust as needed */
+}
+.panel-default {
+    border-color: transparent;
+}
+
+.panel-body {
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    background-color: #f8f8f8;
+}

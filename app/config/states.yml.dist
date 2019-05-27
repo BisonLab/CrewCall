@@ -1,4 +1,10 @@
 parameters:
+    # This is probably overkill. Be aware that editing and setting other states
+    # may break the system. Started as a good idea, but messing about with
+    # state editing and changes will end up in too much complexity and just not
+    # worth it.
+    # The diffenent "active_states" config options here may on the other hand
+    # be useful. You may want to choose which is what.
     app.states:
         # user_chooseable is for deciding if ROLE_USER is allowed to change
         # from and to this state.
@@ -10,27 +16,37 @@ parameters:
                 states:
                     ACTIVE:
                         user_chooseable: true
+                        label: "Active"
                     # If the person can't work, set OCCUPIED. They can set it
                     # themselves. Not sure if we need to set to and from in
                     # CrewCall or handle that somewhere else.
                     OCCUPIED:
                         user_chooseable: true
+                        label: "Occupied"
                     VACATION:
                         user_chooseable: true
+                        label: "Vacation"
                     SICKLEAVE:
                         user_chooseable: false
+                        label: "Sickleave"
                     INACTIVE:
                         user_chooseable: false
+                        label: "Inactive"
                     QUIT:
                         user_chooseable: false
+                        label: "Quit"
+                    # Being a b'stard? Lock out from login and work.
                     LOCKED:
                         user_chooseable: false
+                        label: "Locked"
                     # Meant for contact persons and so on.
                     EXTERNAL:
                         user_chooseable: false
+                        label: "External"
                     # Denied in registration.
                     DENIED:
                         user_chooseable: false
+                        label: "Denied"
                 # After the end of known states, this is the one to use.
                 default_state: 'ACTIVE'
                 # Active states is all those that is used on a person still a
@@ -43,81 +59,84 @@ parameters:
                 states:
                     # We have an order, and are preparing.
                     PROSPECT:
-                        user_chooseable: false
-                    # They signed the contract.
+                        label: "Prospect"
+                    # They signed the contract. Time to open up for
+                    # registration
                     CONFIRMED:
-                        user_chooseable: false
+                        label: "Confirmed"
+                    Ready to rumble
+                    READY:
+                        label: "Ready"
                     CANCELLED:
-                        user_chooseable: false
-                    # Finished, but not invoiced and so on.
-                    DONE:
-                        user_chooseable: false
+                        label: "Cancelled"
                     # Everything handled, all OK and done.
                     COMPLETED:
-                        user_chooseable: false
+                        label: "Completed"
                 # This is for the function "isBooked" and searching for booked
                 # events. This is so you can decide if "PROSPECT" is a booked
                 # stated or not. If it is booked, people will be able to
                 # register interest, if not they will not see it before it's
                 # CONFIRMED
-                # And when it's DONE, it's kinda booked, but not in that way.
+                # And when it's COMPLKETED, it's kinda booked, but not in that
+                # way. Not sure I need this at all though.
                 booked_states: ['CONFIRMED']
-                # Yes, not the same as booked, since a PROSPECT is active aswell.
+                # Yes, not the same as booked, since a PROSPECT is active
+                # aswell.
                 active_states: ['PROSPECT', 'CONFIRMED']
                 done_states: ['CANCELLED', 'DONE', 'COMPLETED']
+            Shift:
+                states:
+                    # First and last state basically. There is a few reasons
+                    # fora shift being closed. Not opened yet (Event not
+                    # confirmed), paused, cancelled and event completed.
+                    CLOSED:
+                        label: Closed
+                    # This is the state needed for the crew to be able to pick
+                    # it. Could be "Published" aswell, kinda more descriptive
+                    OPEN:
+                        label: Open
+                    # This is the "READY to go" state. No more bookings can be
+                    # made and this is set manually. Setting automatically
+                    # based on amounts match is no good. There may be other
+                    # check points before this is set.
+                    READY:
+                        label: Ready
+                # Open for registering interest
+                open_states: ['CONFIRMED']
+                booked_states: ['READY', 'CONFIRMED']
+            # These are more or less hard coded. Feel free to change labels
+            # (and let me know if they aren't shown or patch and PR it.
             Location:
                 states:
                     OPEN:
-                        user_chooseable: false
+                        label: "Open"
                     CLOSED:
-                        user_chooseable: false
+                        label: "Closed"
                 active_states: ['OPEN']
             Function:
                 states:
                     VISIBLE:
-                        user_chooseable: false
+                        label: "Visible"
                     INVISIBLE:
-                        user_chooseable: false
+                        label: "Invisible"
                 active_states: ['VISIBLE']
-            Shift:
-                states:
-                    REGISTERED:
-                        user_chooseable: false
-                    CONFIRMED:
-                        user_chooseable: false
-                    FULLY_BOOKED:
-                        user_chooseable: false
-                    COMPLETED:
-                        user_chooseable: false
-                    CANCELLED:
-                        user_chooseable: false
-                booked_states: ['FULLY_BOOKED', 'CONFIRMED']
-            ShiftOrganization:
-                states:
-                    ASSIGNED:
-                        user_chooseable: false
-                    CONFIRMED:
-                        user_chooseable: false
-                    COMPLETED:
-                        user_chooseable: false
-                booked_states: ['CONFIRMED']
             Job:
                 states:
                     # I want the job!
                     INTERESTED:
-                        user_chooseable: false
+                        label: "Interested"
                     # You can have it if you confirm
                     ASSIGNED:
-                        user_chooseable: false
+                        label: "Assigned"
                     # OK, I confirm!
                     CONFIRMED:
-                        user_chooseable: false
-                    # Sorry, won't give you
+                        label: "Confirmed"
+                    # Sorry, won't give you. Not very much used I hope.
                     DENIED:
-                        user_chooseable: false
-                    # Job done
+                        label: "Denied"
+                    # Job done, hours (if you care) reported. Case closed.
                     COMPLETED:
-                        user_chooseable: false
+                        label: "Completed"
                 booked_states: ['CONFIRMED']
                 wishlist_states: ['INTERESTED', 'ASSIGNED', 'DENIED']
             JobLog:
@@ -126,25 +145,39 @@ parameters:
                     # the default value and means it has been entered.
                     ENTERED:
                         default: true
+                        label: "Entered"
                     # Neither this, but this is "Invoiced and person eventually
                     # paid."
                     COMPLETED:
                         default: false
+                        label: "Completed"
+            # This is the "Job" for the connection between a shift and
+            # organization. This is for sub contractors or external
+            # orrganizations that is supposd to come with X amount of people.
+            ShiftOrganization:
+                states:
+                    ASSIGNED:
+                        label: "Assigned"
+                    CONFIRMED:
+                        label: "Confirmed"
+                    COMPLETED:
+                        label: "Completed"
+                booked_states: ['CONFIRMED']
+            # Could be  OPEN/CLOSED aswell, but well.
             Organization:
                 states:
                     ACTIVE:
-                        user_chooseable: false
-                    CLOSED:
-                        user_chooseable: false
-                    BLOCKED:
-                        user_chooseable: false
+                        label: "Active"
+                    INACTIVE:
+                        label: "Inactive"
                 active_states: ['ACTIVE']
+            # Just a fallback. Should not happen.
             default:
                 states:
                     NONE:
-                        user_chooseable: false
+                        label: "Prospect"
                     DEFAULT:
-                        user_chooseable: false
+                        label: "Prospect"
                 active_states: []
                 booked_states: []
                 wishlist_states: []
