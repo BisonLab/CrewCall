@@ -425,6 +425,10 @@ input:checked + .cc_slider:before {
     /* symbol for "collapsed" panels */
     content: "\002b";
 }
+.panel-heading .state {
+    float: right;
+}
+
 .panel-default > .panel-heading {
     background-color: #e8e8e8;
     border-color: transparent;
