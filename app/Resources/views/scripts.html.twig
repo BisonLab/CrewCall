@@ -16,6 +16,22 @@ $(document).ready(function()
                 "paging": false
                 });
         }
+        /*
+         * This makes the modals not scroll the page up on opening.
+         * If the class is added of course.
+         * Using <a href="#!" .. > works aswell, but somehow using a broken
+         * (invalid) link feels more like a hack than this.
+         * For now at least.
+         */
+        $( ".noscrolla" ).each(function() {
+            $(this).click(function(e) {
+            console.log("Var innom");
+                // Special stuff to do when this link is clicked...
+
+                // Cancel the default action
+                e.preventDefault();
+            });
+        });
     }
 );
 
