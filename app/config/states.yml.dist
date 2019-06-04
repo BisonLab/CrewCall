@@ -79,11 +79,13 @@ parameters:
                 # CONFIRMED
                 # And when it's COMPLKETED, it's kinda booked, but not in that
                 # way. Not sure I need this at all though.
-                booked_states: ['CONFIRMED']
+                booked_states: ['CONFIRMED', 'READY', 'DONE', 'COMPLETED']
                 # Yes, not the same as booked, since a PROSPECT is active
                 # aswell.
-                active_states: ['PROSPECT', 'CONFIRMED']
-                done_states: ['CANCELLED', 'DONE', 'COMPLETED']
+                active_states: ['PROSPECT', 'CONFIRMED', 'READY']
+                # And then, open. Yes, it's way too much here.
+                open_states: ['CONFIRMED']
+                done_states: ['DONE', 'COMPLETED']
             Shift:
                 states:
                     # First and last state basically. There is a few reasons
@@ -102,8 +104,8 @@ parameters:
                     READY:
                         label: Ready
                 # Open for registering interest
-                open_states: ['CONFIRMED']
-                booked_states: ['READY', 'CONFIRMED']
+                open_states: ['OPEN']
+                booked_states: ['READY', 'OPEN']
             # These are more or less hard coded. Feel free to change labels
             # (and let me know if they aren't shown or patch and PR it.
             Location:
