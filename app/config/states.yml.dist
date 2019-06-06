@@ -87,6 +87,7 @@ parameters:
                 open_states: ['CONFIRMED']
                 done_states: ['DONE', 'COMPLETED']
             Shift:
+                # Mainly, keep states as is, but feel free to change labels.
                 states:
                     # First and last state basically. There is a few reasons
                     # fora shift being closed. Not opened yet (Event not
@@ -97,15 +98,9 @@ parameters:
                     # it. Could be "Published" aswell, kinda more descriptive
                     OPEN:
                         label: Open
-                    # This is the "READY to go" state. No more bookings can be
-                    # made and this is set manually. Setting automatically
-                    # based on amounts match is no good. There may be other
-                    # check points before this is set.
-                    READY:
-                        label: Ready
-                # Open for registering interest
+                # Keep it like this in case someone wants more states
+                # (Or even both states being open states, for some reason :=)
                 open_states: ['OPEN']
-                booked_states: ['READY', 'OPEN']
             # These are more or less hard coded. Feel free to change labels
             # (and let me know if they aren't shown or patch and PR it.
             Location:
