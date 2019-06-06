@@ -1,36 +1,12 @@
 {% import "BisonLabCommonBundle::macros.html.twig" as blcommon %}
 <!DOCTYPE html>
 <html>
-    <head>
-       <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-       <title>{% block title %}CrewCall{% endblock %}</title>
-       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-       <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}" />
-       <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}" />
-{% block stylesheets %}
-       <link rel="stylesheet" href="{{ asset('public/jquery-ui/themes/smoothness/jquery-ui.min.css') }}" type="text/css" media="all" />
-<!--  Or you can pick some other themes from https://bootswatch.com/ - Like this one
-       <link rel="stylesheet" href="{{ asset('css/bootstrap-simplex.min.css') }}" type="text/css" media="all" />
--->
-       <link rel="stylesheet" href="{{ asset('public/css/bootstrap.css') }}" type="text/css" media="all" />
-       <link rel="stylesheet" href="{{ asset('public/fullcalendar/dist/fullcalendar.min.css') }}" type="text/css" media="all" />
-       <link rel="stylesheet" href="{{ asset('bundles/bisonlabcommon/datatables/datatables.css') }}" type="text/css" media="all" />
-
-        <!-- The last one, our customizations -->
-       <link rel="stylesheet" href="{{ asset('css/custom.css') }}" type="text/css" media="all" />
-{% endblock %}
-       <script src="{{ asset('public/jquery/jquery.js') }}"></script>
-       <script src="{{ asset('public/js/bootstrap.js') }}"></script>
-       <script src="{{ asset('public/jquery-ui/jquery-ui.js') }}"></script>
-       <script src="{{ asset('bundles/bisonlabcommon/datatables/datatables.min.js') }}"></script>
-       <script src="{{ asset('bundles/bisonlabcommon/js/multiselect.min.js') }}"></script>
-</head>
+{% include '::head.html.twig' %}
 
 <body>
 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-{% include '::scripts.html.twig' %}
-{% include 'BisonLabSakonninBundle::scripts.html.twig' %}
 {% include 'BisonLabSakonninBundle:Message:_message_log_popup.html.twig' %}
+{% include 'BisonLabSakonninBundle::scripts.html.twig' %}
 {% if enable_personal_messaging %}
 {% include 'BisonLabSakonninBundle:Message:_pm_handling.html.twig' %}
 {% endif %}
