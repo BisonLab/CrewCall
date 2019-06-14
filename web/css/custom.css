@@ -139,6 +139,11 @@ table th {
     border-right: 0px;
 }
 
+.table-striped {
+  background-color: #e8e8e8;
+  margin-bottom: 5px;
+}
+
 .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: #e8e8e8;
 }
@@ -149,6 +154,15 @@ table th {
 
 .tableOverlap {
   background-color: #F6CCD1;
+}
+
+table.dataTable thead .sorting:before {
+    opacity: 0.5;
+    content: "\e150";
+}
+table.dataTable thead .sorting:after {
+    opacity: 0.5;
+    content: unset;
 }
 
 
@@ -174,6 +188,15 @@ background-color: #fff;
     color: #fff;
     background-color: #343a40;
     border-color: #343a40;
+}
+
+.btn {
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+
+.btn-dark:hover {
+    color: #ddd;
 }
 
 /*
@@ -297,9 +320,9 @@ background-color: #fff;
     box-sizing: border-box; 
     padding-top: 5px;
     padding-bottom: 5px;
-    padding-left: 7px;
-    padding-right: 7px;
-    margin-left: 0px;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-left: -3px;
     margin-right: 0px;
 }
 
@@ -359,6 +382,8 @@ background-color: #fff;
 {
     background-color: #fefcc7;
     border-color: #fefcc7;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 /* The switch - the box around the slider */
@@ -426,19 +451,21 @@ input:checked + .cc_slider:before {
     font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
     content: "\2212";
     float: right;        /* adjust as needed */
-    color: grey;         /* adjust as needed */
 }
+
 .panel-heading .accordion-toggle.collapsed:after {
     /* symbol for "collapsed" panels */
     content: "\002b";
 }
+
 .panel-heading .state {
     float: right;
 }
 
 .panel-default > .panel-heading {
-    background-color: #e8e8e8;
-    border-color: transparent;
+    color: #fff;
+    background-color: #343a40;
+    border-color: #343a40;
     padding-right: 10px; /* adjust as needed */
     padding-left: 10px; /* adjust as needed */
 }
