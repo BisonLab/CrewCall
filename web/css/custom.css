@@ -158,11 +158,9 @@ table th {
 
 table.dataTable thead .sorting:before {
     opacity: 0.5;
-    content: "\e150";
 }
 table.dataTable thead .sorting:after {
-    opacity: 0.5;
-    content: unset;
+    opacity: 0.7;
 }
 
 
