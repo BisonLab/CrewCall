@@ -6,7 +6,6 @@ body {
     margin:0;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
     color:#212529;
-    text-align:leftg
 }
 
 h1 {
@@ -92,6 +91,9 @@ ul {
     list-style-type: none
 }
 
+/*
+ * In case of different shades
+ */
 .cc_notice {
     background-color: yellow;
 }
@@ -102,6 +104,30 @@ ul {
 
 .cc_error {
     background-color: red;
+}
+
+.remove_glyph:after {
+    font-size: 15px;
+    margin-left: 10px;
+    color: red;
+    font-family: 'Glyphicons Halflings';
+    content: "\e088";
+}
+
+.edit_glyph:after {
+    font-size: 16px;
+    margin-left: 10px;
+    color: black;
+    font-family: 'Glyphicons Halflings';
+    content: "\270f";
+}
+
+.archive_glyph:after {
+    font-size: 16px;
+    margin-left: 10px;
+    color: black;
+    font-family: 'Glyphicons Halflings';
+    content: "\e202";
 }
 
 .blbutton {
