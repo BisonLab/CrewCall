@@ -55,6 +55,8 @@ parameters:
     enable_personal_messaging: false
 
     bisonlab_reports.report_classes:
+        - CrewCallBundle\Lib\Reports\Reports
+        # - CustomBundle\Lib\Reports\Reports
     # For generated reports, usuaslly uuseful to be able to grab from the web.
     bisonlab_reports.default_filestore: '%kernel.root_dir%/../web/reports'
 
