@@ -19,12 +19,14 @@ parameters:
     # where the separate files are 3K.
     fullcalendar_locale: en-gb
 
-    # New users has to be connected to something by default. If it's a creew
+    # New users has to be connected to something by default. If it's a ceew
     # member you want to connect it to your organization with a default role.
     # (This is a hen and egg situation since you haven't created your
     # organization when you set up this application. But there is a solutaion
     # to that. The name and role you put here will be created by the
     # once:create-base-data command.
+    #
+    # This is also what defines a crew member.
     internal_organization:
         name: "Internal"
         default_role: "Crewmember"
@@ -40,6 +42,9 @@ parameters:
     # Country differs that it will not be showwn if it is the default country.
     # The values here is the ones shown in the input and edit forms.
     addressing:
+        # Mostly, postal address as an extra address is not used. If you want
+        # it, set it to true.
+        use_postal_address: false
         default_country_code: NO
         default_country_name: Norway
         format:
@@ -84,6 +89,8 @@ parameters:
             ROLE_ADMIN:
                 # Should this be PublicMessages or PublicWall?
                 # Too much, the Todo will be able to handle most.
+                # On top of that, it uses the "Front page logged in" message
+                # type. (Historical reasons, should change it)
                 Announcements:
                     cols: 4
                 AdminWall:

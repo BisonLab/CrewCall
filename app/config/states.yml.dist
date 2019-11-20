@@ -51,10 +51,10 @@ parameters:
                 default_state: 'ACTIVE'
                 # Active states is all those that is used on a person still a
                 # member of the crew (or contact)
-                active_states: ['ACTIVE', 'OCCUPIED', 'VACATCION', 'SICKLEAVE', 'LOCKED']
+                active_states: ['ACTIVE', 'OCCUPIED', 'VACATION', 'SICKLEAVE', 'LOCKED']
                 # This is what enabled the user to log in. Basically, the ones
                 # above except LOCKED.
-                enable_login: ['ACTIVE', 'OCCUPIED', 'VACATCION', 'SICKLEAVE']
+                enable_login: ['ACTIVE', 'OCCUPIED', 'VACATION', 'SICKLEAVE']
             Event:
                 states:
                     # We have an order, and are preparing.

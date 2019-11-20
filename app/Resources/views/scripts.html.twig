@@ -4,7 +4,7 @@ $(document).ready(function()
         if ($('#sortable_table >tbody >tr').length > 100) {
             $('#sortable_table').dataTable({
                 "pageLength": 100,
-                "lengthMenu": [[ 100, 200, 500 -1], [100, 200, 500, "All"]],
+                "lengthMenu": [[ 100, 200, 500, -1], [100, 200, 500, "All"]],
                 "columnDefs": [{
                     "targets": 'no-sort',
                     "orderable": false,
@@ -34,9 +34,23 @@ $(document).ready(function()
                 });
         }
 
-
+    // From https://www.bootply.com/VQqzOawoYc ( With added escaping of hash )
+    // Javascript to enable link to tab
+    var hash = document.location.hash;
+    var tab_prefix = "tab_";
+    if (hash.match('tab')) {
+        $('.nav-tabs a[href=\\'+hash.replace(tab_prefix,"")+']').tab('show');
     }
-);
+    
+    // Can't mess with this if we are already using this for job listings.
+    if (!hash.match('jobList')) {
+        // Change hash for page-reload
+        $('.nav-tabs a').on('shown.bs.tab', function (e) {
+            window.location.hash = e.target.hash.replace("#", "#" + tab_prefix);
+        });
+    }
+
+});
 
 function popmeup(url)
 {
@@ -61,7 +75,8 @@ function popSummary(entity, entity_id, uid = '') {
     url = "{{ path('summary_show_get', { 'access': 'ajax' }) }}?entity=" + entity + "&entity_id=" + entity_id;
     var popelement = "#popSummary_" + entity + "_" + entity_id + uid;
     ename = entity.replace("_", " ");
-    title = ename.charAt(0).toUpperCase() + ename.slice(1);
+    poptitle = ename.charAt(0).toUpperCase() + ename.slice(1);
+    poptitle = poptitle + 'summary <a href="#" class="close" data-dismiss="alert"><span style="font-size: 15px" class="glyphicon glyphicon-remove-circle"></span></a>';
 
     res = $.ajax({
             url: url,
@@ -73,9 +88,11 @@ function popSummary(entity, entity_id, uid = '') {
             html: true,
             placement: "auto top",
             content: contenthtml,
-            title: title + 'summary <a href="#" class="close" data-dismiss="alert"><span style="font-size: 15px" class="glyphicon glyphicon-remove-circle"></span></a>'
+            trigger: "focus",
         });
+/* May not need $( popelement ).attr('data-original-title', poptitle); */
         $( popelement ).popover("show");
+
         $(document).on("click", ".popover .close" , function(){
             $(this).parents(".popover").popover('hide');
         });
@@ -94,6 +111,7 @@ function popLogSummary(entity, entity_id, placement = 'auto top') {
       }).done( function( content, textStatus, xhr ) {
         $( popelement ).popover({
             container: 'body',
+            trigger: "focus",
             html: true,
             placement: placement,
             title: 'Log Summary <a href="#" class="close" data-dismiss="alert"><span style="font-size: 15px" class="glyphicon glyphicon-remove-circle"></span></a>',
@@ -107,4 +125,27 @@ function popLogSummary(entity, entity_id, placement = 'auto top') {
     return false;
 }
 
+function openCcModal(url, title) {
+    $.get(url, function( data ) {
+        $( "#ccModalBody" ).html(data);
+        $( "#ccModalTitle" ).html(title);
+        $( "#ccModal" ).modal('show');
+    });
+    return false;
+}
+
 </script>
+
+<div class="modal fade" id="ccModal" role="dialog" tabindex="-1">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+         <h4 class="modal-title" id="ccModalTitle"></h4>
+      </div>
+      <div class="modal-body" id="ccModalBody">
+      </div>
+    </div>
+  </div>
+</div> <!-- / modal -->
