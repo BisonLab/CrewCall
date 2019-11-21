@@ -55,7 +55,9 @@ parameters:
 
     # This basically says itself - Maybe false should be default, but at least
     # it'll show that registration is possible.
-    allow_registration: true
+    # But if you want to turn this on you must also comment out the
+    # registration routes in routing_custom.yml
+    allow_registration: false
     # This also basically says itself
     enable_personal_messaging: false
 
@@ -119,13 +121,13 @@ parameters:
     crewcall.system_roles:
             ROLE_USER:
                 label: 'Crewmember'
-                decription: 'User able to use this application (log in)'
+                description: 'User able to log into and use this application as crew member'
             ROLE_ADMIN:
                 label: 'Admin'
-                decription: 'Admin user'
+                description: 'Admin User'
             ROLE_PERSON:
                 label: 'Other'
-                decription: 'Person with other roles, like contact for an organization. Not able to log in.'
+                description: 'Person with other roles, like contact for an organization. Not able to log in.'
 
     # The simplest file types. Need to set it here to override the ones in the
     # Sakonnin Bundle.

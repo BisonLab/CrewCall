@@ -91,43 +91,19 @@ ul {
     list-style-type: none
 }
 
+.glyphicon {
+    color: black;
+}
+
 /*
- * In case of different shades
+ * Gotta have this, easier way to add red colour.
  */
-.cc_notice {
-    background-color: yellow;
-}
-
-.cc_warn {
-    background-color: orange;
-}
-
-.cc_error {
-    background-color: red;
-}
-
 .remove_glyph:after {
     font-size: 15px;
     margin-left: 10px;
     color: red;
     font-family: 'Glyphicons Halflings';
     content: "\e088";
-}
-
-.edit_glyph:after {
-    font-size: 16px;
-    margin-left: 10px;
-    color: black;
-    font-family: 'Glyphicons Halflings';
-    content: "\270f";
-}
-
-.archive_glyph:after {
-    font-size: 16px;
-    margin-left: 10px;
-    color: black;
-    font-family: 'Glyphicons Halflings';
-    content: "\e202";
 }
 
 .blbutton {
@@ -147,6 +123,7 @@ pre {
 /*
  * (Data)tables customizing
  */
+/*
 table {
     border-top: 0px;
     border-bottom: 0px;
@@ -154,16 +131,17 @@ table {
     border-right: 0px;
 }
 
-table thead,
 table tbody,
+table thead,
 table tr,
 table td,
 table th {
     border-top: 0px;
     border-bottom: 0px;
-    border-left: 0px;
+    border-left: 5px;
     border-right: 0px;
 }
+*/
 
 .table-striped {
   background-color: #e8e8e8;
@@ -178,17 +156,30 @@ table th {
   background-color: #fff;
 }
 
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: #e8e8e8;
+}
+
+.table-hover tbody tr td, .table-hover tbody {
+    background-color: #ffffff;
+}
+
+.thead-dark {
+  background-color: #f2f2f2;
+}
+
 .tableOverlap {
   background-color: #F6CCD1;
 }
 
+/*
 table.dataTable thead .sorting:before {
     opacity: 0.5;
 }
 table.dataTable thead .sorting:after {
     opacity: 0.7;
 }
-
+*/
 
 /*
 
@@ -209,9 +200,15 @@ background-color: #fff;
 
 /* Not in the bootstrap css I have here, odd. */
 .btn-dark {
-    color: #fff;
+    color: #ffffff;
     background-color: #343a40;
     border-color: #343a40;
+}
+
+.btn-light {
+    color: #000000;
+    background-color: #a2a2a2;
+    border-color: #f2f2f2;
 }
 
 .btn {
@@ -350,6 +347,13 @@ background-color: #fff;
     margin-right: 0px;
 }
 
+.ccTotal
+{
+    background-color: lightgrey;
+    border-color: lightgrey;
+    color: black;
+}
+
 .ccNeeded
 {
     background-color: grey;
@@ -411,21 +415,21 @@ background-color: #fff;
 }
 
 /* The switch - the box around the slider */
-.cc_switch {
+.ccSwitch {
   position: relative;
   display: inline-block;
   width: 40px;
   height: 22px;
 }
 /* Hide default HTML checkbox */
-.cc_switch input {
+.ccSwitch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
 /* The slider */
-.cc_slider {
+.ccSlider {
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -437,7 +441,7 @@ background-color: #fff;
   transition: .4s;
 }
 
-.cc_slider:before {
+.ccSlider:before {
   position: absolute;
   content: "";
   height: 19px;
@@ -450,11 +454,11 @@ background-color: #fff;
   transition: .4s;
 }
 
-input:focus + .cc_slider {
+input:focus + .ccSlider {
   box-shadow: 0 0 1px #2196F3;
 }
 
-input:checked + .cc_slider:before {
+input:checked + .ccSlider:before {
   -webkit-transform: translateX(16px);
   -ms-transform: translateX(16px);
   transform: translateX(16px);
@@ -462,13 +466,26 @@ input:checked + .cc_slider:before {
 }
 
 /* Rounded sliders */
-.cc_slider.round {
+.ccSlider.round {
   border-radius: 34px;
 }
 
-.cc_slider.round:before {
+.ccSlider.round:before {
   border-radius: 50%;
 }
+
+.ccNotice {
+    background-color: yellow;
+}
+
+.ccWarn {
+    background-color: orange;
+}
+
+.ccError {
+    background-color: red;
+}
+
 
 .panel-heading .accordion-toggle:after {
     /* symbol for "opening" panels */
@@ -504,3 +521,6 @@ input:checked + .cc_slider:before {
     padding-bottom: 0px;
     background-color: #f8f8f8;
 }
+
+[for="crewcallbundle_event_state"] { display: none;}
+#crewcallbundle_event_state { display: none;}
