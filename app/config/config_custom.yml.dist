@@ -89,6 +89,8 @@ parameters:
         # cols is the bootstrap grid columns.
         roles:
             ROLE_ADMIN:
+                Search:
+                    cols: 8
                 # Should this be PublicMessages or PublicWall?
                 # Too much, the Todo will be able to handle most.
                 # On top of that, it uses the "Front page logged in" message
