@@ -10,6 +10,7 @@
 !/src/.gitkeep
 /build/
 /phpunit.xml
+/web/css/custom.css
 
 # Email spool folder
 /app/spool/*
