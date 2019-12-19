@@ -89,15 +89,15 @@ parameters:
             Shift:
                 # Mainly, keep states as is, but feel free to change labels.
                 states:
+                    # This is the state needed for the crew to be able to pick
+                    # it. Could be "Published" aswell, kinda more descriptive
+                    OPEN:
+                        label: Open
                     # First and last state basically. There is a few reasons
                     # fora shift being closed. Not opened yet (Event not
                     # confirmed), paused, cancelled and event completed.
                     CLOSED:
                         label: Closed
-                    # This is the state needed for the crew to be able to pick
-                    # it. Could be "Published" aswell, kinda more descriptive
-                    OPEN:
-                        label: Open
                 # Keep it like this in case someone wants more states
                 # (Or even both states being open states, for some reason :=)
                 open_states: ['OPEN']

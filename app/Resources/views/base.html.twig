@@ -2,15 +2,8 @@
 <!DOCTYPE html>
 <html>
 {% include '::head.html.twig' %}
-
 <body>
-{% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-{% include 'BisonLabSakonninBundle:Message:_message_log_popup.html.twig' %}
-{% include 'BisonLabSakonninBundle::scripts.html.twig' %}
-{% if enable_personal_messaging %}
-{% include 'BisonLabSakonninBundle:Message:_pm_handling.html.twig' %}
-{% endif %}
-{% endif %}
+
 <header class="navbar navbar-default navbar-fixed-top">
   {% block navbar %}
  <div class="container-fluid">
@@ -22,15 +15,15 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
      </button>
-     <a class="navbar-brand" href="{{ path('homepage')}}"><img src="{{ asset('images/logo.gif') }}" border="0" height="40"></a>
-     {% if is_granted("ROLE_ADMIN") %}
-        <a class="navbar-brand" href="{{ path('crew_index', {'simplified': true})}}" id="send_message"><span style="font-size: 35px" class="glyphicon glyphicon-comment"></span></a>
-     {% endif %}
+     <a class="navbar-left" href="{{ path('homepage')}}"><img src="{{ asset('images/logo.gif') }}" border="0" height="40"></a>
    </div>
    <div class="collapse navbar-collapse" id="crewcall-navbar-collapse">
+     <div class="navbar-center">
      {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
        {{ knp_menu_render('CrewCallBundle:Builder:mainMenu', { 'style': 'navbar' }) }}
+    </div>
 
+{#
         {% if is_granted("ROLE_ADMIN") %}
         <form action="{{ path('global_search') }}" class="navbar-form navbar-right" role="search" method="get">
             <div class="input-group">
@@ -43,6 +36,10 @@
             </div>
         </form>
          {% endif %}
+#}
+     {% if is_granted("ROLE_ADMIN") %}
+        <a class="navbar-brand" href="{{ path('crew_index', {'simplified': true})}}" id="send_message"><span style="font-size: 35px" class="glyphicon glyphicon-comment"></span></a>
+     {% endif %}
        {{ knp_menu_render('CrewCallBundle:Builder:userMenu', { 'style': 'navbar-right' }) }}
      {% endif %}
    </div>
