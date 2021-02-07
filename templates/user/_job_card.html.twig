@@ -1,0 +1,114 @@
+<div class="card-custom mb-4 col-sm-6 col-md-6 col-lg-6 col-xl-6" id="item-{{ job.id }}">
+  <div class="card-custom-header row">
+    <div class="col-10">
+      <div class="row">
+        <h2 class="font-weight-bold mr-2 mt-1 ml-2">{{ job.shift.startdaynum }}</h2>
+        <div class="date-header">
+          <span class="font-weight-bold d-block mt-1">{{ job.shift.month }}</span>
+          <span class="font-weight-bold">{{ job.shift.start_string }} - {{ job.shift.end_string }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-2 p-0 mt-1">
+      <a target="_blank" href="http://maps.google.com/?q=Rådhusplassen,0160,Oslo">
+          <img class="rounded mx-auto" src="{{ asset('images/google_maps.png') }}" width="40px">
+      </a>
+   </div>
+  </div><!-- end row -->
+  <div class="card-custom-content p-3 row">
+    <div class="col-10 col-lg-11">
+      <span class="d-block">{{ job.event.location.name }} - {{ job.event.organization.name }}</span>
+      <h4 class="text-uppercase font-weight-bold">{{ job.event.name }}</h4>
+      <h4 class="text-uppercase font-weight-bold">{{ job.shift.function }}</h4>
+    </div>
+    <div class="col-2 col-lg-1">
+      <a class="collapsed" data-toggle="collapse" data-target="#hidden_{{ job.id }}" aria-expanded="false" aria-controls="hidden_{{ job.id }}">
+        <span class="cardplusminus"</span>
+      </a>
+    </div>
+  </div><!-- end row -->
+  <div id="hidden_{{ job.id }}" class="row collapse">
+    <div class="col-12">
+      <div class="mb-2 slider closed"><!---->
+        <p>{{ job.event.description }}</p>
+        <div>
+          <span class="font-weight-bold">Client: </span>
+          <span >{{ job.event.organization.name }}</span>
+        </div>
+        <div>
+          <span class="font-weight-bold">Place: </span>
+          <span>{{ job.event.location.name }}, {{ job.event.location.address_flat.addressLine1 }}
+{% if job.event.location.address_flat.addressLine2 is not empty %},{{ job.event.location.address_flat.addressLine2 }}{% endif %}
+{% if job.event.location.address_flat.postalCode is not empty %},{{ job.event.location.address_flat.postalCode }}{% endif %}
+{% if job.event.location.address_flat.postalName is not empty %},{{ job.event.location.address_flat.postalName }}{% endif %}
+            </span>
+        </div>
+      </div>
+    </div>
+  </div><!-- end row -->
+{% if view == "opportunities" %}
+<form id="interest_form_{{ job.id }}" action="#" onSubmit="return submitInterest({{ job.id }});">
+<input type="hidden" value="{{ signup_shift._csrf_token }}" name="_csrf_token">
+  <div id="comment_{{ job.id }}" class="row ml-2 collapse">
+    <textarea name="comment" cols="20" rows="3"></textarea>
+  </div><!-- end row -->
+{% set disabled = false %}
+{% for check in job.checks %}
+<div class="row ">
+{% if check.type == "ConfirmCheck" %}
+{% set disabled = true %}
+<fieldset class="col-12">
+  <div class="form-check ml-3">
+    <input name="id" type="text" class="" hidden="hidden">
+    <input class="form-check-input" name="checked" type="checkbox" required="" onClick="$('#signup_button_{{ job.id }}').toggleClass('disabled');">
+    <label class="form-check-label" for="checked">
+      <i class="fas fa-exclamation-triangle text-danger "></i>
+      <p class=" d-inline">{{ check.body }}</p>
+    </label>
+  </div>
+</fieldset>
+{% else %}
+<fieldset class="col-12">
+  <div class="form-check ml-3">
+    <input name="id" type="text" class="" hidden="hidden">
+    <input class="form-check-input" name="checked" type="checkbox">
+    <label class="form-check-label" for="checked">
+          <p class=" d-inline">{{ check.body }}</p>
+    </label>
+  </div>
+</fieldset>
+{% endif %}
+</div><!-- end row -->
+{% endfor %}
+  <div class="row ">
+    <div class="col-6 p-3">
+      <button id="signup_button_{{ job.id }}" class="{% if disabled %}disabled {% endif %}btn btn-dark ml-3" type="submit"><i class="fas fa-check text-success"></i> Sign Up</button>
+      <a class="collapsed" data-toggle="collapse" data-target="#comment_{{ job.id }}" aria-expanded="false" aria-controls="comment_{{ job.id }}">
+        <span class="fas fa-comment"</span>
+      </a>
+    </div>
+  </div><!-- end row -->
+</form>
+{% endif %}
+{% if view == "interested" %}
+  <div class="row ">
+    <div class="col-12 ml-3 p-3">
+    <form id="delete_interest_form_{{ job.id }}" action="#" onSubmit="return submitDeleteInterest({{ job.id }});">
+    <input type="hidden" value="{{ delete_interest._csrf_token }}" name="_csrf_token">
+    <button class="btn btn-transparent text-uppercase p-0 mt-4 delete-btn"><i class="fas fa-times mr-1 text-danger"></i> I am no longer available</button>
+    </form>
+    </div>
+  </div><!-- end row -->
+{% endif %}
+{% if view == "assigned" %}
+  <div class="row ">
+    <div class="col-6 p-3">
+    <form id="confirm_form_{{ job.id }}" action="#" onSubmit="return submitConfirmJob({{ job.id }});">
+    <input type="hidden" value="{{ confirm_job._csrf_token }}" name="_csrf_token">
+    <button class="btn btn-dark mt-4 ml-3"><i class="fas fa-check text-success"></i>Confirm</button>
+    </form>
+    </div>
+  </div><!-- end row -->
+{% endif %}
+
+</div><!-- end card -->

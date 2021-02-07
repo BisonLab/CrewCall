@@ -1,0 +1,45 @@
+{% extends 'popup_base.html.twig' %}
+
+{% block body %}
+{% include '/event/handling.html.twig' %}
+{% set prcols = {'Mobile': false , 'Diets': false, 'Checks': false, 'Comments': false, 'Hours1': false, 'Hours2': false} %}
+<div id="unprintableContent">
+
+{{ form_start(mailform) }}
+<div class="row">
+    <div class="col-md-5">
+        {% for check, checked in prcols %}
+        <input name="fields[{{ check }}]" id="epcheck_{{  check  }}" type="checkbox" onClick='return checkChecked("{{  check  }}");' {% if checked %}checked{% endif %}>{{  check  }}</input>
+        {% endfor %}
+        <a href="#" onClick="return printTableContent();" class="btn-sm btn-dark" id="printbutton">Print</a>
+    </div>
+    <div class="col-md-2">
+        Send as mail to:
+    </div>
+    <div class="col-md-2">
+        {{ form_widget(mailform.email) }}
+    </div>
+    <div class="col-md-2">
+        <button class="btn-sm btn-dark" type="submit">Send</button>
+    </div>
+</div>
+{{ form_end(mailform) }}
+
+</div>
+<div class="printableContent">
+{% include '/event/_printable.html.twig' %}
+</div>
+
+<script>
+$(document).ready(function() {
+    {% for check, checked in prcols %}
+    checkChecked("{{ check }}");
+    {% endfor %}
+    {% if message is defined %}
+    alert("{{ message }}");
+    {% endif %}
+});
+</script>
+
+
+{% endblock %}

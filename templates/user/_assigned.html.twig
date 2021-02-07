@@ -1,0 +1,49 @@
+<h4 class="text-uppercase font-weight-bold mt-4">Confirm jobs</h4>
+<div class="row">
+    <div class="col-4 justify-content-center">
+    </div>
+    {% include '/user/_choose_month.html.twig' %}
+</div><!-- end row -->
+{% if assigned | length == 0 %}
+<div class="alert alert-warning mt-5">No jobs here!</div>
+{% endif %}
+
+{% set month = ''%}
+<div class="row p-3">
+{% for job in assigned %}
+{% if month != job.shift.month %}
+{% set month = job.shift.month %}
+<h5 class="col-12 p-0 mt-2 font-weight-bold">{{ job.shift.month }}</h5>
+{% endif %}
+    {% include '/user/_job_card.html.twig' %}
+{% endfor %}
+</div>
+
+<script>
+function submitConfirmJob(job_id) {
+    orgurl = "{{ confirm_job.url }}";
+    url = orgurl.replace("ID", job_id);
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        type: "POST",
+        url: url,
+        data: $( "#confirm_form_" + job_id ).serialize(),
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+        $( "#item-" + job_id ).hide();
+        ccount = $( "#confirmedCount" ).text();
+        acount = $( "#assignedCount" ).text();
+        acount--;
+        ccount++;
+        $( "#assignedCount" ).text(acount);
+        $( "#confirmedCountassignedCount" ).text(ccount);
+      }).fail(function(xhr, status, error) {
+            errmsg = "Failed signing you up.\n";
+            alert(errmsg);
+    });
+    return false;
+}
+</script>

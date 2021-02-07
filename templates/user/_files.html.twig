@@ -1,0 +1,24 @@
+<h4 class="text-uppercase font-weight-bold mt-4">My Files</h4>
+<p>Please make sure your information is up to date at all times</p>
+<div class="row mb-4">
+<div class="col-12">
+<table class="profile-table table-sm table-striped">
+<thead>
+<tr>
+<th>File</th>
+<th>Description</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+{% for file in files %}
+<tr>
+<td><a href="{{ file.url }}">{{ file.name }}</a></td>
+<td>{{ file.description }}</td>
+<td>{{ file.file_type }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>

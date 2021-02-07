@@ -1,0 +1,49 @@
+{# include made more sense, but then I could not replace blocks from the head ("title" in particular) #}
+{% extends 'head.html.twig' %}
+{% block base %}
+<body>
+
+<header class="fixed-top" id="crewcall-header">
+{% block navbar %}
+ <nav class="navbar-header">
+    <div class="navbar-header-item">
+      <a class="navbar-brand" href="{{ path('dashboard') }}">
+       <img src="{{ asset('images/logo.gif') }}" border="0" height="40">
+      </a>
+    </div>
+    <div class="navbar-header-item mr-auto navbar-title">
+        CrewCall</br>
+{% if app.user %}
+        <div class="user">{{ app.user }}</div>
+{% endif %}
+    </div>
+    <div class="navbar-header-item">
+        {{ knp_menu_render('mainmenu') }}
+    </div>
+    {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+    <div class="navbar-header-item ml-auto">
+        {{ knp_menu_render('usermenu') }}
+    </div>
+    {% endif %}
+  </div> <!-- end row -->
+ </nav>
+</div>
+{% endblock %}
+</header>
+
+<div class="container p-4 mb-5">
+  {% block flashmessage %}
+<div class="flashmessageblock">
+ {% include 'flash.html.twig' with { 'close': true } %}
+</div>
+  {% endblock %}
+  {% block lmenu %}{% endblock %}
+<div class="container contentblock">
+  {% block content %}{% endblock %}
+  {% block body %}{% endblock %}
+</div>
+  {% block rmenu %}{% endblock %}
+  {% block footer %}{% endblock %}
+  {% block javascripts %}{% endblock %}
+ </body>
+{% endblock %}

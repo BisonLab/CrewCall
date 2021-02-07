@@ -1,0 +1,9 @@
+bison_lab_sakonnin:
+    resource: "@BisonLabSakonninBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+bisonlab_reports:
+    resource: "@BisonLabReportsBundle/Controller/"
+    type:     annotation
+    prefix:   /

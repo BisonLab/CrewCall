@@ -1,0 +1,49 @@
+    {% if event.state == "READY" %}
+        {% set collapse = true %}
+    {% else %}
+        {% set collapse = false %}
+    {% endif %}
+    {# Unless we have an open shift, no collapse #}
+    {% for sh in event.shifts %}
+        {% if sh.open %}
+            {% set collapse = false %}
+        {% endif %}
+    {% endfor %}
+    <div id="event_shift_list_{{ event.id }}" class="eventShiftList">
+      <div class="card">
+        <div class="card-header">
+          <a class="d-block accordion-toggle {% if collapse %}collapsed{% endif %}" data-toggle="collapse" href="#eventacc_{{ event.id }}" aria-expanded="{% if collapse %}false{% else %}true{% endif %}" aria-controls="eventacc_{{ event.id }}">
+           <h4>
+            {{ event.start|date('d M H:i') }}
+            <span class="fas fa-arrow-right"></span> 
+            {%  if event.end | date('Y-m-d') == event.start | date('Y-m-d') %}
+                {{ event.end|date('H:i') }}
+            {% else %}
+                {{ event.end | date('d M H:i') }}
+            {% endif %}
+            <span class="card-centerish">
+            {% if event.parent %}
+                {{ event.parent.name }} <span class="fas fa-arrow-right"></span> {{ event.name }}
+            {% else %}
+                {{ event.name }} (Main Event)
+            {% endif %}
+            </span>
+            <span class="cardplusminus card-right"></span>
+            {% if event.state == "READY" %}
+<!--
+            <i class="card-right ok_glyph"></i>
+            <i class="card-right fas fa-check"></i>
+-->
+            <span class="card-right fas ok_glyph"></span>
+            {% endif %}
+           </h4>
+          </a>
+       </div>
+
+          <div id="eventacc_{{ event.id }}" class="eventacc_content collapse {% if not collapse %}show{% endif %}">
+            <div class="card-body">
+            {% include '/event/_sub_event.html.twig' with { 'event': event}  %}
+            </div>
+          </div>
+      </div> <!-- / Card -->
+    </div> <!-- / event_shift_list -->

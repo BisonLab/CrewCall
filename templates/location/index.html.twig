@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Locations{% endblock %}
+{% block body %}
+    <div class="row">
+    <div class="col-sm-6">
+    <h1>Locations</h1>
+    </div>
+    <div class="col-sm-3">
+    </div>
+    <div class="col-sm-2 ml-auto">
+    <a href="{{ path('location_new') }}" class="btn-sm btn-dark">New Location</a>
+    </div>
+    </div>
+
+        <table class="sortable_table table table-hover table-sm">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Sublocations</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for location in locations %}
+          {% if location.parent is empty %}
+            <tr>
+                <td><a href="{{ path('location_show', { 'id': location.id }) }}">{{ location.name }}</a></td>
+                <td>{{ cc_addressing.compose(location, 'line') }}</td>
+                <td>{{ location.description }}</td>
+                <td>{{ location.statelabel }}</td>
+                <td>
+                {% for child in location.children %}
+                    <a href="{{ path('location_show', { 'id': child.id }) }}">{{ child.name }}</a><br>
+                {% else %}
+                    &nbsp;
+                {% endfor %}
+                </td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

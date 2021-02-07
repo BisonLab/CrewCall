@@ -1,0 +1,15 @@
+knp_menu:
+    # use "twig: false" to disable the Twig extension and the TwigRenderer
+    #twig:
+    #    template: KnpMenuBundle::menu.html.twig
+    #  if true, enables the helper for PHP templates
+    templating: false
+    # the renderer to use, list is also available by default
+    default_renderer: twig
+
+parameters:
+    # Doc (more or less) says put it here.
+    knp_menu.renderer.twig.options:
+        currentClass: active
+        ancestorClass: active
+        allow_safe_labels: true

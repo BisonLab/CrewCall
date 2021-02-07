@@ -1,0 +1,25 @@
+<h4 class="text-uppercase font-weight-bold mt-4">My Hours</h4>
+<p>Please make sure your information is up to date at all times</p>
+</div>
+<div  class="row mb-4">
+<div  class="col-12">
+<table class="profile-table table-sm table-striped">
+<thead>
+<tr>
+<th>Job</th>
+<th>In</th>
+<th>Out</th>
+</tr>
+</thead>
+<tbody>
+{% for job in joblog_array %}
+<tr>
+<td>{{ job.job }}</td>
+<td>{{ job.in }}</td>
+<td>{{ job.out }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>

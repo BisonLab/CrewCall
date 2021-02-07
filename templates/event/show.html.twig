@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% if event.parent %}{{ event.parent }} -> {% endif %}{{ event.name }}{% endblock %}
+{% block body %}
+{% include '/event/handling.html.twig' %}
+{% include '/shift/handling.html.twig' %}
+{% include '/job/handling.html.twig' %}
+{% include '/joblog/handling.html.twig' %}
+{% include '/shiftorganization/handling.html.twig' %}
+
+<div class="row">
+  <div class="col-sm-6">
+    {% if event.parent %}
+        <h1>
+        <a href="{{ path('event_show', {'id': event.parent.id}) }}">{{ event.parent }}</a> -> {{ event.name }}
+        </h1>
+    {% else %}
+        <h1>{{ event.name }}</h1>
+    {% endif %}
+  </div>
+  <div class="col-sm-6" align="right">
+    {% if not event.parent %}
+        <a href="{{ path('event_new', {'parent': event.id}) }}" class="btn-sm btn-dark">New sub event</a>
+        <a href="{{ path('event_clone', {'event': event.id}) }}" class="btn-sm btn-dark">Create a copy with new start date</a>
+    {% endif %}
+  </div>
+</div> <!-- / row -->
+
+  <table class="showTable">
+    <tbody>
+        <tr>
+            <th>Start</th>
+            <td>{% if event.start %}{{ event.start|date('Y-m-d H:i:s') }}{% endif %}</td>
+        </tr>
+        <tr>
+            <th>End</th>
+            <td>{% if event.end %}{{ event.end|date('Y-m-d H:i:s') }}{% endif %}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>
+                {{ event.statelabel }}
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+{% if event.children | length > 0 %}
+  <!-- Group them all -->
+  <div class="accordion">
+  {% include '/event/_accordion.html.twig' with { 'event': event}  %}
+{% else %}
+<div class="card-body">
+    {% include '/event/_sub_event.html.twig' with { 'event': event}  %}
+</div>
+  <!-- Group them all, including main event. -->
+  <div class="accordion">
+{% endif %}
+        {% for child in event.children %}
+            {% include '/event/_accordion.html.twig' with { 'event': child}  %}
+        {% endfor %}
+    </div><!-- End accordion -->
+</div>
+
+{% if add_contact_form is not null %}
+<div class="modal fade" id="addContactModal" role="dialog" tabindex='-1'>
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add contact</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body" id="addContactModalBody">
+        <div id="add_contact_popover_content">
+            {{ form_start(add_contact_form, { 'action': path('event_add_contact', {'id': "XXX" }), 'attr': {'id':'addContactForm'}}) }}
+            {{ form_widget(add_contact_form.person) }}
+            <div class="d-none">
+            {{ form_widget(add_contact_form.role) }}
+            </div>
+            <input type="hidden" name="username" id="username">
+            <input id="submitAddExistingPerson" type="submit" value="Add" />
+            {{ form_end(add_contact_form) }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div> <!-- / modal -->
+{% endif %}
+
+{% endblock %}

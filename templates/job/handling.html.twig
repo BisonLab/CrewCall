@@ -1,0 +1,353 @@
+<script>
+
+function grabJobList(shift_id, dont_store = false) {
+    url = "{{ path('job_index', {'access': 'ajax' }) }}" 
+        + "?shift=" + shift_id;
+    $.get(url, function( data ) {
+        $( "#jobTable_" + shift_id ).html(data);
+        $( "#jobList_" + shift_id ).show();
+        $( "#plus_job_list_" + shift_id ).hide();
+        $( "#minus_job_list_" + shift_id ).show();
+        /* And then move to a better place */
+        var head_height = $('#crewcall-header').height();
+        var divPosition = $('#shiftRow_' + shift_id).offset();
+        var toTop = divPosition.top - head_height;
+        $('html, body').animate({scrollTop: toTop}, "fast");
+    });
+
+    if (dont_store || typeof(Storage) === "undefined") {
+        return false;
+    }
+    var evjoblists = {};
+    if (localStorage.evjoblists) {
+        evjoblists = JSON.parse(localStorage.evjoblists);
+    }
+    var timestamp = Date.now() / 1000;
+    evjoblists[shift_id] = { 'timestamp': timestamp, 'state': 'show' };
+    localStorage.evjoblists = JSON.stringify(evjoblists);
+
+    return false;
+}
+
+function hideJobList(shift_id) {
+    $( "#jobList_" + shift_id ).hide();
+    $( "#plus_job_list_" + shift_id ).show();
+    $( "#minus_job_list_" + shift_id ).hide();
+    var evjoblists = {};
+    if (localStorage.evjoblists) {
+        evjoblists = JSON.parse(localStorage.evjoblists);
+    }
+    var timestamp = Date.now() / 1000;
+    evjoblists[shift_id] = { 'timestamp': timestamp, 'state': 'hide' };
+    localStorage.evjoblists = JSON.stringify(evjoblists);
+console.log(evjoblists);
+    return false;
+}
+
+function toggleJobButtons(job_id, to_state) {
+    ['CONFIRMED', 'ASSIGNED', 'INTERESTED'].forEach(function (state) {
+        button_id = "#job_toggle_" + state + "_" + job_id;
+        if (state == to_state) {
+            $( button_id ).hide();
+        } else {
+            $( button_id ).show();
+        }
+    });
+}
+
+function setStateOnJob(job_id, state, shift_id, force = false) {
+    cheat_url = "{{ path('job_state', { 'id': 0, 'state': 'NONE', 'access': 'ajax' }) }}";
+    c_url = cheat_url.replace("0", job_id);
+    url = c_url.replace("NONE", state);
+    if (force) {
+        url = url + "?force=true";
+    }
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        url: url,
+        type: "POST",
+        async: true,
+        dataType: 'json',
+      }).done( function( cont, textStatus, xhr ) {
+        recountShift(shift_id);
+        toggleJobButtons(job_id, state);
+        return false;
+      }).fail(function(xhr, status, error) {
+            if (xhr.status == 409) {
+                warning = "Warning!\n\n";
+                errmsg = warning + xhr.responseText + "\n\nDo you want to do this anyway?\n";
+                result = confirm(errmsg);
+                if (result) {
+                    setStateOnJob(job_id, state, shift_id, true);
+                }
+            } else {
+                errmsg = "Failed setting state!\n";
+                errmsg = errmsg + xhr.responseText + "\n";
+                alert(errmsg);
+                return false;
+            }
+    });
+    return false;
+}
+
+function grabNewJobForm(shift_id, already_added = false) {
+    url = "{{ path('job_new', { 'access': 'ajax' }) }}";
+    if (shift_id) {
+        url = url + "?shift=" + shift_id;
+    }
+    $.get(url, function( data ) {
+        $( "#jobModalBody" ).html(data);
+        $( "#jobModalTitle" ).html("Add Person to shift");
+        $( "#newJobForm #crewcallbundle_job_shift").prev().hide();
+        $( "#newJobForm #crewcallbundle_job_shift").hide();
+        $( "#newJobForm").submit(function( event ) {
+            event.preventDefault();
+            submitNewJobForm(shift_id);
+        });
+        $( "#newJobForm #crewcallbundle_job_person" ).autocomplete({
+          source: "{{ path('person_search', {'crew_only': true, 'enabled': true, 'access': 'ajax','value_with_all': true }) }}",
+          minLength: 2,
+          select: function( event, ui ) {
+            $( "#newJobForm #crewcallbundle_job_person" ).val(ui.item.value);
+            $( "#newJobForm #username" ).val(ui.item.username);
+          }
+         });
+        if (already_added != false) {
+            $( "#alreadyAdded" ).html(already_added);
+        }
+        $( "#jobModal" ).modal('show');
+
+        {# Trying to do without 
+            $( "#jobModalCloseButton" ).click(function(){ parent.location.reload(); });
+        #}
+
+        $( "#newJobForm #crewcallbundle_job_person" ).autocomplete("option", "appendTo", "#newJobForm");
+    });
+    return false;
+}
+
+function submitNewJobForm(shift_id, force = false) {
+    var $btn = $(document.activeElement);
+    username = $( "#newJobForm #username" ).val();
+    person = $( "#newJobForm #crewcallbundle_job_person" ).val();
+    state = $( "#newJobForm #crewcallbundle_job_state option:selected" ).text();
+    already_added = $("#alreadyAdded").html();
+    url = "{{ path('job_new', { 'access': 'ajax' }) }}";
+    if (force) {
+        url = url + "?force=true";
+    }
+    $( "#newJobForm #crewcallbundle_job_person" ).val(username);
+    newJobFormData = $( "#newJobForm" ).serialize();
+    // And back again, in case of conflict and rerunning this.
+    $( "#newJobForm #crewcallbundle_job_person" ).val(person);
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        type: "POST",
+        url: url,
+        data: newJobFormData,
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+            if (xhr.status == 201) {
+                if ($btn.is('[id]') && $btn.attr("id") == "submitNewJobClose") {
+                    grabJobList(shift_id);
+                    recountShift(shift_id);
+                    $( "#jobModal" ).modal('hide');
+                    return false; 
+                } else {
+                    aahtml = "";
+                    if (already_added.search("Already") < 0) {
+                        aahtml += "<p><strong>Already added:</strong></p>";
+                    }
+                    aahtml += already_added;
+                    aahtml += "<li>" + person + " (" + state + ")</li>";
+                    grabNewJobForm(shift_id, aahtml);
+                }
+            } else {
+                $( "#jobModalBody" ).html(xhr.responseText);
+            }
+      }).fail(function(xhr, status, error) {
+            if (xhr.status == 409) {
+                warning = "Warning!\n\n";
+                errmsg = warning + xhr.responseText + "\n\nDo you want to add this anyway?\n";
+                result = confirm(errmsg);
+                if (result) {
+                    submitNewJobForm(shift_id, true);
+                } else {
+                    $( "#jobModalBody" ).hide();
+                    return false;
+                }
+            } else {
+                errmsg = "Failed adding new job!\n";
+                errmsg = errmsg + xhr.responseText + "\n";
+                alert(errmsg);
+            }
+    });
+    return false;
+}
+
+function popPersonJobs(person_id, job_id) {
+    url = "{{ path('summary_person_jobs_job', {'access': 'ajax' }) }}?job=" + job_id;
+    var popelement = "#popSummary_person_jobs_" + person_id + job_id;
+    poptitle = 'Jobs <a href="#" class="close" data-dismiss="alert"><span style="font-size: 15px" class="fas fa-times-circle"></span></a>';
+
+    /*
+     * I'll rather do this than sanitize: false, which is too wide.
+     */
+    $.fn.popover.Constructor.Default.whiteList.table = [];
+    $.fn.popover.Constructor.Default.whiteList.tr = [];
+    $.fn.popover.Constructor.Default.whiteList.td = [];
+    $.fn.popover.Constructor.Default.whiteList.th = [];
+    $.fn.popover.Constructor.Default.whiteList.div = [];
+    $.fn.popover.Constructor.Default.whiteList.tbody = [];
+    $.fn.popover.Constructor.Default.whiteList.thead = [];
+
+    res = $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'html'
+      }).done( function( contenthtml, textStatus, xhr ) {
+        $( popelement ).popover({
+            delay: 500,
+            html: true,
+            placement: "auto",
+            trigger: "focus",
+            content: contenthtml,
+        });
+        /* May not need $( popelement ).attr('data-original-title', poptitle); */
+        $( popelement ).popover("show");
+        $(document).on("click", ".popover .close" , function(){
+            $(this).parents(".popover").popover('hide');
+            return false;
+        });
+      }).fail( function( ) {
+        alert("Error grabbing summary");
+      });
+    return false;
+}
+
+function select_all_jobs(shift_id, value) {
+    if (typeof(value) !== "boolean") {
+        value = $(value).prop('checked');
+    }
+    $(".job_list_checkbox_" + shift_id).prop('checked', value);
+}
+
+function get_selected_jobs(shift_id) {
+    list = [];
+    $(".job_list_checkbox_" + shift_id).each(function(index, box) {
+        if ($(box).prop('checked') == true) {
+            values = box.value.split(",");
+            list.push(values[0]);
+        }
+    });
+    return list;
+}
+
+function get_selected_persons(shift_id) {
+    list = [];
+    $(".job_list_checkbox_" + shift_id).each(function(index, box) {
+        if ($(box).prop('checked') == true) {
+            values = box.value.split(",");
+            list.push(values[1]);
+        }
+    });
+    return list;
+}
+
+function openMessageToJobsModal(shift_id) {
+    content = $("#jobmessage_modal").html();
+    $( "#jobModalTitle" ).html('Send Message');
+    $( "#jobModalBody" ).html(content);
+    $( "#jobModal" ).modal();
+
+    $("#job_list_message_form").submit(function( event ) {
+        var btn = $(document.activeElement);
+        list = get_selected_persons(shift_id);
+        $(".job_list_message_form_plist").remove();
+        list.map(function(value) {
+            $("#job_list_message_form").append('<input class="job_list_message_form_plist" type="hidden" name="person_list[]" value="'+value+'">');
+        });
+        if (btn.is('[id]') && btn.attr("id") == "sendmessage") {
+            postdata = $("#job_list_message_form").serialize();
+            $.ajax({
+                type: "POST",
+                url: "{{ path('persons_send_message') }}",
+                data: postdata,
+                success: function(data)
+                {
+                    alert(data);
+                    /* select_all_jobs(shift_id, false); */
+                    $( "#jobModal" ).modal("hide");
+                    $( "#jobModalTitle" ).html("");
+                    $( "#jobModalBody" ).html("");
+                    $(".job_list_message_form_plist").remove();
+                    document.getElementById("job_list_message_form").reset();
+                },
+                error: function(data)
+                {
+                    alert("Failed sending SMS.\n" + data.responseText);
+                    $("#personMessageModal").modal("hide");
+                    $(".job_list_message_form_plist").remove();
+                    document.getElementById("job_list_message_form").reset();
+                }
+            });
+        }
+        event.preventDefault();
+    });
+}
+
+function popOverlap(job_id) {
+
+    popcontent = $("#overlap_popover_content_" + job_id).html();
+    var popelement = "#overlap_popover_" + job_id;
+    /*
+     * I'll rather do this than the option "sanitize: false", which is too wide.
+     */
+    $.fn.popover.Constructor.Default.whiteList.table = [];
+    $.fn.popover.Constructor.Default.whiteList.tr = [];
+    $.fn.popover.Constructor.Default.whiteList.td = [];
+    $.fn.popover.Constructor.Default.whiteList.th = [];
+    $.fn.popover.Constructor.Default.whiteList.div = [];
+    $.fn.popover.Constructor.Default.whiteList.tbody = [];
+    $.fn.popover.Constructor.Default.whiteList.thead = [];
+
+    $( popelement ).popover({
+        delay: 500,
+        html: true,
+        placement: "auto",
+        content: popcontent,
+        trigger: "focus",
+    });
+    $( popelement ).popover("show");
+    return false;
+}
+
+</script>
+
+<div class="modal fade" id="jobModal" role="dialog" tabindex='-1'>
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="jobModalTitle"></h4>
+        <button id="jobModalCloseButton" type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body" id="jobModalBody">
+      </div>
+    </div>
+  </div>
+</div> <!-- / modal -->
+
+<div id="jobmessage_modal" class="d-none">
+    <form id="job_list_message_form" method="POST">
+    <textarea name="body" cols="40" rows="4"></textarea><br>
+    <input type="radio" value="BULKSMS" name="message_type" CHECKED>SMS only</input>
+    <input type="radio" value="BULKALL" name="message_type">SMS and  Email</input><br>
+    <input class="btn-sm btn-dark" id="sendmessage" type="submit" name="submit" value="Send">
+    </form>
+</div>

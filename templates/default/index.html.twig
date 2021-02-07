@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CrewCall Dashboard{% endblock %}
+{% block body %}
+
+{% set colcount = 0 %}
+<div class="row">
+  {% for dash in dashboarder.dashboards(app.user) %}
+      {% set colcount = colcount + dash.cols %}
+      {% if colcount > 12 %}
+          {% set colcount = dash.cols %}
+          </div> <!-- endrow -->
+          <div class="row">
+      {% endif %}
+      {% if dash.no_start is not defined %}
+      <div class="col-{{ dash.cols }} {{ dash.dashie }} {% if dash.divclass is defined %}{{ dash.divclass }}{% endif %}">
+      {% endif %}
+      {{ dash.content | raw }}
+      {% if dash.no_end is not defined %}
+      </div><!-- End {{ dash.dashie }} Dashie {{ dash.cols }} cols -->
+      {% endif %}
+  {% endfor %}
+</div> <!-- no new rows -->
+{% endblock %}

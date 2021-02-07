@@ -1,0 +1,494 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ person.fullname }}{% endblock %}
+{% block body %}
+
+{% include '/job/handling.html.twig' %}
+{% include '/person/handling.html.twig' %}
+
+<div class="row">
+  <div class="col-sm-4" id="personLeft">
+    {% set ppcontext = {
+                'file_type': 'ProfilePicture',
+                'system': 'crewcall',
+                'object_name': 'person',
+                'external_id': person.id
+        }
+    %}
+{% set sfconf = {'sfconfig': {
+        'file_type': "ProfilePicture",
+        'description': "ProfilePicture",
+        'formname': 'profile_upload',
+        'reload_after_post': true,
+        'context': {
+            'system': 'crewcall',
+            'object_name': 'person',
+            'external_id': person.id
+            }
+        }
+    }
+%}
+{% include '@BisonLabSakonnin/SakonninFile/_create_popup.html.twig' with sfconf %}
+{% set profile_pictures = sakonnin_files.getFilesForContext(ppcontext) %}
+{% if profile_pictures | length > 0 %}
+    {% set pfile = profile_pictures | last %}
+    <img id="img_{{pfile.id}}" src="{{ path('file_thumbnail', { 'file_id': pfile.fileid, 'x': 100, 'y': 100 }) }}"><br />
+    <a href="#" onClick="return uploadSakonninFile('profile_upload');">Replace profile picture</a><br />
+{% else %}
+    <a href="#" onClick="return uploadSakonninFile('profile_upload');">Add profile picture</a><br />
+{% endif %}
+    <h1>
+    <a href="#" id="message_modal_link" onClick="return openMessageModal({{ person.id }}, 'PM');"><span style="font-size: 15px" class="fas fa-comment"></span></a>
+    {{ person.fullname }}
+    </h1>
+    <h4>{{ person.statelabel }}</h4>
+    <table class="showTable">
+        <tbody>
+            <tr>
+                <th>Username</th>
+                <td>{{ person.username }}</td>
+            </tr>
+            <tr>
+                <th>First name</th>
+                <td>{{ person.firstname }}</td>
+            </tr>
+            <tr>
+                <th>Last name</th>
+                <td>{{ person.lastname }}</td>
+            </tr>
+            <tr>
+                <th>Can log into CrewCall</th>
+                <td>
+                {% if person.enabled %}
+                    Yes{% if person.admin %}, as admin.{% endif %}
+                {%else%}
+                    No
+                {%endif%}</td>
+            </tr>
+            <tr>
+                <th>Date of birth</th>
+                <td>{% if person.dateofbirth %}{{ person.dateofbirth|date('Y-m-d') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Diets</th>
+                <td>{{ person.dietslabels | join(", ")}}</td>
+            </tr>
+            <tr>
+                <th>E-Mail</th>
+                <td>{{ person.email }}</td>
+            </tr>
+            <tr>
+                <th>Mobile phone number</th>
+                <td>{{ person.mobilephonenumber }}</td>
+            </tr>
+            <tr>
+                <th>Home phone number</th>
+                <td>{{ person.homephonenumber }}</td>
+            </tr>
+            <tr>
+                <th>Address</th>
+                <td>{{ cc_addressing.compose(person.address, 'html') | raw }}</td>
+            </tr>
+{% if person.postaladdress is not empty %}
+            <tr>
+                <th>Postal Address</th>
+                <td>{{ cc_addressing.compose(person.postaladdress, 'html') | raw }}</td>
+            </tr>
+{% endif %}
+{% if person.contexts | length > 0 %}
+            <tr>
+                <th>External pointers</th>
+                <td>
+                {% for context in person.contexts %}
+                    {% if context.url is not empty %}
+                        <a href="{{ context.url }}">{{ context.label }}</a>: {{ context.externalid }}<br>
+                    {% else %}
+                        {{ context.label }}: {{ context.externalid }}<br>
+                    {% endif %}
+                {% endfor %}
+                </td>
+            </tr>
+{% endif %}
+            <tr>
+                <th>Roles</th>
+                <td>
+                {% for pfo in person.personroleorganizations %}
+                {{ pfo }}<br>
+                {% endfor %}
+                {% for pfl in person.personrolelocations %}
+                {{ pfl }}<br>
+                {% endfor %}
+                {% for pfe in person.personroleevents %}
+                {{ pfe }}<br>
+                {% endfor %}
+                </ul>
+                </td>
+            </tr>
+            <tr>
+                <th>Functions</th>
+                <td>
+                {% for f in person.personfunctions %}
+                {{ f }}<br>
+                {% endfor %}
+                </td>
+            </tr>
+{% if person.attributes is not empty %}
+            <tr>
+                <th>Attributes</th>
+                <td>{{ person.attributes | prettyprint }}</td>
+            </tr>
+{% endif %}
+            <tr>
+                <th>
+                    <a tabindex="0" href="#" title="Logs" id="popLogSummary_person_{{ person.id }}" onClick="return popLogSummary('person', {{ person.id }});" class="btn-sm btn-dark">Changelog</a>
+                    <br>
+                    <a href="{{ path('person_edit', { 'id': person.id }) }}" class="btn-sm btn-dark">Edit</a>
+                    <br>
+    {{ form_start(reset_form, {'action': path('app_forgot_password_request', {'user': person.id }), 'method': 'POST'}) }}
+        {{ form_widget(reset_form.email, { 'value': person.email , 'attr': {'class': 'd-none'}}) }}
+        <button class="btn btn-sm btn-dark">Send password reset email</button>
+    {{ form_end(reset_form) }}
+                    <br>
+{% if person.deleteable %}
+                    {{ form_start(delete_form, {'attr': {'onSubmit': 'return confirm("Are you sure you want to delete this person?");'}}) }}
+                    <input  class="btn-sm btn-danger" type="submit" value="Delete">
+                    <br>
+                    {{ form_end(delete_form) }}
+{% endif %}
+                </th>
+                <td>&nbsp;</td>
+        </tbody>
+    </table>
+</div>
+<div class="col-sm-8" id="personRight">
+
+<div class="tabbable" id="rightTabMenu">
+  <ul class="nav nav-tabs">
+    <li class="nav-item personNotesTab">
+    <a class="nav-link active" href="#notestab" data-toggle="tab">Notes</a>
+    </li>
+    <li class="nav-item personMessagesTab">
+    <a class="nav-link" href="#messagestab" data-toggle="tab">Messages</a>
+    </li>
+    <li class="nav-item personFilesTab">
+    <a class="nav-link" href="#filestab" data-toggle="tab">Files</a>
+    </li>
+    <li class="nav-item personFunctionsTab">
+    <a class="nav-link" href="#functab" data-toggle="tab" onClick="return grabFunctionPickerTab();">Manage functions</a>
+    </li>
+    <li class="nav-item personCalendarTab">
+    <a class="nav-link" href="#caltab" data-toggle="tab" onClick="return loadCalendar();">Calendar</a>
+    </li>
+    <li class="nav-item personJobsTab">
+    <a class="nav-link" href="#jobstab" data-toggle="tab">Jobs</a>
+    </li>
+    <li class="nav-item personHoursTab">
+    <a class="nav-link" href="#hourstab" data-toggle="tab"  onClick="return grabJobLogSummary();">Hours</a>
+    </li>
+    <li class="nav-item personAbsenceTab">
+    <a class="nav-link" class="nav-link" href="#absencetab" data-toggle="tab">Absence</a>
+    </li>
+{% include '@Custom/person/_custom_navtabs.html.twig' ignore missing %}
+  </ul>
+
+<div class="tab-content ">
+
+  <div class="tab-pane personNotesTab active" id="notestab">
+    <div class="adminpersonnote">
+    <p>
+    {% set mconf = {'mconfig': {
+            'formname': 'adminpersonnote',
+            'reload_after_post': true,
+            'subject': "",
+            'to_type': "NONE",
+            'from_type': "NONE",
+            'expire_field': false,
+            'message_type': 'PersonNote',
+            'submit': 'Save',
+            'context': {
+                'system': 'crewcall',
+                'object_name': 'person',
+                'external_id': person.id
+                }
+            }
+        }
+    %}
+    {% include '@BisonLabSakonnin/Message/_create_popup.html.twig' with mconf %}
+        <a href="#" onClick='return createSakonninMessage("adminpersonnote");'>Add a note to the crew member (PersonNote)</a><br />
+    </p>
+    </div>
+{% set mlogcontext = {
+            'message_group': 'Notes',
+            'order': 'DESC',
+            'system': 'crewcall',
+            'object_name': 'person',
+            'external_id': person.id
+    }
+%}
+
+    <div class="adminadminnote">
+    <p>
+    {% set mconf = {'mconfig': {
+            'formname': 'adminadminnote',
+            'reload_after_post': true,
+            'subject': "",
+            'to_type': "NONE",
+            'from_type': "NONE",
+            'expire_field': false,
+            'message_type': 'AdminNote',
+            'submit': 'Save',
+            'context': {
+                'system': 'crewcall',
+                'object_name': 'person',
+                'external_id': person.id
+                }
+            }
+        }
+    %}
+    {% include '@BisonLabSakonnin/Message/_create_popup.html.twig' with mconf %}
+        <a href="#" onClick='return createSakonninMessage("adminadminnote");'>Add a note for Admins only (AdminNote)</a><br />
+    </p>
+    </div>
+{% set mlogcontext = {
+            'message_group': 'Notes',
+            'order': 'DESC',
+            'system': 'crewcall',
+            'object_name': 'person',
+            'external_id': person.id
+    }
+%}
+{% for note in sakonnin_messages.MessagesForContext(mlogcontext) %}
+    {% include '/_note.html.twig' %}
+{% endfor %}
+
+  </div><!-- notestab -->
+
+  <div class="tab-pane personMessagesTab" id="messagestab">
+    <br>
+
+{% set bulkcriterias = {
+            'message_group': 'Messages',
+            'order': 'DESC',
+            'system': 'crewcall',
+            'object_name': 'person',
+            'external_id': person.id
+    }
+%}
+{% for message in sakonnin_messages.MessagesForContext(bulkcriterias) %}
+    {% include '/_message.html.twig' %}
+{% endfor %}
+
+  </div><!-- messagestab -->
+
+  <div class="tab-pane personFilesTab" id="filestab">
+    <p>
+    {% set sfconf = {'sfconfig': {
+            'file_type': "AUTO",
+            'formname': 'file_upload',
+            'reload_after_post': true,
+            'context': {
+                'system': 'crewcall',
+                'object_name': 'person',
+                'external_id': person.id
+                }
+            }
+        }
+    %}
+    {% include '@BisonLabSakonnin/SakonninFile/_create_popup.html.twig' with sfconf %}
+      <a href="#" onClick="return uploadSakonninFile('file_upload');">Add a file</a><br />
+    </p>
+    {% set filecontext = {
+        'system': 'crewcall',
+        'object_name': 'person',
+        'external_id': person.id
+      } %}
+    {% include '_files.html.twig' with filecontext %}
+  </div><!-- filestab -->
+
+  <div class="tab-pane personFunctionsTab" id="functab">
+  </div><!-- functab -->
+
+  <div class="tab-pane personCalendarTab" id="caltab">
+    <br>
+{% set calendar_load_url = path('person_calendar', {'id': person.id, 'access': 'ajax'}) %}
+{% include '/_calendar.html.twig' with { 'lazy_load': true, 'calendar_load_url': calendar_load_url}  %}
+  </div><!-- caltab -->
+
+  <div class="tab-pane personJobsTab" id="jobstab">
+{% set jobs = cc_jobs.jobsforperson(person, {'all': true, 'from': 'now'}) %}
+    <table class="table table-striped  table-sm">
+    <thead class="thead-inverse">
+        <tr>
+            <th>Event</th>
+            <th>When</th>
+            <th>What</th>
+            <th>Response</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for job in jobs %}
+        {% set shift = job.shift %}
+        <tr>
+            <td>
+            <a tabindex="0" href="#" id="popSummary_event_{{ job.event.id }}{{ job.id }}" onClick="return popSummary('event', {{ job.event.id }}, {{ job.id }});"><span style="font-size: 15px" class="fas fa-info-circle"></span></a>
+            {{ shift.event }}
+            </td>
+            <td data-order="{{ shift.start | date('U')}}" >
+
+        {% set overjobs = cc_jobs.checkoverlapforperson(job, {'same_day': true, 'booked_only': true, 'return_jobs': true }) %}
+        {% if overjobs | length > 0 %}
+<div id="overlap_popover_content_{{ job.id }}" class="d-none">
+{% for ojob in overjobs %}
+{{ ojob.shift }} ({{ ojob.statelabel }} {{ ojob.shift.start|date('H:i') }} -> {{ ojob.shift.end|date('H:i') }})<br>
+{% endfor %}
+</div>
+            <a tabindex="0" href="#" title="Overlapping Jobs" id="overlap_popover_{{ job.id }}" onClick="return popOverlap({{ job.id }});"><span style="font-size: 15px; color: {% if job.booked %}red{% else %}orange{% endif %};" class="fas fa-warning-sign"></span></a>
+        {% endif %}
+
+                {{ shift.start|date('d M H:i') }}
+                <span class="fas fa-arrow-right"></span> 
+                {%  if shift.end | date('Y-m-d') == shift.start | date('Y-m-d') %}
+                {{ shift.end|date('H:i') }}
+                {% else %}
+                    {{ shift.end | date('d M H:i') }}
+                {% endif %}
+            </td>
+            <td>{{ shift.function }}</td>
+            <td>{{ job.statelabel }}
+{# No reason to add confirm check here, it's kinda explicist 
+                'message_types': ['JobComment', 'ConfirmCheck', 'InformCheck'], #}
+{% set jobcontext = {
+            'message_types': ['JobComment', 'InformCheck'],
+            'order': 'DESC',
+            'system': 'crewcall',
+            'object_name': 'job',
+            'external_id': job.id
+    }
+%}
+{% for note in sakonnin_messages.MessagesForContext(jobcontext) %}
+    {{ note.createdAt | date('Y-m-d') }}: <pre>{{ note.body }}</pre>
+{% endfor %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+  </div><!-- jobstab -->
+
+  <div class="tab-pane personAbsenceTab" id="absencetab">
+    <p>
+    <div id="change_state_popover" class="d-none">
+    <a href="#" id="stateChangeLink" onClick="return openStateChange();" class="btn-sm btn-dark">Add</a><br>
+    </div>
+    </p>
+
+    <table class="table table-sm">
+    <th>What</th><th>From</th><th>To</th><th>Days</th>
+    {% for pstate in person.states %}
+      {% if pstate.state != "ACTIVE" %}
+        <tr>
+        <td>{{ pstate.statelabel }}</td>
+        <td>{% if pstate.fromdate is not null %}{{ pstate.fromdate | date("Y-m-d") }}{% else %}&nbsp;{% endif %}</td>
+        <td>{% if pstate.todate is not null %}{{ pstate.todate | date("Y-m-d") }}{% else %}&nbsp;{% endif %}</td>
+        <td>{{ pstate.days }}</td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+    </table>
+
+    <h3>Add</h3>
+    {{ form(state_form) }}
+
+  </div><!-- absencetab -->
+
+  <div class="tab-pane personHoursTab" id="hourstab">
+  </div><!-- hourstab -->
+
+{% include '@Custom/person/_custom_tabcontent.html.twig' ignore missing %}
+  </div><!-- tab-content -->
+ </div><!-- Tabbable -->
+</div><!-- End Row -->
+
+<!--
+
+Until I need to reuse, i'll be lazy and keep'em here.
+
+-->
+<script>
+
+function grabFunctionPickerTab() {
+    if ($( "#functab div" ).length > 1) {
+        return false;
+    }
+    url = "{{ path('function_picker', {'access': 'ajax' }) }}?person_id={{ person.id }}";
+    $.get(url, function( data ) {
+        $( "#functab" ).html(data);
+    }).done(function() {
+        $( ".sfList" ).hide();
+    });
+    return false;
+}
+
+function grabJobLogSummary() {
+    if ($( "#hourstab div" ).length > 1) {
+        return false;
+    }
+    url = "{{ path('joblog_person', {'access': 'ajax', 'id': person.id }) }}";
+    $.get(url, function( data ) {
+        $( "#hourstab" ).html(data);
+console.log(data);
+console.log($( "#hourstab" ).html());
+    }).done(function() {
+        $( ".sfList" ).hide();
+    });
+    return false;
+}
+
+function pickedFunction(function_id) {
+    var person_function = {};
+    person_function.person_id   = {{ person.id }};
+    person_function.function_id = function_id;
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        type: "POST",
+        url: "{{ path('personfunction_new', { 'access': 'ajax' }) }}",
+        /*
+        data: $.param(person_function),
+        dataType: "json",
+        */
+        data: person_function,
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+            if (xhr.status == 201) {
+                parent.location.reload();
+            } else {
+                alert("Something successfully didn't happen." + textStatus);
+            }
+      }).fail(function(xhr, status, error) {
+            errmsg = "Failed adding fiunction\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+    });
+    return false;
+}
+
+function openStateChange() {
+    content = $("#change_state_popover").html();
+    $( "#stateChangeLink" ).popover({
+        html: true,
+        placement: 'bottom',
+        title: 'Status change <a href="#" class="close" data-dismiss="alert">&times;</a>',
+        content: content
+    });
+    $( "#stateChangeLink" ).popover("show");
+    $(document).on("click", ".popover .close" , function(){
+        $(this).parents(".popover").popover('hide');
+        return false;
+    });
+}
+
+</script>
+
+{% endblock %}

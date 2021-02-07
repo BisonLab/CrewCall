@@ -1,71 +1,26 @@
-/app/config/parameters.yml
-/app/AppKernelCustomTrait.php
-/app/config/states.yml
-/app/config/contexts.yml
-/app/config/types.yml
-/app/config/services.yml
-/app/config/routing_custom.yml
-/app/config/config_custom.yml
-/src/*
-!/src/.gitkeep
-/build/
-/phpunit.xml
-/web/css/custom.css
-
-# Email spool folder
-/app/spool/*
-
-/var/*
-!/var/cache
-/var/cache/*
-!var/cache/.gitkeep
-!/var/logs
-/var/logs/*
-!var/logs/.gitkeep
-!/var/sessions
-/var/sessions/*
-!var/sessions/.gitkeep
-!var/SymfonyRequirements.php
-
-# Managed by Composer
-/app/bootstrap.php.cache
-/var/bootstrap.php.cache
-/bin/*
-!bin/console
-!bin/prep.sh
-!bin/reload.sh
-!bin/db.sh
-!bin/symfony_requirements
-/vendor/
-
-# Assets and user uploads
-/web/bundles/
-/web/public/
-/web/uploads/
-
-# Assets managed by Bower
-/web/assets/vendor/
-
-# PHPUnit
-/app/phpunit.xml
-/phpunit.xml
-
-# Build data
-/build/
-
-# Composer PHAR
-/composer.phar
-/composer
-# We're using the distfile.
-/composer.json
-# And then this is no use.
+/src/CustomBundle/
+/public/bootstrap/
+/public/font-awesome/
+/public/components/
+/public/userfront/
 /composer.lock
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
 
-# Backup entities generated with doctrine:generate:entities command
-*/Entity/*~
-# vim swap files
-*.swp
+###> symfony/phpunit-bridge ###
+.phpunit
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
 
-# I tend to have quite a few helper shell scripts in my project root.
-# No need for those in the project.
-/*.sh
+###> friendsofphp/php-cs-fixer ###
+/.php_cs
+/.php_cs.cache
+###< friendsofphp/php-cs-fixer ###

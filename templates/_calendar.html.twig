@@ -1,0 +1,79 @@
+<script src="{{ asset('components/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('components/fullcalendar/dist/fullcalendar.js') }}"></script>
+<script src="{{ asset('components/fullcalendar/dist/gcal.js') }}"></script>
+{% if fullcalendar_locale == "all" %}
+<script src="{{ asset('components/fullcalendar/dist/locale-all.js') }}"></script>
+{% else %}
+<script src="{{ asset('components/fullcalendar/dist/locale/' ~ fullcalendar_locale ~ '.js') }}"></script>
+{% endif %}
+
+<script>
+
+function loadCalendar() {
+    $('#calendar').fullCalendar({
+        selectable: false,
+        editable: false,
+        fixedWeekCount: false,
+        eventDurationEditable: false,
+        weekNumbers: true,
+        firstDay: 1,
+        navLinks: true,
+        timeFormat: 'H(:mm)',
+        allDaySlot: false,
+        displayEventEnd: true,
+        header: {
+            left: 'prev, next',
+            center: 'title',
+            right: 'month, agendaWeek, agendaDay, listWeek'
+        },
+        lazyFetching: false,
+{% if defaultView is defined %}
+        defaultView: '{{ defaultview }}',
+{% else %}
+        defaultView: 'month',
+{% endif %}
+        eventSources: [
+            {
+                url: '{{ calendar_load_url }}',
+                type: 'POST',
+                data: {},
+                error: function () {}
+            }
+        ],
+
+        eventRender: function(event, element) {
+            $(element).attr('tabindex', '0');
+            $(element).attr('role', 'button');
+            element.popover({
+                html: true,
+                content: event.popup_content,
+                placement: 'top',
+                container: 'body',
+                trigger: 'focus',
+                title: event.popup_title + ' <a href="#" class="close"><span style="font-size: 13px" class="fas fa-times-circle"></span></a>'
+            });
+        },
+        viewDestroy: function(view, element) {
+            $( ".popover" ).each(function() {
+                $(this).popover('hide');
+            });
+        }
+
+    });
+}
+
+$(document).ready(function() {
+{% if lazy_load is not defined or not lazy_load %}
+    loadCalendar();
+{% endif %}
+    $(document).on("click", ".popover .close" , function(){
+        $( ".popover" ).each(function() {
+            $(this).popover('hide');
+        });
+        return false;
+    });
+});
+
+
+</script>
+<div id="calendar"></div>

@@ -1,0 +1,108 @@
+<div class="modal fade" id="personModal" role="dialog" tabindex='-1'>
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="personModalTitle"></h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>               
+      </div>    
+      <div class="modal-body" id="personModalBody">
+      </div>
+    </div>
+  </div>
+</div> <!-- / modal -->
+
+{% if no_message_modal is not defined or not no_message_modal %}
+<div class="modal fade" id="personMessageModal" role="dialog" tabindex='-1'>
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="personMessageModalTitle">Send Message</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>               
+      </div>    
+      <div id="personmessage_modal" class="modal-body">
+            <form id="person_message_form" method="POST">
+            <textarea name="body" cols="40" rows="4"></textarea><br>
+            <div class="bulkmessageradio"><input type="radio" value="BULKSMS" name="message_type" CHECKED>SMS only</input><br></div>
+            <div class="bulkmessageradio"><input type="radio" value="BULKMAIL" name="message_type">Email only</input><br></div>
+            <div class="bulkmessageradio"><input type="radio" value="BULKALL" name="message_type">SMS and Email</input><br></div>
+
+            <input class="btn-sm btn-dark" id="sendPersonMessage" type="submit" name="submit" value="Send">
+            </form>
+      </div>
+    </div>
+  </div>
+</div> <!-- / modal -->
+{% endif %}
+
+<script>
+
+$(document).ready(function() {
+
+    var selected_crewtable = setupSortable($( '#crew_table' ), true);
+
+    // Scope rules makes me have to put this here and not just a part of
+    // openMessageModal.
+    $("#person_message_form").on('submit', function(eventObj) {
+        var $btn = $(document.activeElement);
+        var form = this;
+
+        if (selected_crewtable) {
+            var rows_selected = selected_crewtable.column('.selectcol').checkboxes.selected();
+
+            // Iterate over all selected checkboxes
+            $.each(rows_selected, function(index, rowId){
+               // Create a hidden element
+               $(form).append(
+                   $('<input class="person_list">')
+                      .attr('type', 'hidden')
+                      .attr('name', 'person_list[]')
+                      .val(rowId)
+               );
+            });
+        }
+        var $btn = $(document.activeElement);
+        if ($btn.is('[id]') && $btn.attr("id") == "sendPersonMessage") {
+            postdata = $("#person_message_form").serialize();
+            $.ajax({
+                type: "POST",
+                url: "{{ path('persons_send_message') }}",
+                data: postdata,
+                success: function(data)
+                {
+                    alert(data);
+                    $("#personMessageModal").modal("hide");
+                    document.getElementById("person_message_form").reset();
+                    selected_crewtable.column('.selectcol').checkboxes.deselect();
+                    $( ".person_list" ).remove();
+                },
+                error: function(data)
+                {
+                    alert("Failed sending SMS.\n" + data.responseText);
+                    $("#personMessageModal").modal("hide");
+                    document.getElementById("person_message_form").reset();
+                    selected_crewtable.column('.selectcol').checkboxes.deselect();
+                    $( ".person_list" ).remove();
+                }
+            });
+        }
+        eventObj.preventDefault();
+        return false;
+    });
+});
+
+function openMessageModal(person_id = null, message_type = null) {
+
+    $( "#personMessageModal" ).modal();
+    if (person_id) {
+        $("#person_message_form").append('<input class="person_list_form_plist" type="hidden" name="person_list[]" value="'+person_id+'">');
+    }
+    if (message_type) {
+        $("#person_message_form").append('<input class="messagetype" type="hidden" name="message_type" value="'+message_type+'">');
+        $( ".bulkmessageradio" ).remove();
+    }
+
+    return false;
+}
+</script>

@@ -1,0 +1,22 @@
+<h4 class="text-uppercase font-weight-bold mt-4">Sign up for jobs</h4>
+    {% include '/user/_choose_month.html.twig' %}
+<div class="row mt-2 mb-3">
+ {% if opportunities | length > 0 %}
+    <div class="col-4">
+    <button class="btn badge mr-2 badge-secondary" value="signup">Sign up ({{ opportunities | length }})</button>
+    <button class="btn badge badge-light" value="signedup">Signed Up (0)</button>
+    </div>
+</div><!-- end row -->
+    {% include '/user/_opportunities.html.twig' %}
+ {% else %}
+</div><!-- end row -->
+ {% endif %}
+{% for job in interested %}
+{% include '/user/_job_card.html.twig' %}
+{% endfor %}
+{% for job in assigned %}
+{% include '/user/_job_card.html.twig' %}
+{% endfor %}
+{% for job in confirmed %}
+{% include '/user/_job_card.html.twig' %}
+{% endfor %}

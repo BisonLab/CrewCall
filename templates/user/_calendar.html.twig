@@ -1,0 +1,87 @@
+<script src="{{ asset('components/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('components/fullcalendar/dist/fullcalendar.js') }}"></script>
+<script src="{{ asset('components/fullcalendar/dist/gcal.js') }}"></script>
+{% if fullcalendar_locale == "all" %}
+<script src="{{ asset('components/fullcalendar/dist/locale-all.js') }}"></script>
+{% else %}
+<script src="{{ asset('components/fullcalendar/dist/locale/' ~ fullcalendar_locale ~ '.js') }}"></script>
+{% endif %}
+
+<script>
+
+function loadCalendar() {
+    $('#calendar').fullCalendar({
+        selectable: false,
+        editable: false,
+        fixedWeekCount: false,
+        eventDurationEditable: false,
+        firstDay: 1,
+        navLinks: true,
+        timeFormat: 'H(:mm)',
+        allDaySlot: false,
+        displayEventEnd: true,
+        header: {
+            left: 'prev',
+            center: 'title',
+            right: 'next'
+        },
+        lazyFetching: false,
+        defaultView: 'month',
+/*
+ * No popovers, yet. If I can do it on dayview only, I'll add it again.
+        eventRender: function(event, element) {
+            $(element).attr('tabindex', '0');
+            $(element).attr('role', 'button');
+            element.popover({
+                html: true,
+                content: event.popup_content,
+                placement: 'top',
+                container: 'body',
+                trigger: 'focus',
+                title: event.popup_title + ' <a href="#" class="close"><span style="font-size: 13px" class="fas fa-times-circle"></span></a>'
+            });
+        },
+        viewDestroy: function(view, element) {
+            $( ".popover" ).each(function() {
+                $(this).popover('hide');
+            });
+        },
+*/
+        eventSources: [
+            {
+                url: '{{ path('uf_me_calendar') }}',
+                type: 'POST',
+                data: {},
+                error: function () {}
+            }
+        ]
+
+    });
+}
+
+$(document).ready(function() {
+{% if lazy_load is not defined or not lazy_load %}
+    loadCalendar();
+{% endif %}
+    $(document).on("click", ".popover .close" , function(){
+        $( ".popover" ).each(function() {
+            $(this).popover('hide');
+        });
+        return false;
+    });
+});
+
+
+</script>
+<h4 class="text-uppercase font-weight-bold mt-4">My Calendar</h4>
+
+<div class="d-flex justify-content-center mb-4">
+<button class="btn badge mr-2 text-uppercase badge-light" value="CONFIRMED">
+<i class="fas fa-circle text-success"></i> My jobs</button>
+<button class="btn badge mr-2 text-uppercase badge-light" value="ASSIGNED">
+<i class="fas fa-circle text-warning"></i> confirm</button>
+<button class="btn badge mr-2 text-uppercase badge-light" value="INTERESTED">
+<i class="fas fa-circle text-danger"></i> signed up</button>
+</div>
+
+<div id="calendar" class="calendar-content"></div>

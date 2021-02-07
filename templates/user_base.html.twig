@@ -1,0 +1,135 @@
+{# include made more sense, but then I could not replace blocks from the head ("title" in particular) #}
+{% extends 'head.html.twig' %}
+{% block base %}
+<body>
+
+<header class="fixed-top" id="crewcall-header">
+{% block navbar %}
+ <nav class="navbar-header">
+    <div class="navbar-header-item">
+{% if app.user and app.user.admin %}
+      <a class="navbar-brand" href="{{ path('dashboard') }}">
+{% else %}
+      <a class="navbar-brand" href="{{ path('user_view') }}">
+{% endif %}
+       <img src="{{ asset('images/logo.gif') }}" border="0" height="40">
+      </a>
+    </div>
+    <div class="navbar-header-item mr-auto navbar-title">
+        CrewCall</br>
+{% if app.user %}
+        <div class="user">{{ app.user }}</div>
+{% endif %}
+    </div>
+{# Kinda cheating, but working. #}
+{% if app.user and app.user.admin and "admin" in app.request.uri %}
+    <div class="navbar-header-item">
+        {{ knp_menu_render('mainmenu') }}
+    </div>
+{% endif %}
+    {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+    <div class="navbar-header-item ml-auto">
+{% set calstart = "now"|date_modify('first day of this month')|date_modify('first day of this week')|date("Y-m-d") %}
+{% set calend = "now"|date_modify('last day of this month')|date_modify('last day of this week')|date("Y-m-d") %}
+      <a class="navbar-brand" href="#" onClick="return getCContent('{{ path('uf_me_calendar', { 'start': calstart, 'end': calend }) }}');">
+        <i class="far fa-calendar-alt text-dark"></i>
+      </a>
+    </div>
+    <div class="navbar-header-item">
+        {{ knp_menu_render('usermenu') }}
+    </div>
+    {% endif %}
+  </div> <!-- end row -->
+ </nav>
+</div>
+{% endblock %}
+</header>
+
+<div class="container p-4 mb-5">
+  {% block flashmessage %}
+<div class="flashmessageblock">
+ {% include 'flash.html.twig' with { 'close': true } %}
+</div>
+  {% endblock %}
+  {% block content %}
+<div id="ccContentBody">
+</div>
+  {% endblock %}
+  {% block body %}{% endblock %}
+</div>
+{% block footer %}
+<footer class="fixed-bottom" id="crewcall-footer">
+ <nav class="navbar-footer d-flex p-2">
+  <a id="homeLink" class="footerlink navbar-footer-item-active flex-fill" href="#" onClick="return getCContent('{{ path('uf_me') }}','homeLink');">
+   <i class="fas fa-home"></i>
+  </a>
+  <a id="confirmedLink" class="footerlink navbar-footer-item flex-fill" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'confirmed'}) }}', 'confirmedLink');">
+    My Jobs
+    <span id="confirmedCount" class="badge badge-success">0</span>
+  </a>
+  <a id="assignedLink" class="footerlink navbar-footer-item flex-fill" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'assigned'}) }}', 'assignedLink');">
+    Confirm
+    <span id="assignedCount" class="badge badge-warning">0</span>
+  </a>
+  <a id="signupLink" class="footerlink navbar-footer-item flex-fill" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'opportunities'}) }}', 'signupLink');">
+    Sign up
+    <span id="signupCount" class="badge badge-danger">0</span>
+  </a>
+ </nav>
+</footer>
+{% endblock %}
+
+</body>
+
+{% block javascripts %}
+<script>
+function getCContent(url = false, linkid = false) {
+    if (!url) {
+        return false;
+    }
+    month_num = "";
+    month_name = false;
+    mbutt = $( '#monthButton' )[0];
+    if (mbutt && url.search('view') != -1) {
+        month_num = $( mbutt ).attr('data-month');
+        month_name = $( mbutt ).attr('title');
+        url = url + "&month=" + month_num;
+    }
+
+    $.get(url, function(data, status){
+        $( "#ccContentBody" ).html(data);
+      }).fail(function(xhr, status, error) {
+            errmsg = "Failed getting content\n";
+            errmsg = errmsg + status + "\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+      }).done( function( cont, textStatus, xhr ) {
+        /* Lazy mans navtabs? */
+        $( ".footerlink" ).addClass('navbar-footer-item');
+        $( ".footerlink" ).removeClass('navbar-footer-item-active');
+        if (linkid) {
+            $( '#'+linkid ).addClass('navbar-footer-item-active');
+        }
+        if (month_name) {
+            mbutt = $( '#monthButton' )[0];
+            $( mbutt ).attr('data-month', month_num);
+            $( mbutt ).attr('title', month_name);
+            $( mbutt ).text(month_name);
+        }
+    });
+    return false;
+}
+
+{% if assigned_count is defined %}
+$(document).ready(function() {
+    $( "#assignedCount" ).text("{{ assigned_count }}");
+    $( "#confirmedCount" ).text("{{ confirmed_count }}");
+    $( "#signupCount" ).text("{{ opportunities_count }}");
+})
+{% endif %}
+
+</script>
+<link rel="stylesheet" href="{{ asset('css/uf.css') }}" type="text/css" media="all" />
+
+{% endblock %}
+{% endblock %}

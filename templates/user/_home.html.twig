@@ -1,0 +1,52 @@
+{% if notes.general | length > 0 %}
+<h4 class="text-uppercase font-weight-bold mt-4">General Info</h4>
+<div class="row p-2">
+{% for note in notes.general %}
+  {% if (note.state == "SHOW" or note.state == "UNREAD") %}
+  <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-12 noteCard" id="sakonninnote_{{ note.id}}">
+   <p><strong>{{ note.createdAt | date('Y-m-d') }} - {{ note.createdBy }}</strong></p>
+<p>{{ note.body }}</p>
+   </div>
+{% endif %}
+{% endfor %}
+</div><!-- end row -->
+{% endif %}
+
+{% if notes.personal | length > 0 %}
+<h4 class="text-uppercase font-weight-bold mt-4">Info just for you</h4>
+<div class="row p-2">
+{% for note in notes.personal %}
+  {% if (note.state == "SHOW" or note.state == "UNREAD") %}
+  <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-12 noteCard" id="sakonninnote_{{ note.id}}">
+   <p><strong>{{ note.createdAt | date('Y-m-d') }} - {{ note.createdBy }}</strong></p>
+<p>{{ note.body }}</p>
+   </div>
+{% endif %}
+{% endfor %}
+</div><!-- end row -->
+{% endif %}
+
+<h4 class="text-uppercase font-weight-bold mt-4">My Jobs</h4>
+{% if confirmed | length == 0 %}
+<div class="alert alert-warning mt-5">No jobs here!</div>
+{% endif %}
+{% set month = ''%}
+<div class="row p-3">
+{% for job in confirmed %}
+{% if month != job.shift.month %}
+{% set month = job.shift.month %}
+<h5 class="col-12 p-0 mt-2 font-weight-bold">{{ job.shift.month }}</h5>
+{% endif %}
+    {% include '/user/_job_card.html.twig' %}
+{% endfor %}
+</div>
+
+{% if assigned_count is defined %}
+<script>
+$(document).ready(function() {
+    $( "#assignedCount" ).text("{{ assigned_count }}");
+    $( "#confirmedCount" ).text("{{ confirmed_count }}");
+    $( "#signupCount" ).text("{{ opportunities_count }}");
+})
+</script>
+{% endif %}

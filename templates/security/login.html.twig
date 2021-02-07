@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+<form method="post">
+  <input type="hidden" id="remember_me" name="_remember_me" value="on">
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+  {# This may not be smart. TODO: consider it.
+  <input type="hidden" id="remember_me" name="_remember_me" value="on">
+   #}
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    {% if app.user %}
+        <div class="mb-3">
+            You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    {% endif %}
+
+ <div class="row">
+  <br>
+  <br>
+  <div class="col-xs-10 col-xs-offset-1 col-md-4 col-md-offset-4">
+   <div class="form-group input-group">
+     <span class="input-group-addon"><i class="fas fa-user"></i></span>
+    <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" required autofocus>
+   </div>
+   <div class="form-group input-group">
+     <span class="input-group-addon"><i class="fas fa-lock"></i></span>
+    <input type="password" name="password" id="inputPassword" class="form-control" required>
+   </div>
+{#
+    <div class="checkbox mb-3">
+        <label>
+            <input type="checkbox" name="_remember_me">Remember me
+        </label>
+    </div>
+ #}
+   <div class="form-group">
+     <button id="_submit" type="submit" name="_submit" class="btn btn-dark btn-block">Log in</button>
+   </div>
+   <a href="{{ path('app_forgot_password_request') }}">Forgot password?</a>
+  </div><!-- end col-xs-10 -->
+</div><!-- end row -->
+</form>
+{% if allow_registration %}
+<a href="{{ path("app_register") }}">Register</a>
+{% endif %}
+
+{% set fpnl = sakonnin_messages.messagetype('Front page not logged in') %}
+{% if fpnl is not null %}
+    {% for message in fpnl.messages %}
+        {% if message.state == "SHOW" %}
+        <div id="status">
+    <h3>{{ message.subject }}</h3>
+            <p>
+    {{ message.body }}
+            </p>
+        </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<script>
+window.onload = function() {
+  document.getElementById("username").focus();
+};
+</script>
+{% endblock %}

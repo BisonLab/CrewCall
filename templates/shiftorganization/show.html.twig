@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ shiftOrganization }}{% endblock %}
+{% block body %}
+    <h1>Shiftorganization</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ shiftOrganization.id }}</td>
+            </tr>
+            <tr>
+                <th>Amount</th>
+                <td>{{ shiftOrganization.amount }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('shiftorganization_index') }}">Cancel</a>
+        </li>
+        <li>
+            <a href="{{ path('shiftorganization_edit', { 'id': shiftOrganization.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input class="btn-sm btn-danger" type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

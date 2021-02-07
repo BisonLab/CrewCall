@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+{% block title %}People{% endblock %}
+{% block body %}
+{% include '/person/handling.html.twig' %}
+
+    {% if functionEntity is defined and functionEntity is not null %}
+        <h1>People with {{ functionEntity }}</h1>
+    {% else %}
+        <h1>People</h1>
+    {% endif %}
+<div class="row">
+<div class="col-8">
+{% if functions is defined %}
+   <form action="{{ path('person_function') }}" method="GET">
+{% endif %}
+<label>Functions</label>
+<select name="function_id">
+    <option value="">All</option>
+    {% for elem in functions %}
+    <option value="{{ elem.id }}" {% if functionEntity is not null and elem.id == functionEntity.id %}selected{% endif %}>{{ elem.name }}</option>
+    {% endfor %}
+</select>
+{# TODO: if on-date, show jobs-summary that date #}
+    <select name="select_grouping">
+        <option value="all">All</option>
+        <option value="no_crew">All, exclude crewmembers </option>
+    </select>
+{% if simplified %}
+    <input type="hidden" name="simplified" value="true">
+{% endif %}
+    <button class="btn-sm btn-dark" type="submit">Show</button>
+    </form>
+{% endif %}
+</div>
+<div class="col-2">
+</div>
+
+{% if simplified %}
+{% include '/person/_simplified_index.html.twig' %}
+{% else %}
+{% include '/person/_index.html.twig' %}
+{% endif %}
+
+<div align="right">
+    <button class="btn-sm btn-dark" id="message_modal_link" onClick="return openMessageModal();">Send a message</button>
+</div>
+{% endblock %}

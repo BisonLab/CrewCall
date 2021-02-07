@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit {% if event.parent %}{{ event.parent }} -> {% endif %}{{ event.name }}{% endblock %}
+{% block body %}
+<script>
+$(document).ready(function()
+    {
+    $("#crewcallbundle_event_start_date input").each(function(){
+        $(this).attr("readonly","readonly");
+    });
+    $("#crewcallbundle_event_end_date input").each(function(){
+        $(this).attr("readonly","readonly");
+    });
+});
+</script>
+
+    <h1>Event edit</h1>
+    {{ form_start(edit_form) }}
+        {{ form_widget(edit_form) }}
+        <input class="btn-sm btn-dark" type="submit" value="Save" />
+{% if event.parent %}
+    <a href="{{ path('event_show', {'id': event.parent.id }) }}" class="btn-sm btn-dark">Cancel</a><br>
+{% else %}
+    <a href="{{ path('event_show', {'id': event.id }) }}" class="btn-sm btn-dark">Cancel</a><br>
+{% endif %}
+    {{ form_end(edit_form) }}
+{% endblock %}

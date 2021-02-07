@@ -1,0 +1,378 @@
+<script>
+
+$(document).ready(function() {
+
+    if (typeof(Storage) !== "undefined"
+            && localStorage.hidereadyevents == "true") {
+        hidebox = $( "#hidereadycheckbox" );
+        // Yes, I do need both. For some odd reason I am not bothered to find.
+        hidebox.prop("checked", true);
+        hidebox.checked = true;
+        checkReadyCheckbox(hidebox);
+    }
+
+    handleEventAccStatus();
+
+    $(".eventacc_content").on('hidden.bs.collapse', function () {
+        setEventAccStatus();
+    });
+    $(".eventacc_content").on('shown.bs.collapse', function () {
+        setEventAccStatus();
+    });
+
+    // And initially, if not set.
+    setEventAccStatus();
+    handleJobLists();
+});
+
+function handleEventAccStatus() {
+    if (typeof(Storage) === "undefined") {
+        return;
+    }
+    if (localStorage.evaccordions) {
+        evaccordions = JSON.parse(localStorage.evaccordions);
+    } else {
+        return;
+    }
+    // TODO; or ponder about: Refresh the timestamp so it won't be "GC"ed out.
+    // (Maybe end up like the shift/job list way?)
+    // var timestamp = Date.now() / 1000;
+    $(".eventacc_content").each(function () {
+        eid = $(this).attr("id");
+        if (evaccordions[eid]) {
+            $("#" + eid).collapse(evaccordions[eid]['state']);
+        }
+    });
+}
+
+function setEventAccStatus() {
+    if (typeof(Storage) === "undefined") {
+        return;
+    }
+    // Do I need a more unique id? Not as I could find.
+    var evaccordions = {};
+    if (localStorage.evaccordions) {
+        evaccordions = JSON.parse(localStorage.evaccordions);
+    }
+    var timestamp = Date.now() / 1000;
+    $(".eventacc_content").each(function () {
+        eid = $(this).attr("id");
+        classes = $(this).attr("class");
+        if (classes.search("show") < 1) {
+            evaccordions[eid] = { 'timestamp': timestamp, 'state': 'hide'};
+        } else {
+            evaccordions[eid] = { 'timestamp': timestamp, 'state': 'show'};
+        }
+    });
+    localStorage.evaccordions = JSON.stringify(evaccordions);
+}
+
+/*
+ * This replaces the URL based job list expanding.
+ * Using localStorage as with the event accordion thingies.
+ * This looks (and may be) stupid since it iterates all entries in storage and
+ * not just finds the useful entries with the job ID as key or multi
+ * dimensional with the event as main key.
+ * But since localStorage does not have any expiration of old data I am doung
+ * simple garbage collecting at the same time here.
+ * Can't really use the event as key either, since it not always known when
+ * this is run.
+ * (Why do two similar things the same way, you ask?)
+ */
+function handleJobLists() {
+    if (typeof(Storage) === "undefined") {
+        return;
+    }
+    if (localStorage.evjoblists) {
+        evjoblists = JSON.parse(localStorage.evjoblists);
+    } else {
+        return;
+    }
+    var newlist = {};
+    var timestamp = Date.now() / 1000;
+    for (var shift_id in evjoblists) {
+        shiftdata = evjoblists[shift_id];
+        if ($( "#jobList_" + shift_id ).length) {
+            if (shiftdata['state'] == 'show') {
+                grabJobList(shift_id, true);
+            }
+            // Reset counter.
+            shiftdata['timestamp'] = timestamp;
+        }
+        // "Garbage collection" If older than a month'ish, ditch it.
+        if (timestamp - shiftdata['timestamp'] < 2419200) {
+            newlist[shift_id] = shiftdata;
+        }
+    }
+    localStorage.evjoblists = JSON.stringify(newlist);
+}
+
+/*
+ * Yeah, and shift.
+ */
+function openMessageToEventModal(object, object_id) {
+    content = $("#eventmessage_modal").html();
+    $( "#eventModalTitle" ).html('Send Message');
+    $( "#eventModalBody" ).html(content);
+    $( "#eventModal" ).modal();
+    if (object == "event") {
+        url = "{{ path('event_send_message', {'access': 'ajax', 'id': "XXX" }) }}".replace("XXX", object_id);
+        fselect = $( "#function_select_" + object_id ).html();
+        $( "#eventMessageFormSelect" ).append(fselect);
+    }
+    if (object == "shift") {
+        url = "{{ path('shift_send_message', {'access': 'ajax', 'id': "XXX" }) }}".replace("XXX", object_id);
+    }
+
+    $("#eventMessageForm").submit(function( event ) {
+        postdata = $("#eventMessageForm").serialize();
+        $.ajax({
+            type: "POST",
+            data: postdata,
+            url: url,
+            success: function(data)
+            {
+                alert(data);
+                $( "#eventModal" ).modal("hide");
+                $( "#eventModalTitle" ).html("");
+                $( "#eventModalBody" ).html("");
+                document.getElementById("eventMessageForm").reset();
+            },
+            error: function(data)
+            {
+                alert("Failed sending SMS.\n" + data.responseText);
+                $( "#eventModal" ).modal("hide");
+                $( "#eventModalTitle" ).html("");
+                $( "#eventModalBody" ).html("");
+                document.getElementById("eventMessageForm").reset();
+            }
+        });
+        event.preventDefault();
+    });
+    return false;
+}
+
+function openAddContact(event_id) {
+
+    /* Yet another way to do this. Gotta standardize some day. */
+    $( "#addContactForm" ).submit(function( event ) {
+        event.preventDefault();
+        url = "{{ path('event_add_contact', {'access': 'ajax', 'id': "XXX" }) }}".replace("XXX", event_id);
+        addContactFormData = $( "#addContactForm" ).serialize();
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: addContactFormData,
+            dataType: "text",
+            async: true,
+          }).done( function( cont, textStatus, xhr ) {
+                parent.location.reload();
+          }).fail(function(xhr, status, error) {
+                errmsg = "Adding contact failed\n";
+                errmsg = errmsg + xhr.responseText + "\n";
+                alert(errmsg);
+        });
+        return false;
+    });
+    return false;
+}
+
+function grabEvents(what) {
+    url = "{{ path('event_index', {'access': 'ajax' }) }}" 
+        + "?" + what +"=true";
+    if (what == "past") {
+        search = true;
+    } else {
+        search = false;
+    }
+    $.get(url, function( data ) {
+        $( "#" + what + "content" ).html(data);
+    }).done(function() {
+        $( "#" + what + "table").dataTable({
+            "paging": false,
+            "searching": search
+            });
+    });
+    return false;
+}
+
+function submitDeleteForm(event_id) {
+    if (!confirm("Are you sure you want to delete")) {
+        return false;
+    }
+    deleteEventFormData = $( "#deleteEventForm" ).serialize();
+    url = "{{ path('event_delete', { 'access': 'ajax', 'id': 'XXX' }) }}";
+    url = url.replace('XXX', event_id);
+    $.ajax({
+        type: "DELETE",
+        url: url,
+        data: deleteEventFormData,
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+            window.location.href = "{{ path('event_index') }}";
+      }).fail(function(xhr, status, error) {
+            errmsg = "Delete failed\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+    });
+    return false;
+}
+
+function submitEventStateForm(event_id, state) {
+    stateEventFormData = $( "#stateEventForm" ).serialize();
+    url = "{{ path('event_state', { 'access': 'ajax', 'state': 'STATE', 'id': 'XXX' }) }}";
+    url = url.replace('XXX', event_id);
+    url = url.replace('STATE', state);
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: stateEventFormData,
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+            parent.location.reload();
+      }).fail(function(xhr, status, error) {
+            errmsg = "It failed\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+    });
+    return false;
+}
+
+function openPrintEventWindow(event_id, state = null)
+{
+    url = "{{ path('event_show', { 'id': "XXX", 'printable': true }) }}";
+    url = url.replace('XXX', event_id);
+    
+    if (state != null) {
+        url = url + "&state=" + state;
+    }
+    w = popmeup(url);
+    return false;
+}
+
+function checkChecked(classname)
+{
+    if ( $( "#epcheck_" + classname ).is(":checked") ) {
+        $( ".ep" + classname ).show();
+    } else {
+        $( ".ep" + classname ).hide();
+    }
+}
+
+function printTableContent()
+{
+    // This may be a bit specific for my designs,
+    document.body.style.paddingTop = "0px";
+    $("#unprintableContent").hide();
+    window.print();
+    document.body.style.paddingTop = "";
+    $("#unprintableContent").show();
+}
+
+function openAddContactInfo(event_id) {
+
+    url = "{{ path('event_pick_contact_info', {'access': 'ajax', 'id': "XXX" }) }}".replace("XXX", event_id);
+
+    $.get(url, function( content ) {
+        $( "#eventModalTitle" ).html('Add Contact Info');
+        $( "#eventModalBody" ).html(content);
+        $( "#eventModal" ).modal();
+
+        $( "#eventModalBody form" ).each(function() {
+            var url = this.action;
+            var form_id = this.id;
+            $( "#"+form_id ).submit(function( event ) {
+                // Actually, there is nothing to serialize, but in case.
+                postdata = $( "#"+form_id ).serialize();
+                event.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    data: postdata,
+                    url: url,
+                    success: function(data)
+                    {
+                        parent.location.reload();
+                    },
+                    error: function(data)
+                    {
+                        alert("Failed Adding contact.\n" + data.responseText);
+                        $( "#eventModal" ).modal("hide");
+                        $( "#eventModalTitle" ).html("");
+                        $( "#eventModalBody" ).html("");
+                    }
+                });
+                event.preventDefault();
+            });
+        });
+    });
+    event.preventDefault();
+    return false;
+}
+
+function checkReadyCheckbox(elem) {
+    // localStorage has an issue with booleans.
+    hideready = "false";
+    if (elem.checked) {
+        $(".READY_state").hide();
+        hideready = "true";
+    } else {
+        // Not ideal, but beats parent.reload()
+        $(".READY_state").not(".event_child").show();
+        $(".event_child").hide();
+        $(".collapse_subs").hide();
+        $(".expand_subs").show();
+    }
+    if (typeof(Storage) !== "undefined") {
+        localStorage.hidereadyevents = hideready;
+    }
+}
+</script>
+
+<div class="modal fade" id="eventModal" role="dialog" tabindex='-1'>
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="eventModalTitle"></h4>
+        <button id="eventModalCloseButton" type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body" id="eventModalBody">
+      </div>
+    </div>
+  </div>
+</div> <!-- / modal -->
+
+<div id="eventmessage_modal" class="d-none">
+    <form name="eventmessage_form" id="eventMessageForm" method="POST">
+      <div class="row">
+       <div class="col-sm-6">
+        <textarea id="eventMessageFormBody" name="body" cols="30" rows="6"></textarea><br>
+       </div>
+       <div class="col-sm-3">
+        <input type="checkbox" name="states[]" value="CONFIRMED" checked>Confirmed</input><br>
+        <input type="checkbox" name="states[]" value="ASSIGNED">Assigned</input><br>
+        <input type="checkbox" name="states[]" value="INTERESTED">Interested</input><br>
+        <input type="checkbox" name="states[]" value="all">All</input><br>
+        <div id="eventMessageFormSelect"></div>
+       </div>
+       <div class="col-sm-3">
+            <input type="radio" value="BULKSMS" name="message_type" CHECKED>SMS only</input><br>
+            <input type="radio" value="BULKALL" name="message_type">SMS and  Email</input>
+        <input class="btn-sm btn-dark" id="evsendmessage" type="submit" name="submit" value="Send">
+       </div>
+      </div>
+    </form>
+</div>
+
+{% if state_form is defined %}
+    <div class="d-none">
+    <form id="stateEventForm" method="POST">
+    {{ form_widget(state_form._token, {'id': state_form._token.vars.id ~ '_setstateevent' }) }}
+    {{ form_end(state_form) }}
+    <form id="deleteEventForm" method="DELETE">
+    {{ form_widget(delete_form._token, {'id': delete_form._token.vars.id ~ '_deletestateevent' }) }}
+    {{ form_end(delete_form) }}
+    </div>
+{% endif %}

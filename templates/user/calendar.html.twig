@@ -1,0 +1,12 @@
+{% extends 'user_base.html.twig' %}
+{% block title %}My Calendar{% endblock %}
+
+{% block body %}
+
+{#
+{% set calendar_load_url = path('user_me_calendar', {'access': 'ajax', 'summary': true }) %}
+#}
+{% set calendar_load_url = path('user_me_calendar', {'access': 'ajax' }) %}
+{% include '/_calendar.html.twig' with { 'calendar_load_url': calendar_load_url}  %}
+
+{% endblock %}

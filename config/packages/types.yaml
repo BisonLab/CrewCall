@@ -1,0 +1,20 @@
+parameters:
+    app.types:
+        App:
+            Person:
+                Diet:
+                    ANY:
+                        label: "Whatever"
+                        chooseable: true
+                    VEGAN:
+                        label: "Vegan"
+                        chooseable: true
+                    VEGETARIAN:
+                        label: "Vegetarian"
+                        chooseable: true
+                    LACTOSE:
+                        label: "Lactose intolerant"
+                        chooseable: true
+                    GLUTEN:
+                        label: "Gluten intolerant"
+                        chooseable: true

@@ -1,0 +1,43 @@
+{% if sakonnin_files.contexthasfiles(filecontext) %}
+    <table class="table">
+    <thead>
+       <tr>
+           <th>Name</th>
+           <th>Description</th>
+           <th>Uploaded At</th>
+           <th>Uploaded By</th>
+           <th>&nbsp;</th>
+       </tr>
+   </thead>
+    <tbody>
+{% for sfile in sakonnin_files.getFilesForContext(filecontext) %}
+       <tr>
+        <td>
+{% if sfile.thumbnailable %}
+<img id="img_{{sfile.id}}" data-zoom-image="{{ path('file_view', { 'file_id': sfile.id }) }}" src="{{ path('uf_file', { 'id': sfile.fileid, 'x': 30, 'y': 30 }) }}">
+<script>
+$("#img_{{sfile.id}}").ezPlus({
+    zoomWindowPosition: 16
+});
+</script>
+{% endif %}
+        {{ sfile.name }}
+        </td>
+        <td>{{ sfile.description }}</td>
+        <td>{{ sfile.createdat|date('Y-m-d H:i:s') }}</td>
+        <td>{{ sfile.createdby }}</td>
+        <td>
+            {% set delete_form = sakonnin_files.getdeleteform(sfile, {'create_view': true}) %}
+            {{ form_start(delete_form)}}
+            {{ form_rest(delete_form)}}
+            <input type="hidden" name="back" value="{{ app.request.uri }}">
+            <a href="{{ path('file_download', { 'file_id': sfile.fileid }) }}"><button class="btn btn-link fas fa-file-download"></button></a>
+            <a href="#" onClick="return grabEditSakonninFileForm('{{ sfile.fileid }}');"><button class="btn btn-link edit_glyph"></button></a>
+            <button type="submit" name="Delete" class="btn btn-link remove_glyph"></button>
+            {{ form_end(delete_form)}}
+        </td>
+       </tr>
+{% endfor %}
+   </tbody>
+   </table>
+{% endif %}

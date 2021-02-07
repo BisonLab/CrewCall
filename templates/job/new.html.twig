@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Add Job</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <input type="submit" value="Add" />
+    {{ form_end(form) }}
+    <a href="{{ path('job_index') }}" class="btn-sm btn-dark">Cancel</a>
+{% endblock %}

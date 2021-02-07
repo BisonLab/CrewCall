@@ -1,0 +1,43 @@
+  <div class="col-4 d-flex justify-content-center">
+      <button id="monthButton" type="button" class="btn dropdown-toggle btn-light" data-toggle="dropdown" role="button" aria-expanded="false" data-month="{{ month }}">Choose month</button>
+       <ul class="dropdown-menu">
+{% if month is not null %}
+        <li><a onclick="return chosenMonth(this);" class="dropdown-item" href="#" data-month="">Choose month</a></li>
+{% endif %}
+        <li><a onclick="return chosenMonth(this);" class="dropdown-item" href="#" data-month="1">January</a></li>
+        <li><a onclick="return chosenMonth(this);" class="dropdown-item" href="#" data-month="2">February</a></li>
+        <li><a onclick="return chosenMonth(this);" class="dropdown-item" href="#" data-month="3">March</a></li>
+        <li><a onclick="return chosenMonth(this);" class="dropdown-item" href="#" data-month="4">April</a></li>
+        <li><a onclick="return chosenMonth(this);" class="dropdown-item" href="#" data-month="5">May</a></li>
+        <li><a onclick="return chosenMonth(this);" class="dropdown-item" href="#" data-month="6">June</a></li>
+        <li><a onclick="return chosenMonth(this);" class="dropdown-item" href="#" data-month="7">July</a></li>
+        <li><a onclick="return chosenMonth(this);" class="dropdown-item" href="#" data-month="8">August</a></li>
+        <li><a onclick="return chosenMonth(this);" class="dropdown-item" href="#" data-month="9">September</a></li>
+        <li><a onclick="return chosenMonth(this);" class="dropdown-item" href="#" data-month="10">October</a></li>
+        <li><a onclick="return chosenMonth(this);" class="dropdown-item" href="#" data-month="11">November</a></li>
+        <li><a onclick="return chosenMonth(this);" class="dropdown-item" href="#" data-month="12">December</a></li>
+       </ul>
+  </div>
+
+<script>
+function chosenMonth(button) {
+    month = button.innerHTML;
+    month_num = $(button).attr('data-month');
+    month_name = $(button).text();
+    $( '#monthButton' ).attr('data-month', month_num);
+    $( '#monthButton' ).attr('title', month_name);
+    url = "{{ path('uf_me_jobs', {'view': view}) }}";
+    {% set footerlink = view ~ "Link" %}
+    {% if view == "interested" or view == "opportunities" %}
+        {% set footerlink = "signupLink" %}
+    {% endif %}
+    getCContent(url, "{{ footerlink }}");
+    return false;
+}
+
+$(document).ready(function() {
+    $( "#assignedCount" ).text("{{ assigned_count }}");
+    $( "#confirmedCount" ).text("{{ confirmed_count }}");
+    $( "#signupCount" ).text("{{ opportunities_count }}");
+});
+</script>

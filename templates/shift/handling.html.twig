@@ -1,0 +1,228 @@
+<script>
+$(document).ready(function() {
+    // First, close them all.. looks stupid but it's because they are not
+    // populated and ends up as just a small white stripe.
+    $( ".jobList" ).each(function() {
+        $(this).hide();
+    });
+    // Had a "Grab job lists" function here, but it should be enough
+    // having this in event/handling ready ( handleJobLists() ) 
+});
+
+function grabShiftList(event_id) {
+    url = "{{ path('shift_index', {'access': 'ajax' }) }}" 
+        + "?event=" + event_id;
+    $.get(url, function( data ) {
+        $( "#shiftList_" + event_id).html(data);
+    }).done(function() {
+        $( "#shiftList_" + event_id + " .jobList" ).each(function() {
+            $(this).hide();
+        });
+    });
+    return false;
+}
+
+function submitNewShiftForm(event_id) {
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        type: "POST",
+        url: "{{ path('shift_new', { 'access': 'ajax' }) }}",
+        data: $( "#newShiftForm" ).serialize(),
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+            if (xhr.status == 201) {
+                parent.location.reload();
+            } else {
+                $( "#shiftModalBody" ).html(xhr.responseText);
+                $( "#shiftModalTitle" ).html("Add Shift");
+            }
+      }).fail(function(xhr, status, error) {
+            errmsg = "Failed adding shift\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+    });
+    return false;
+}
+
+function grabNewShiftForm(event_id = false, from_shift_id = false) {
+    url = "{{ path('shift_new', { 'access': 'ajax' }) }}";
+    if (from_shift_id) {
+        url = url + "?from_shift=" + from_shift_id;
+    } else if (event_id) {
+        url = url + "?event=" + event_id;
+    } else {
+        // Nothing useful to connect the shift on.
+        alert("Can not add shift, no event to add it to");
+        return false;
+    }
+    $.get(url, function( data ) {
+        $( "#shiftModalBody" ).html(data);
+        $( "#shiftModalTitle" ).html("Add Shift");
+        $( "#shiftModal" ).modal();
+        /*
+         * My JS-fu is bad. I'm quite sure I should be able to set the
+         * submitNewShiftForm function directly, but then it woule be called
+         * immediately.  Aka, I have to read up on this..
+         */
+        $( "#crewcallbundle_shift_event").prev().hide();
+        $( "#crewcallbundle_shift_event").hide();
+        /* This is tempting for reducing the form elements, but it may create
+         * an issue even if I do add one day when time is below start time.
+         * (Which will not validate as the validation is set up right now.)
+        $( "#crewcallbundle_shift_end_date").prev().hide();
+        $( "#crewcallbundle_shift_end_date").hide();
+         */
+        $( "#newShiftForm" ).submit(function( event ) {
+            event.preventDefault();
+            submitNewShiftForm(event_id);
+        });
+    });
+    return false;
+}
+
+function submitEditShiftForm(shift_id, event_id) {
+    /* 
+     * Looks odd?
+     * The option is to make the controller action not use the ID in
+     * the URL. I may change to that later.
+     */
+    orgurl = "{{ path('shift_edit', { 'access': 'ajax' }) }}";
+    url = orgurl.replace("0", shift_id);
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        type: "POST",
+        url: url,
+        data: $( "#editShiftForm" ).serialize(),
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+        $( "#shiftModal" ).modal('hide');
+        // Cheating with twig.
+        grabShiftList(event_id);
+      }).fail(function(xhr, status, error) {
+            errmsg = "Failed saving the shift\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+    });
+    return false;
+}
+
+function grabEditShiftForm(shift_id, event_id) {
+    orgurl = "{{ path('shift_edit', { 'access': 'ajax' }) }}";
+    url = orgurl.replace("0", shift_id);
+    $.get(url, function( data ) {
+        $( "#shiftModalBody" ).html(data);
+        $( "#shiftModalTitle" ).html("Edit Shift");
+        $( "#shiftModal" ).modal();
+        $( "#editShiftForm" ).submit(function( event ) {
+            event.preventDefault();
+            submitEditShiftForm(shift_id, event_id);
+        });
+    });
+    return false;
+}
+
+function setStateOnShiftCheckbox(shift_id, event_id, elem) {
+    if (elem.checked) {
+        setStateOnShift(shift_id, "OPEN", event_id);
+    } else {
+        setStateOnShift(shift_id, "CLOSED", event_id);
+    }
+}
+
+function setStateOnShift(shift_id, state, event_id) {
+    cheat_url = "{{ path('shift_state', { 'id': "XXX", 'state': 'NONE', 'access': 'ajax' }) }}";
+    c_url = cheat_url.replace("XXX", shift_id);
+    url = c_url.replace("NONE", state);
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        url: url,
+        type: "POST",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+        grabShiftList(event_id);
+      }).fail(function(xhr, status, error) {
+            errmsg = "Warning!\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+    });
+    return false;
+}
+
+function deleteShift(shift_id) {
+    cheat_url = "{{ path('shift_delete', { 'id': 0, 'access': 'ajax' }) }}";
+    url = cheat_url.replace("0", shift_id);
+    if (!confirm("Are you sure you want to delete this Shift?")) {
+        return false;
+    }
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        url: url,
+        type: "DELETE",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+            if (xhr.status == 200) {
+                srid = "#shiftRow_" + shift_id;
+                if ( $( srid ).length) {
+                    $( srid).remove();
+                    $( "#jobList_" + shift_id).remove();
+                    return false;
+                } else {
+                    parent.location.reload();
+                }
+            }
+      }).fail(function(xhr, status, error) {
+            errmsg = "Deleting the shift failed\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+    });
+    return false;
+}
+
+function recountShift(shift_id) {
+    orgurl = "{{ path('shift_amounts', { 'access': 'ajax' }) }}";
+    url = orgurl.replace("0", shift_id);
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        url: url,
+        type: "GET",
+        async: true,
+        dataType: 'json',
+      }).done( function( cont, textStatus, xhr ) {
+        sa = cont.shiftamounts;
+        for(var key in sa) {
+            counter_id = "#shift_counter_" + key + "_" + shift_id;
+            $( counter_id ).text(sa[key]);
+        };
+    });
+    return false;
+}
+
+</script>
+<div id="editShift">
+</div>
+
+<div class="modal" id="shiftModal" role="dialog" tabindex='-1'>
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="shiftModalTitle"></h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body" id="shiftModalBody">
+      </div>
+    </div>
+  </div>
+</div> <!-- / modal -->

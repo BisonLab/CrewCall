@@ -1,0 +1,59 @@
+doctrine:
+    dbal:
+        default_connection: crewcall
+        connections:
+            crewcall:
+                url: '%env(resolve:DATABASE_URL)%'
+
+        # IMPORTANT: You MUST configure your server version,
+        # either here or in the DATABASE_URL env var (see .env file)
+        #server_version: '13'
+    orm:
+        default_entity_manager: crewcall
+        auto_generate_proxy_classes: "%kernel.debug%"
+        # No automapping when more than one entity manager.
+        # auto_mapping: true
+        #mappings:
+        #    App:
+        #        is_bundle: false
+        #        type: annotation
+        #        dir: '%kernel.project_dir%/src/Entity'
+        #        prefix: 'App\Entity'
+        #        alias: App
+
+        entity_managers:
+            crewcall:
+                # To have or not to have?
+                connection: crewcall
+                # auto_mapping: true
+                mappings:
+                    App:
+                        # is_bundle: false
+                        type: annotation
+                        dir: '%kernel.project_dir%/src/Entity'
+                        prefix: 'App\Entity'
+                        alias: App
+                    BisonLabCommonBundle: ~
+                    CustomBundle: ~
+                    BisonLabSakonninBundle:
+                        mapping: false
+                    gedmo_loggable:
+                        type: annotation
+                        prefix: Gedmo\Loggable\Entity
+                        dir: "%kernel.project_dir%/vendor/gedmo/doctrine-extensions/src/Loggable/Entity"
+                        alias: GedmoLoggable
+                        is_bundle: false
+            sakonnin:
+                # To have or not to have?
+                # naming_strategy: doctrine.orm.naming_strategy.underscore
+                connection: crewcall
+                # auto_mapping: true
+                mappings:
+                    BisonLabSakonninBundle:
+                        is_bundle: true
+                    App:
+                        mapping: false
+                    BisonLabCommonBundle:
+                        mapping: false
+                    CustomBundle:
+                        mapping: false

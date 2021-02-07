@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Events{% endblock %}
+{% block body %}
+    
+{% include '/event/handling.html.twig' %}
+    
+<div class="row">
+
+ <div class="col-sm-3">
+    {% if past %}
+      <h1>Past Events</h1>
+    {% elseif upcoming %}
+      <h1>Upcoming Events</h1>
+    {% else %}
+      <h1>Ongoing Events</h1>
+    {% endif %}
+ </div>
+
+ <div class="col-sm-1" style="margin-top: 10px;">
+    {% if not upcoming %}
+   <a href="{{ path('event_index', {'upcoming': true }) }}" class="btn-sm btn-light">Upcoming</a>
+    {% endif %}
+    {% if not past %}
+    <a href="{{ path('event_index', {'past': true }) }}" class="btn-sm btn-light">Past</a>
+    {% endif %}
+ </div>
+ <div class="col-sm-3" style="margin-top: 20px;">
+    <input id="hidereadycheckbox" type="checkbox" onChange="checkReadyCheckbox(this)">Hide ready events</input>
+ </div>
+
+ <div class="col-sm-2 ml-auto" style="margin-top: 10px;">
+   <a href="{{ path('event_new') }}" class="btn-sm btn-dark">New Event</a>
+ </div>
+
+</div>
+
+{% include '/event/_index.html.twig' %}
+
+{% endblock %}

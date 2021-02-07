@@ -1,0 +1,226 @@
+{% macro print_comboedit(mform, action, message_id, messagetype = "Admin Wall") %}
+<div class="modal fade" id="combo_edit_{{ message_id }}" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Edit</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="comboform_{{ message_id }}" action="{{ action }}" method="POST" onSubmit="return submitComboForm('{{ action }}', '{{message_id}}');">
+        {{ form_row(mform.body)}} 
+<span class="d-none">
+        {{ form_row(mform.state)}} 
+        {{ form_row(mform.message_type)}} 
+</span>
+        {{ form_row(mform.expire_at)}} 
+        <input type="submit" name="submit" value="Save">
+        {{ form_widget(mform._token)}} 
+        </form>
+    </div>
+  </div>
+ </div>
+</div>
+{% endmacro %}
+{% import _self as cmac %}
+
+{% include '/dashboarder/handling.html.twig' %}
+
+<div id="combowall">
+  <div class="row">
+    <div class="col-sm-12">
+    <h3>Admin Wall and Todos</h3>
+    </div>
+  </div>
+
+{% set criterias = {
+    'message_types': ['Admin Wall', 'TODO'],
+    'states': ['UNREAD', 'UNCHECKED', 'CHECKED', 'SHOW'],
+    }
+%}
+{% for message in sakonnin_messages.messages(criterias) %}
+ {% if is_granted('edit', message) %}
+  {% set emform = sakonnin_messages.getEditForm( message, true ) %}
+  {% set action = path('message_edit', { 'id': message.id, 'access': 'ajax' }) %}
+  {{ cmac.print_comboedit(emform, action, message.id, message.messagetype ) }}
+ {% endif %}
+ {% if is_granted('show', message) %}
+   <div id="sakonninmessage_{{ message.id}}">
+     <div class="noteText row">
+        <div class="col-sm-9">
+            <em>{{ message.createdAt | date('Y-m-d') }} - {{ message.createdBy }}</em>
+        </div>
+      {% if is_granted('edit', message) %}
+<div class="d-none">
+{% set mdelform = sakonnin_messages.getCreateDeleteForm(message, true) %}
+<form id="deletemessageform_{{ message.id }}" onSubmit="return deleteSakonninMessage({{ message.id }});">
+{{ form_rest(mdelform) }}
+<input id="delcombo_{{ message.id }}" type="submit">
+</form>
+</div>
+        <div class="col-sm-3">
+          <div class="dropdown">
+             <button class="fas fa-bars" type="button" data-toggle="dropdown">
+             <span></span>
+             </button>
+             <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" href="#" onClick="return setStateOnSakonninMessage({{ message.id }}, 'ARCHIVED');">Archive</a>
+                <a class="dropdown-item" href="#" onClick='return editCombo({{ message.id }});'>Edit</a>
+                <a class="dropdown-item" href="#" onClick='return $("#delcombo_{{ message.id }}").click();'>Delete</a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+     </div>
+     <div class="noteText row">
+<div class="col-sm-9">
+<pre wrap id="sakonninmessagebody_{{ message.id }}">
+{{ message.body }}
+</pre>
+</div>
+    <div class="col-sm-3 align-bottom">
+      {% if message.messagetype == "TODO" %}
+          {# OK, are we checked or not? #}
+          {% set checked = false %}
+          {% set last_reply = message.replies | last %}
+          {% if last_reply %}
+              {% if last_reply.state == "CHECKED" %}
+                  {% set checked = true %}
+              {% else %}
+                  {% set checked = false %}
+              {% endif %}
+          {% endif %}
+
+          <label class="checkSwitch">
+            <input type="checkbox" id="todocheck_{{ message.id }}" onChange="setCheckboxState('{{ message.messageid }}', 'TODO', this)" {% if checked %}checked{% endif %}/>
+            {% if checked %}
+                <span class="checkSlider round" title="{{ last_reply.createdAt | date('Y-m-d H:i') }} - {{ last_reply.createdBy }}"></span>
+                </label><br>
+                <em style="font-size: 70%;">
+                {{ last_reply.createdAt | date('Y-m-d H:i') }}
+                {{ last_reply.createdBy }}
+                </em>
+            {% else %}
+                <span class="checkSlider round" title="Todo"></span>
+                </label>
+            {% endif %}
+        {% endif %}
+     </div>
+    </div>
+ </div> <!--sakonninmessage -->
+ {% endif %}
+{% endfor %}
+<div class="row">
+  <div class="col-2" style="margin-left: 20px; padding: 7px;">
+   <a href="#" onClick='return createCombo();' class="btn-dash btn-dark">New</a>
+  </div>
+  <div class="col-2" style="padding: 7px;">
+   <a href="#" class="btn-dash btn-light" title="Admin Wall and Todos" onClick="return openSakonninMessageLogBox('{{ path('messages_list', {'sort': 'DESC', 'access': 'ajax', 'states': ['ARCHIVED'], 'message_types':['Admin Wall', 'TODO']  }) }}', 'Archive')">Archive</a>
+  </div>
+</div>
+
+ <div class="modal fade" id="createcombo" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add todo or wall message</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="checkbox" id="mtypecheck" onChange="setMessageType(this)"> <strong>Todo</strong></input>
+{% set ccmform = sakonnin_messages.getCreateForm({
+    'message_data': {},
+    'create_view': true,
+    'formname': 'createcomboform'
+ }) %}
+        <form id="createcomboform" action="{{ path('message_create', { 'access': 'ajax' }) }}" method="POST" onSubmit="return submitCreateComboForm();">
+        {{ form_row(ccmform.body)}} 
+        <span class="d-none">
+        {{ form_row(ccmform.state)}} 
+        {{ form_row(ccmform.message_type)}} 
+        </span>
+        {{ form_row(ccmform.expire_at)}} 
+        <input type="submit" name="submit" value="Save">
+        {{ form_widget(ccmform._token)}} 
+        </form>
+      </div>
+    </div>
+  </div>
+ </div>
+
+</div> <!-- end combowall -->
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+    $( "#createcomboform #message_data_message_type" ).val({{ sakonnin_messages.messagetype('Admin Wall').id }});
+} );
+
+function createCombo() {
+    $( "#createcombo").modal();
+    return false;
+}
+
+function editCombo(message_id) {
+    $( "#combo_edit_" + message_id).modal();
+    return false;
+}
+
+function submitComboForm(action_url, message_id) {
+    formdata = $( "#comboform_" + message_id).serialize();
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        type: "POST",
+        url: action_url,
+        data: formdata,
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+            $( "#combo_edit_" + message_id ).modal("hide");
+            parent.location.reload();
+      }).fail(function(xhr, status, error) {
+            errmsg = "Combo sending failed\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+    });
+    return false;
+}
+
+function setMessageType(elem) {
+    if (elem.checked) {
+        $( "#createcomboform #message_data_message_type" ).val({{ sakonnin_messages.messagetype('TODO').id }});
+    } else {
+        $( "#createcomboform #message_data_message_type" ).val({{ sakonnin_messages.messagetype('Admin Wall').id }});
+    }
+}
+
+/*
+ * I should not need this one, but I gave up on getting create and edit work
+ * together, the Save button did nothing unless I did this.
+ */
+function submitCreateComboForm() {
+    formdata = $( "#createcomboform" ).serialize();
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        type: "POST",
+        url: "{{ path('message_create', { 'access': 'ajax' }) }}",
+        data: formdata,
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+            $( "#createcombo" ).modal("hide");
+            parent.location.reload();
+      }).fail(function(xhr, status, error) {
+            errmsg = "Combo sending failed\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+    });
+    return false;
+}
+</script>

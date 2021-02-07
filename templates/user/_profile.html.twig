@@ -1,0 +1,39 @@
+<h4 class="text-uppercase font-weight-bold mt-4">My Profile</h4>
+<p>Please make sure your contact information is up to date at all times</p>
+
+<div class="mb-4">
+  <div class="row">
+    <div class="col-5 col-lg-2">
+        {% if profile_picture_url is not null %}
+        <img class="image-circle" src="{{ profile_picture_url }}"></img>
+        {% endif %}
+    </div>
+    <div class="col-7 col-lg-10">
+        {% for role in roles %}
+        {{ role.description }}</br>
+        {% endfor %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 col-lg-6 mt-4">
+        <div>Mobile:
+            <span class="font-weight-bold">{{ mobile_phone_number }}</span>
+        </div>
+        <div>E-mail:
+            <span class="font-weight-bold">{{ email }}</span>
+        </div>
+    </div>
+    <div class="col-12 col-lg-8 mt-4">
+        <span class="font-weight-bold d-block">Skills:</span>
+        {{ functions | join(", ") }}
+    </div>
+    <div class="col-12 mt-4">
+{% set from_date = "now"|date_modify('first day of this month')|date_modify('first day of this week')|date("Y-m-d") %}
+{% set to_date = "now"|date_modify('last day of this month')|date_modify('last day of this week')|date("Y-m-d") %}
+        <a class="btn btn-light p-4 border border-secondary col-12 col-lg-2 mb-2 mr-2" href="#" onClick="return getCContent('{{ path('uf_me_joblog', { 'from_date': from_date, 'to_date': to_date }) }}');">MY HOURS</a>
+        <a class="btn btn-light p-4 border border-secondary col-12 col-lg-2 mb-2 mr-2" href="#" onClick="return getCContent('{{ path('uf_me_absence', { 'from_date': from_date, 'to_date': to_date }) }}');">MY ABSENCE</a>
+        <a class="btn btn-light p-4 border border-secondary col-12 col-lg-2 mb-2 mr-2" href="#" onClick="return getCContent('{{ path('uf_me_files') }}');">FILES</a>
+        <a class="btn btn-light p-4 border border-secondary col-12 col-lg-2 mb-2" href="#" onClick="return getCContent('{{ path('uf_me_change_password') }}');">PASSWORD</a>
+    </div>
+  </div>
+</div>

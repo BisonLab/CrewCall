@@ -1,0 +1,45 @@
+{% include 'dashboarder/handling.html.twig' %}
+{% set mlogcontext = {
+            'system': 'dabaru',
+            'object_name': 'person',
+            'message_types': ['PersonNote', 'PM', 'PMSMS'],
+            'states': ['UNREAD','SENT'],
+            'external_id': app.user.id
+    }
+%}
+<div id="personalmessages">
+  <div class="row">
+    <div class="col-sm-12">
+    <h3>Messages to you</h3>
+    </div>
+  </div>
+{% set messages = sakonnin_messages.MessagesForContext(mlogcontext) %}
+{% set messages = messages | merge(sakonnin_messages.MessagesForUser(app.user, {'state': 'UNREAD'})) %}
+{% for message in messages %}
+{% if is_granted('show', message) %}
+<div id="sakonninmessage_{{ message.id}}">
+ <div class="noteText row">
+    <div class="col-6">
+        {# While we wait for a message type label. 
+        <strong>{% if message.subject is not empty %}{{ message.subject }}{% else %}{{ message.messagetype }}{% endif %}</strong>
+        #}
+        <strong>{{ message.subject }}</strong>
+    </div>
+    <div class="col-6 ml-auto">
+        <em>{{ message.createdAt | date('Y-m-d') }} - {{ message.createdBy }}</em>
+    </div>
+ </div>
+ <div class="noteText row">
+  <div class="col-sm-8">
+<pre wrap class="noteText">
+{{ message.body }}
+</pre>
+ </div>
+  <div class="col-4">
+    <a href="#" onClick="return setStateOnSakonninMessage({{ message.id }}, 'ARCHIVED');" class="btn-dash btn-success">Read it!</a>
+  </div>
+</div>
+</div> <!--sakonninmessage -->
+{% endif %}
+{% endfor %}
+</div><!-- personalmessages -->

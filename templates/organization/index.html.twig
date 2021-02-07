@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+{% block title %}Organizations{% endblock %}
+{% block body %}
+
+    <div class="row">
+    <div class="col-sm-6">
+    <h1>Organizations</h1>
+    </div>
+    <div class="col-sm-3">
+    </div>
+    <div class="col-sm-2 ml-auto">
+    <a href="{{ path('organization_new') }}" class="btn-sm btn-dark">New Organization</a>
+    </div>
+    </div>
+
+        <table class="sortable_table table table-hover table-sm">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Office phone</th>
+                <th>Office email</th>
+                <th>Status</th>
+                <th class="organizationListPeopleCol">People</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for organization in organizations %}
+            <tr>
+                <td><a href="{{ path('organization_show', { 'id': organization.id }) }}">{{ organization.name }}</a></td>
+                <td>{{ organization.officephonenumber }}</td>
+                <td>{{ organization.officeemail }}</td>
+                <td>{{ organization.statelabel }}</td>
+                <td class="organizationListPeopleCol">{{ organization.personroleorganizations.count }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

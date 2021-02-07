@@ -1,0 +1,938 @@
+/*
+ * Just specific css tags (and a little bit more than that..) for this
+ * application.
+ */
+html {
+    overflow-y: scroll;
+}
+
+/* 
+ * Modals makes the head and body padding-right jump to 15px
+ * (Both header and body)
+ */
+header {
+    padding-right: 0 !important;
+}
+
+body {
+    padding-right: 0 !important;
+    padding-top: 80px;
+    line-height: 1.15;
+    background-color:#f2f2f2!important;
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    color:#212529;
+    font-size: 12px;
+}
+
+h1 {
+    font-size: 24px;
+}
+h3 {
+ font-size: 20px;
+}
+
+/*
+ * Menu number one, the main one.
+ */
+.fixed-top {
+    background-color: #f8f8f8;
+}
+
+.ccNavmenu {
+    /* 
+     * This has implications I may not really like. May be possible
+     * to tweak in the media- settings to change the wrap.
+     */
+    width: 100%;
+    flex-wrap: nowrap;
+    font-size: 14px;
+}
+
+.ccNavmenu a {
+    font-weight: bold;
+    color: #555555;
+}
+
+.ccMainmenu,
+.ccUsermenu {
+    margin-top: 9px;
+}
+
+.subEventInfo {
+    margin-left: 25px;
+    margin-right: 25px;
+    padding-bottom: 16px;
+}
+
+/* Not really the right thing to do, but the result looks better */
+.btn-sm {
+    display: inline-block;
+    margin: 4px;
+    font-weight: bold;
+}
+
+.btn {
+    display: inline-block;
+    margin: 4px;
+    font-weight: bold;
+}
+
+.btn-default {
+    color: #333333;
+    background-color: #ffffff;
+    border-color: #cccccc;
+}
+
+.btn-dash {
+    margin-top: 16px;
+    border: 1px solid;
+    border-color: black;
+    padding-top: 0.2rem;
+    padding-right: 0.4rem;
+    padding-bottom: 0.2rem;
+    padding-left: 0.4rem;
+    font-size: 0.875rem;
+    font-weight: bold;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+}
+
+.btn-light {
+    border: 1px solid;
+    border-color: black;
+}
+
+/*
+ * Makes it possible to hide tabs without ending up with a hole.
+ */
+.nav-tabs li {
+    position: static;
+}
+/*
+ * Makes it possible to hide tabs without ending up with a hole.
+ */
+
+.nopadding {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+/*
+ * The header Navbar.
+ */
+.navbar-header {
+    margin-left: 20px;
+    margin-right: 10px;
+    background-color: #f8f8f8;
+    color: black;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    flex-wrap: wrap;
+    vertical-align: middle;
+    align-items: center;
+    font-size: 16px;
+}
+.navbar-header a,
+.navbar-header .fas,
+.navbar-header .far {
+    margin: 4px;
+    font-size: 24px;
+}
+
+.navbar-header-item {
+}
+
+.navbar-header ul,
+.navbar-header ul a {
+    font-size: 14px;
+    font-weight: 700;
+    color: #555555;
+    justify-content: center;
+}
+
+.navbar-header .dropdown-toggle {
+    color: #555555;
+}
+
+.navbar-header .dropdown-item {
+    font-size: 16px;
+    display: block;
+    width: 100%;
+    padding: .25rem 1.5rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+}
+
+.navbar-title {
+    color: black;
+    font-size: 16px;
+    font-weight: bolder;
+}
+.navbar-title .user {
+    font-size: 80%;
+    font-weight: normal;
+}
+/*
+.navbar-header-item-active {
+    text-align: center;
+    background: black;
+}
+.navbar-header a:hover {
+    background: black;
+}
+*/
+
+/*
+ * The footer Navbar.
+ */
+.navbar-footer {
+    background: #343a40;
+    color: #f8f9fa;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding; 4px;
+    margin; 20px;
+    text-align: middle;
+}
+
+.navbar-footer a {
+    padding: 10px;
+    font-size: 16px;
+    color: #f8f9fa;
+}
+.navbar-footer .fas {
+    font-size: 23px;
+    color: #f8f9fa;
+}
+.navbar-footer-item {
+    text-align: center;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+.navbar-footer-item-active {
+    text-align: center;
+    background: black;
+}
+.navbar-footer a:hover {
+    background: black;
+}
+
+.navbar-footer .badge {
+    padding: .25em .5em;
+    border-radius: .5rem;
+    top: -10px;
+    position: relative;
+}
+
+/*
+ * Respsonsiveness
+ */
+@media (max-width: 600px) {
+  body { padding-top: 145px; }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    width: 1195px;
+  }
+}
+
+@media (min-width: 1300px) {
+  .container {
+    width: 1295px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .container {
+    width: 1395px;
+  }
+}
+
+@media (min-width: 1500px) {
+  .container {
+    width: 1495px;
+  }
+}
+
+.container {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.form-control {
+    width: auto;
+    font-size: 14px;
+} 
+
+.showTable {
+    margin:10px 0pt 15px;
+    border-spacing: 100px;
+}
+.showTable th {
+    margin:10px 0pt 15px;
+    vertical-align: top;
+    text-align: right;
+    padding: 5px 8px;
+}
+.showTable td {
+    margin:10px 0pt 15px;
+    padding: 5px 8px;
+}
+
+.summaryLogTable {
+    margin:10px 10px 15px;
+    border-spacing: 100px;
+}
+.summaryLogTable th {
+    margin:10px 0pt 15px;
+    vertical-align: top;
+    padding: 5px 8px;
+}
+.summaryLogTable td {
+    margin:10px 10px 15px;
+    padding: 5px 8px;
+}
+ 
+.popover{
+    max-width: 60%;
+}
+.popover-header .close {
+    font-size: 15px;
+}
+
+ul {
+    list-style-type: none
+}
+
+pre {
+    white-space: pre-wrap;
+    word-break: keep-all;
+    display: block;
+    padding: 3px;
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 1.42857143;
+    word-wrap: break-word;
+}
+
+button {
+    text-align: center;
+    border: 2px solid #555555;
+    background-color: #555555;
+    color: white;
+    border-radius: 0.2rem;
+}
+
+.fa-bars:before {
+    color: white;
+}
+
+/*
+ * (Data)tables customizing
+ */
+.shiftTable {
+  background-color: #e8e8e8;
+  margin-bottom: 0px;
+}
+
+.shiftTable tr {
+  border-top: 1px solid white;
+}
+
+.shiftTable tr td {
+  padding-right: 18px;
+  padding-left: 18px;
+}
+
+.table .table-striped {
+  background-color: #e8e8e8;
+  margin-bottom: 5px;
+  vertical-align: center;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+  border-top: 0px;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #e8e8e8;
+}
+
+.table-striped > tbody > tr:nth-of-type(even) {
+  background-color: #fff;
+}
+
+.table .jobListTd,
+.table-striped .jobListTd {
+  background-color: #e8e8e8;
+  padding-top: 9px;
+  padding-bottom: 0px;
+  padding-right: 18px;
+  padding-left: 18px;
+  margin: 0px;
+  margin-top: 9px;
+}
+
+.table-striped-inverted {
+  background-color: white;
+  border: 1px solid grey;
+  border-radius: 0.2rem;
+}
+
+.table-striped-inverted thead,
+.table-striped-inverted thead th {
+  background-color: white;
+  padding-top: 13px;
+  padding-bottom: 13px;
+  border: none;
+}
+
+.table-striped-inverted > tbody > tr:nth-of-type(odd) {
+  background-color: #e8e8e8;
+}
+
+.table-striped-inverted > tbody > tr:nth-of-type(even) {
+  background-color: white;
+}
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: #e8e8e8;
+}
+
+.table-hover tbody td .ccWarn, .table-hover tbody .ccWarn {
+    background-color: orange;
+}
+
+.table-hover tbody td .ccError, .table-hover tbody .ccError {
+    background-color: red;
+}
+
+.table-hover tbody tr td, .table-hover tbody {
+    background-color: #ffffff;
+}
+
+.thead-dark {
+  background-color: #f2f2f2;
+}
+
+.tableOverlap {
+  background-color: #F6CCD1;
+}
+
+table.dataTable.compact thead th,
+table.dataTable.compact thead td {
+    padding: 4px 17px 4px 4px;
+    border-bottom: 1px solid #00000;
+}
+
+table.dataTable.compact tfoot th,
+table.dataTable.compact tfoot td {
+    padding: 4px 17px 4px 4px;
+}
+
+table.dataTable.compact tbody th,
+table.dataTable.compact tbody td {
+    padding: 4px 17px 4px 4px;
+    border-top: 1px solid #dddddd;
+    border-right: 1px solid #dddddd;
+}
+
+table.dataTable.compact thead th {
+    background-color: #FAFAFA;
+}
+
+table.dataTable.compact tfoot th {
+    background-color: #FAFAFA;
+}
+
+/*
+table.dataTable thead .sorting:before {
+    opacity: 0.5;
+}
+table.dataTable thead .sorting:after {
+    opacity: 0.7;
+}
+*/
+
+/*
+
+Hover:
+#F6CCD1
+
+Dark stripe: 
+background-color: #e8e8e8;
+
+Light stripe
+background-color: #fff;
+
+ */
+
+/*
+ * Override / extend bootstrap
+ */
+
+/*
+ * Override / extend FullCalendar
+ */
+.fc-month-view .fc-time {
+ display:none
+}
+.fc-month-view .fc-day-top {
+ text-align:center!important
+}
+.fc-month-view .fc-day-number {
+ float:none!important
+}
+.fc-state-default {
+ background-color:#ffffff;
+ border-color:#ffffff;
+ color:#000000;
+ text-shadow: initial;
+ box-shadow: initial;
+ background-image: initial;
+}
+.fc-state-active {
+ color:#000000;
+ border-color: #CBCDCE;
+ background-color: #CBCDCE;
+}
+.fc-unthemed td.fc-today {
+ background:#ffff!important;
+ font-weight:700
+}
+.fc-week-number,
+.fc-month-view .fc-day-header {
+ color:#000000;
+ padding-top:3px!important;
+ padding-bottom:3px!important;
+}
+.fc-toolbar .fc-center {
+ margin-top:2px
+}
+.fc-center h2 {
+ font-size: 20px;
+}
+.fc-time-grid-container td,
+.fc-time-grid-container tr {
+ border:1px solid #eaeaea!important
+}
+.fc-view-container {
+ background-color: #FFFFFF;
+ border-color: #CBCDCE;
+}
+.fc-basic-view .fc-body .fc-row {
+ min-height:3.7em!important;
+ min-height:4em
+}
+
+/*
+ * Custom classes
+ */
+
+/*
+ * Nicked from
+ * http://www.themaninblue.com/experiment/InForm/horizontal.htm
+ */
+.ccCompactForm fieldset
+{
+    display: block;
+    margin: 0 0 3em 0;
+    padding: 0 1em 1em 1em;
+    font-size: 10px;
+}
+
+.ccCompactForm fieldset.radio
+{
+    margin: 1em 0 2em 0;
+}
+
+.ccCompactForm fieldset.radio input
+{
+    clear: both;
+    float: left;
+    width: auto;
+}
+
+.ccCompactForm fieldset.radio label
+{
+    font-weight: normal;
+}
+
+.ccCompactForm input
+{
+    display: block;
+/*    width: 15em; */
+    font-weight: normal;
+}
+
+.ccCompactForm input.submit
+{
+    clear: both;
+}
+
+.ccCompactForm label
+{
+    float: left;
+    display: block;
+    margin: 1em 1em 0 0;
+    font-weight: bold;
+}
+
+.ccCompactForm select
+{
+    font-weight: normal;
+    display: block;
+}
+
+.ccAmount
+{
+    box-sizing: border-box;
+    text-align: center;
+    display: inline-block;
+    width: 6ch;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-left: -3px;
+    margin-right: 0px;
+}
+
+.ccAmount.left
+{
+    border-radius: 17px 0px 0px 17px;
+}
+
+.ccAmount.right
+{
+    border-radius: 0px 17px 17px 0px;
+}
+
+.ccButtonSmall
+{
+    font-weight: bold;
+    border-radius: 6px;
+    box-sizing: border-box;
+    text-align: center;
+    display: inline-block;
+    width: 78px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.ccTotal
+{
+    background-color: lightgrey;
+    border-color: lightgrey;
+    color: black;
+}
+
+.ccNeeded
+{
+    background-color: grey;
+    border-color: grey;
+    color: black;
+}
+
+.ccConfirmed
+{
+    background-color: green;
+    border-color: green;
+    color: white;
+}
+
+.ccAssigned
+{
+    background-color: orange;
+    border-color: orange;
+    color: white;
+}
+
+.ccInterested
+{
+    background-color: red;
+    border-color: red;
+    color: white;
+}
+
+/*
+ * The ugly version, based on the saved STATE which is in CAPS
+ */
+.ccCONFIRMED
+{
+    background-color: green;
+    border-color: green;
+    color: white;
+}
+
+.ccASSIGNED
+{
+    background-color: orange;
+    border-color: orange;
+    color: white;
+}
+
+.ccINTERESTED
+{
+    background-color: red;
+    border-color: red;
+    color: white;
+}
+
+.ccNotice {
+    background-color: yellow;
+}
+
+.ccWarn {
+    background-color: orange;
+}
+
+.ccError {
+    background-color: red;
+}
+
+/* The switch - the box around the slider */
+.ccSwitch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+/* Hide default HTML checkbox */
+.ccSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.ccSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border: 1px solid #cccccc;
+}
+
+.ccSlider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 19px;
+  left: 2px;
+  top: 1px;
+  bottom: 1px;
+  background-color: red;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:focus + .ccSlider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .ccSlider:before {
+  -webkit-transform: translateX(16px);
+  -ms-transform: translateX(16px);
+  transform: translateX(16px);
+  background-color: green;
+}
+
+/* Rounded sliders */
+.ccSlider.round {
+  border-radius: 34px;
+}
+
+.ccSlider.round:before {
+  border-radius: 50%;
+}
+
+/*
+ * The printed event lists.
+ */
+.printableContent h4 {
+  margin-bottom: 5px;
+  font-size: 20px;
+}
+
+.printableContent h1 {
+  margin-left: 20px;
+}
+
+.info-table th, .info-table td {
+  font-size: 16px;
+  padding-left: 30px;
+  padding-right: 3px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+.printable-table {
+  width:100%;
+  margin-left: 20px;
+}
+
+.printable-table th,
+.printable-table td {
+    font-size: 15px;
+    padding: 3px;
+}
+
+/*
+ * Event card / accordion
+ */
+.card {
+    background-color: #e8e8e8;
+    border-right: 0px;
+    border-left: 0px;
+}
+
+.card-header {
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 8px;
+    padding-bottom: 2px;
+    border: 0px;
+    display: float;
+
+    color: #fff;
+    background-color: #343a40;
+    border-color: #343a40;
+    font-size: 12px;
+}
+
+.card-header h4{
+    font-size: 14px;
+    color: #fff;
+}
+
+.card-header a:link,
+.card-header a:visited,
+.card-header a:hover,
+.card-header a:active,
+.card-header a:focus
+ {
+    color: #fff;
+    background-color: #343a40;
+    border-color: #343a40;
+    text-decoration: none;
+}
+
+.card-header .cardplusminus:after {
+    font-family: 'Font Awesome 5 Free';
+    content: "\f068";
+    float: right !important;
+    color: white;
+    font-weight: bold;
+}
+
+.card-header .collapsed .cardplusminus:after {
+    font-family: 'Font Awesome 5 Free';
+    content: "\f067";
+    float: right !important;
+    color: white;
+    font-weight: bold;
+}
+
+.card-title {
+    color: white;
+    margin-bottom: 0px;
+}
+
+.card-right {
+    float: right;
+}
+.card-centerish {
+    margin-left: 50px;
+}
+.card-body {
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 16px;
+    padding-bottom: 0px;
+    background-color: white;
+    /* background-color: #f8f8f8; */
+}
+
+.delete-btn {
+    text-decoration: underline;
+    font-weight: 400;
+}
+
+.card-custom .fa-comment {
+    font-size: 39px;
+}
+
+/*
+ * Glyphs for this application
+ */
+.fas {
+    color: black;
+}
+
+/*
+ * Gotta have these, easier adding of extra properties.
+ */
+.user_glyph:after {
+    font-size: 25px;
+    color: black;
+    font-family: 'Font Awesome 5 Free';
+    content: "\f2bd";
+}
+
+.remove_glyph:after {
+    font-size: 15px;
+    color: red;
+    font-family: 'Font Awesome 5 Free';
+    content: "\f2ed";
+}
+
+.edit_glyph:after {
+    font-size: 15px;
+    color: black;
+    font-family: 'Font Awesome 5 Free';
+    content: "\f044";
+}
+
+.archive_glyph:after {
+    font-size: 15px;
+    color: black;
+    font-family: 'Font Awesome 5 Free';
+    content: "\f0c7";
+}
+
+.ok_glyph:after {
+    font-size: 15px;
+    color: green;
+    background-color: white;
+    padding-left: 4px;
+    padding-right: 4px;
+    margin-left: 8px;
+    margin-right: 8px;
+    font-family: 'Font Awesome 5 Free';
+    content: "\f00c";
+    border-radius: 0.2rem;
+}

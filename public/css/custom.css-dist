@@ -1,0 +1,16 @@
+/*
+ * This file is for the local customizations.
+ * Starting with nothing.
+ */
+
+/*
+ * This is how you hide a tab.
+li.personHoursTab {
+    position: fixed;
+}
+.personHoursTab {
+    content: none;
+    display: none;
+    visibility: hidden;
+}
+ */

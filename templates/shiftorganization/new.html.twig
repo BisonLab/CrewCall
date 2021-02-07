@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+{% block title %}New Shift Organization{% endblock %}
+{% block body %}
+    <h1>Shiftorganization creation</h1>
+{% include '/shiftorganization/_new.html.twig' with { 'form': form}  %}
+
+    <ul>
+        <li>
+            <a href="{{ path('shiftorganization_index') }}">Cancel</a>
+        </li>
+    </ul>
+{% endblock %}

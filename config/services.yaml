@@ -1,0 +1,96 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+        bind:
+            $crewcall_em: "@doctrine.orm.crewcall_entity_manager"
+            $sakonnin_em: "@doctrine.orm.sakonnin_entity_manager"
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/CustomBundle/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller/*'
+        tags: ['controller.service_arguments']
+        calls:
+            - [ setContainer, ['@service_container'] ]
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    app.menu_builder:
+        class: App\Menu\Builder
+        arguments: ["@knp_menu.factory", '@service_container']
+        tags:
+            - { name: knp_menu.menu_builder, method: mainMenu, alias: mainmenu }
+            - { name: knp_menu.menu_builder, method: userMenu, alias: usermenu }
+
+    # TODO: Make these autowireable
+    crewcall.events:
+        class: App\Service\Events
+        public: true
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    crewcall.jobs:
+        class: App\Service\Jobs
+        public: true
+        arguments: ["@doctrine.orm.entity_manager", "@sakonnin.messages"]
+
+    crewcall.joblogs:
+        class: App\Service\JobLogs
+        public: true
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    crewcall.retriever:
+        class: App\Service\CrewCallRetriever
+        public: true
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    crewcall.calendar:
+        class: App\Service\Calendar
+        public: true
+        arguments: ["@router", "@crewcall.summarizer"]
+
+    crewcall.statehandler:
+        class: App\Service\StateHandler
+        arguments: ["@doctrine.orm.entity_manager", "@sakonnin.messages"]
+
+    crewcall.summarizer:
+        class: App\Service\Summarizer
+        public: true
+        arguments: ['@router']
+
+    crewcall.dashboarder:
+        class: App\Service\Dashboarder
+        public: true
+        arguments: ['%crewcall.dashboarder%','@router', "@doctrine.orm.entity_manager", "@twig"]
+
+    crewcall.addressing:
+        class: App\Service\Addressing
+        public: true
+        arguments: ['%locale%','%addressing%']
+
+    crewcall_retriever:
+        alias: crewcall.retriever
+
+    crewcall.statechangelistener:
+        class: App\EventListener\StateChangeListener
+        arguments: ["@crewcall.statehandler"]
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+            - { name: doctrine.event_listener, event: onFlush }

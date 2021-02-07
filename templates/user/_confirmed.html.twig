@@ -1,0 +1,20 @@
+<h4 class="text-uppercase font-weight-bold mt-4">My jobs</h4>
+<div class="row">
+    <div class="col-4 justify-content-center">
+    </div>
+    {% include '/user/_choose_month.html.twig' %}
+</div><!-- end row -->
+{% if confirmed | length == 0 %}
+<div class="alert alert-warning mt-5">No jobs here!</div>
+{% endif %}
+
+{% set month = ''%}
+<div class="row p-3">
+{% for job in confirmed %}
+{% if month != job.shift.month %}
+{% set month = job.shift.month %}
+<h5 class="col-12 p-0 mt-2 font-weight-bold">{{ job.shift.month }}</h5>
+{% endif %}
+    {% include '/user/_job_card.html.twig' %}
+{% endfor %}
+</div>

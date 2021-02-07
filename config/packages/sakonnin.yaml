@@ -1,0 +1,43 @@
+parameters:
+    sakonnin.user:
+        class: App:Person
+        entity: \App\Entity\Person
+
+    sakonnin.function_factories:
+        - BisonLab\SakonninBundle\Lib\Sakonnin\SakonninFunctions
+        - App\Lib\Sakonnin\SakonninFunctions
+    # For the up/download of files attached to objects. This should not be
+    # available from the web.
+    sakonnin.file_storage: '%kernel.project_dir%/var/files'
+    # When a message has "expires at" and reaches the expire date, do:
+    sakonnin.expire_method: "Archive"
+    # And when the message type expunge hits:
+    sakonnin.expunge_method: "Delete"
+
+    # The simplest file types. Need to set it here to override the ones in the
+    # Sakonnin Bundle.
+    sakonnin.file_types:
+        ProfilePicture:
+            chooseable: true
+            thumbnailable: true
+        CV:
+            chooseable: true
+            thumbnailable: false
+        Map:
+            chooseable: true
+            thumbnailable: false
+        DOCUMENT:
+            chooseable: true
+            thumbnailable: false
+        AUTO:
+            chooseable: true
+            thumbnailable: false
+        IMAGE:
+            chooseable: true
+            thumbnailable: true
+        TEXT:
+            chooseable: true
+            thumbnailable: false
+        UNKNOWN:
+            chooseable: true
+            thumbnailable: false

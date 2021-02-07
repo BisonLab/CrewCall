@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+{% block title %}Crew{% endblock %}
+{% block body %}
+{% include '/person/handling.html.twig' %}
+
+<h1>Crew</h1>
+<div class="row">
+<div class="col-8">
+{% if functions is defined %}
+<form action="{{ path('crew_index') }}" method="GET">
+<label>Function</label>
+<select name="function_id">
+    <option value="">All</option>
+    {% for elem in functions %}
+    <option value="{{ elem.id }}" {% if functionEntity is not null and elem.id == functionEntity.id %}selected{% endif %}>{{ elem.name }}</option>
+    {% endfor %}
+</select>
+{# TODO: if on-date, show jobs-summary that date #}
+    <select name="select_grouping">
+        <option value="all_active"{% if select_grouping == "all_active" %} SELECTED{% endif %}>All Active</option>
+        <option value="available"{% if select_grouping == "available" %} SELECTED{% endif %}>Available on date:</option>
+        <option value="booked"{% if select_grouping == "booked" %} SELECTED{% endif %}>Booked on date:</option>
+        <option value="confirmed"{% if select_grouping == "confirmed" %} SELECTED{% endif %}>Confirmed on date:</option>
+        <option value="assigned"{% if select_grouping == "assigned" %} SELECTED{% endif %}>Assigned on date:</option>
+        <option value="interested"{% if select_grouping == "interested" %} SELECTED{% endif %}>Interested on date:</option>
+<!-- Not sure why I wanted this. Keep it as an idea for now.
+        <option value="nothing"{% if select_grouping == "nothing" %} SELECTED{% endif %}>Nothing on date:</option>
+-->
+        <option value="all"{% if select_grouping == "all" %} SELECTED{% endif %}>Include non-active</option>
+    </select>
+    <input type="date" value="{{ on_date}}" name="on_date"/>
+{% if simplified %}
+    <input type="hidden" name="simplified" value="true">
+{% endif %}
+    <button class="btn-sm btn-dark" type="submit">Show</button>
+    </form>
+{% endif %}
+</div>
+<div class="col-2">
+</div>
+{% if simplified %}
+<div class="col-2" align="right">
+    <button class="btn-sm btn-dark" id="message_modal_link" onClick="return openMessageModal();">Send a message</button>
+</div>
+{% else %}
+<div class="col-2">
+    <a href="{{ path('person_new_crewmember') }}" class="btn-sm btn-dark">New Crew member</a>
+</div>
+{% endif %}
+
+{% if simplified %}
+{% include '/person/_simplified_index.html.twig' %}
+{% else %}
+{% include '/person/_index.html.twig' %}
+{% endif %}
+
+<div align="right">
+    <button class="btn-sm btn-dark" id="message_modal_link" onClick="return openMessageModal();">Send a message</button>
+</div>
+{% endblock %}

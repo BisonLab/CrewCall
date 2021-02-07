@@ -1,0 +1,19 @@
+<p><strong>{{ job.shift }} {{ job.start | date("d.m.Y H:i") }} -> {{ job.end | date("H:i") }}</strong></p>
+{% form_theme form 'form_div_layout.html.twig' %}
+{{ form_start(form, {action:path('job_new', {'access': 'ajax'}), 'attr': {'id':'newJobForm', 'class': 'ccCompactForm'}}) }}
+<fieldset>
+    <input type="hidden" name="username" id="username">
+    <label>Person
+    {{ form_widget(form.person) }}
+    </label>
+    <label>Status
+    {{ form_widget(form.state) }}
+    </label>
+    <label>&nbsp;
+    <input id="submitNewJobClose" type="submit" value="Add and close" /><br>
+    <input id="submitNewJobAnother" type="submit" value="Add and add another" /><br>
+    </label>
+</fieldset>
+{{ form_end(form) }}
+<div id="alreadyAdded">
+</div>

@@ -1,0 +1,24 @@
+<h4 class="text-uppercase font-weight-bold mt-4">My Absence</h4>
+<p>Please make sure your information is up to date at all times</p>
+<div  class="row mb-4">
+<div  class="col-12">
+<table class="profile-table table-sm table-striped">
+<thead>
+<tr>
+<th>State</th>
+<th>From</th>
+<th>To</th>
+</tr>
+</thead>
+<tbody>
+{% for abs in absence %}
+<tr>
+<td>{{ abs.state }}</td>
+<td>{{ abs.from_date }}</td>
+<td>{{ abs.to_date }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>

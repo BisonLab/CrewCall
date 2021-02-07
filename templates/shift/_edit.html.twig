@@ -1,0 +1,26 @@
+{% form_theme edit_form 'form_div_layout.html.twig' %}
+{{ form_start(edit_form, { 'action': path('shift_edit', {'access': 'ajax'}), 'attr': {'id':'editShiftForm', 'class': 'ccCompactForm'}}) }}
+<fieldset>
+    <label>Start
+    {{ form_widget(edit_form.start) }}
+    </label>
+    <label>End
+{{ form_widget(edit_form.end) }}
+    </label>
+    <label>Status
+{{ form_widget(edit_form.state) }}
+    </label>
+    <label>Amount
+{{ form_widget(edit_form.amount) }}
+    </label>
+    <label>Function
+{{ form_widget(edit_form.function) }}
+    </label>
+<div class="d-none">
+{{ form_widget(edit_form.event) }}
+</div>
+    <label>&nbsp;
+    <input class="btn-sm btn-dark" id="submitEditShift"  type="submit" value="Save" />
+    </label>
+</fieldset>
+{{ form_end(edit_form) }}

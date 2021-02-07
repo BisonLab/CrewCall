@@ -1,0 +1,229 @@
+<script type="text/javascript">
+
+$.fn.dataTable.ext.order.intl = function ( locales, options ) {
+    if ( window.Intl ) {
+        var collator = new window.Intl.Collator( locales, options );
+        var types = $.fn.dataTable.ext.type;
+ 
+        delete types.order['string-pre'];
+        types.order['string-asc'] = collator.compare;
+        types.order['string-desc'] = function ( a, b ) {
+            return collator.compare( a, b ) * -1;
+        };
+        types.order['norsk-asc'] = collator.compare;
+        types.order['norsk-desc'] = function ( a, b ) {
+            return collator.compare( a, b ) * -1;
+        };
+    }
+};
+
+function setupSortable(sortable_table, selectable) {
+    var options = {};
+    if ($(sortable_table).find('>tbody >tr').length > 100) {
+        options = {
+            "pageLength": 100,
+            "lengthMenu": [[ 100, 200, 500, -1], [100, 200, 500, "All"]],
+            "columnDefs": [
+                {
+                "targets": 'no-sort',
+                "orderable": false
+                }
+            ]
+        };
+    } else if ($(sortable_table).find('>tbody >tr').length < 20) {
+        options = {
+            "paging": false,
+            "searching": false,
+            "columnDefs": [{
+                "targets": 'no-sort',
+                "orderable": false
+            }]
+        };
+    } else {
+        options = {
+            "paging": false,
+            "columnDefs": [{
+                "targets": 'no-sort',
+                "orderable": false
+            }]
+        };
+    }
+
+    if (selectable) {
+        options["columnDefs"].push( {
+            "label": "Select All",
+            "orderable": false,
+            "targets": 'selectcol',
+            'checkboxes': true
+        });
+    }
+/*
+ * Not really working.
+    $.fn.dataTable.ext.order.intl("{{ javascript_locale }}");
+ */
+    sorted_table = $(sortable_table).DataTable( options );
+    sorted_table.on( 'page.dt', function () {
+        $('html, body').animate({
+            scrollTop: 0
+        }, 300);
+    } );
+/*
+ * Just butt ugly.
+    if (selectable) {
+        $(".selectcol").prepend("<label>Select All</label><br>");
+    }
+ */
+    return sorted_table;
+}
+
+$(document).ready(function() {
+
+    $(".sortable_table").each(function() {
+        if (!$(this).is("#sortable_table")) {
+            setupSortable(this, false);
+        }
+    });
+    // Call me lazy.
+    $("#sortable_table").each(function() {
+        setupSortable(this, false);
+    });
+
+    // From https://www.bootply.com/VQqzOawoYc ( With added escaping of hash )
+    // Javascript to enable link to tab
+    var hash = document.location.hash;
+    var tab_prefix = "tab_";
+    if (hash.match('tab')) {
+        $('.nav-tabs a[href=\\'+hash.replace(tab_prefix,"")+']').tab('show');
+    }
+    // Change hash for page-reload
+    $('.nav-tabs a').on('shown.bs.tab', function (e) {
+        window.location.hash = e.target.hash.replace("#", "#" + tab_prefix);
+    });
+
+    $('[data-toggle="popover"]').popover();
+
+});
+
+function popmeup(url)
+{
+    var newwindow;
+    newwindow = window.open(url,'name','height=800,width=1000,resizeable,scrollbars=yes');
+    if (window.focus) {newwindow.focus()};
+    return newwindow;
+}
+function form_post_popup(form) {
+    window.open('','form_popup','height=800,width=700,resizeable,scrollbars=yes');
+    form.target = 'form_popup';
+}
+function confirm_post_pop(form, text) {
+    if (confirm(text)) {
+        return form_post_popup(form);
+    } else {
+        return false;
+    }
+}
+
+function popSummary(entity, entity_id, uid = '') {
+    url = "{{ path('summary_show_get', { 'access': 'ajax' }) }}?entity=" + entity + "&entity_id=" + entity_id;
+
+    var popelement = "#popSummary_" + entity + "_" + entity_id + uid;
+
+    ename = entity.replace("_", " ");
+    var poptitle = ename.charAt(0).toUpperCase() + ename.slice(1);
+    var poptitle = poptitle + 'summary <a href="#" class="close" data-dismiss="alert"><span class="fas fa-times-circle"></span></a>';
+
+    /*
+     * I'll rather do this than sanitize: false, which is too wide.
+     */
+    $.fn.popover.Constructor.Default.whiteList.table = [];
+    $.fn.popover.Constructor.Default.whiteList.tr = [];
+    $.fn.popover.Constructor.Default.whiteList.td = [];
+    $.fn.popover.Constructor.Default.whiteList.th = [];
+    $.fn.popover.Constructor.Default.whiteList.div = [];
+    $.fn.popover.Constructor.Default.whiteList.tbody = [];
+    $.fn.popover.Constructor.Default.whiteList.thead = [];
+
+    res = $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'html'
+      }).done( function( contenthtml, textStatus, xhr ) {
+        $( popelement ).popover({
+            delay: 500,
+            html: true,
+            placement: "top",
+            content: contenthtml,
+            title: poptitle,
+            trigger: "focus",
+        });
+        $( popelement ).popover("show");
+
+        $(document).on("click", ".popover .close" , function(){
+            $(this).parents(".popover").popover('hide');
+            return false;
+        });
+      }).fail( function( ) {
+        alert("Error grabbing summary");
+      });
+    return false;
+}
+
+function popLogSummary(entity, entity_id, placement = 'top') {
+    url = "{{ path('summary_show_log', { 'access': 'ajax' }) }}?entity=" + entity + "&entity_id=" + entity_id;
+    var popelement = "#popLogSummary_" + entity + "_" + entity_id;
+
+    /*
+     * I'll rather do this than sanitize: false, which is too wide.
+     */
+    $.fn.popover.Constructor.Default.whiteList.table = [];
+    $.fn.popover.Constructor.Default.whiteList.tr = [];
+    $.fn.popover.Constructor.Default.whiteList.td = [];
+    $.fn.popover.Constructor.Default.whiteList.th = [];
+    $.fn.popover.Constructor.Default.whiteList.div = [];
+    $.fn.popover.Constructor.Default.whiteList.tbody = [];
+    $.fn.popover.Constructor.Default.whiteList.thead = [];
+
+    $.ajax({
+            url: url,
+            dataType: 'html'
+      }).done( function( content, textStatus, xhr ) {
+        $( popelement ).popover({
+            container: 'body',
+            trigger: "focus",
+            html: true,
+            placement: placement,
+            title: 'Log Summary <a href="#" class="close" data-dismiss="alert"><span style="font-size: 12px" class="fas fa-times-circle"></span></a>',
+            content: content
+        });
+        $( popelement ).popover("show");
+        $(document).on("click", ".popover .close" , function(){
+            $(this).parents(".popover").popover('hide');
+        });
+    });
+    return false;
+}
+
+function openCcModal(url, title) {
+    $.get(url, function( data ) {
+        $( "#ccModalBody" ).html(data);
+        $( "#ccModalTitle" ).html(title);
+        $( "#ccModal" ).modal('show');
+    });
+    return false;
+}
+
+</script>
+
+<div class="modal fade" id="ccModal" role="dialog" tabindex="-1">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="ccModalTitle"></h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body" id="ccModalBody">
+      </div>
+    </div>
+  </div>
+</div> <!-- / modal -->

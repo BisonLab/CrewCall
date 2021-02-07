@@ -1,0 +1,10 @@
+<table class="showTable">
+{% for s in data %}
+  {% if s.value is defined %}
+    <tr>
+    <th>{{ s.label }}</th>
+    <td>{{ s.value }}</td>
+    </tr>
+  {% endif %}
+{% endfor %}
+</table>

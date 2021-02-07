@@ -1,0 +1,120 @@
+{% macro print_event_tr(event, dateformat, expandable, with_amounts) %}
+    {% if event.parent %}
+        <tr class="event_child event_parent_{{ event.parent.id}} {{ event.state }}_state ">
+    {% else %}
+        <tr class="event_tr_{{ event.id}} {{ event.state }}_state">
+    {% endif %}
+        <td>
+            {% if expandable and event.children | length > 0 %}
+            <a href="#" class="expand_subs" id="expand_subs_{{ event.id }}" onClick="return expandSubs({{ event.id }});"><span id=expand_subs_{{ event.id }}_span" class="fas fa-plus"></span></a>
+            <a href="#" class="collapse_subs" id="collapse_subs_{{ event.id }}" onClick="return collapseSubs({{ event.id }});"><span id=collapse_subs_{{ event.id }}_span" class="fas fa-minus"></span></a>
+            {% else %}
+            &nbsp;
+            {% endif %}
+        </td>
+
+        {% if event.parent %}
+        <td data-order="{{ event.parent.start | date('U')}}" >
+        {% else %}
+        <td data-order="{{ event.start | date('U')}}" >
+        {% endif %}
+            {{ event.start|date(dateformat) }}
+            {% if event.end %}
+                <span class="fas fa-arrow-right"></span> 
+                {%  if event.end | date('Y-m-d') == event.start | date('Y-m-d') %}
+                {{ event.end|date('H:i') }}
+                {% else %}
+                    {{ event.end | date(dateformat) }}
+                {% endif %}
+            {% endif %}
+        </td>
+        <td>
+        <a href="{{ path('event_show', { 'id': event.id }) }}">{{ event }}</a>
+        </td>
+        <td>{{ event.location }}</td>
+        <td>{{ event.statelabel }}</td>
+        {% if with_amounts %}
+            <td>
+            {% set amounts = event.jobsamountbystate %}
+<!-- TODO: Probably remove this one
+            <span title="All shifts booked" class="fas fa-ok" {% if event.needsamount - amounts.CONFIRMED != 0 %}style="opacity: 0;"{% endif %}"></span>&nbsp;
+-->
+            <span title="Total needed" class="ccAmount left ccTotal">{{ event.needsamount }}</span>
+            <span title="Still needing" class="ccAmount ccNeeded">{{ event.needsamount - event.bookedamount}}</span>
+            <span title="Amount Confirmed"  class="ccAmount ccConfirmed">{{ amounts.CONFIRMED }}</span>
+            <span title="Amount Assigned" class="ccAmount ccAssigned">{{ amounts.ASSIGNED }}</span>
+            <span title="Amount Interested" class="ccAmount right ccInterested">{{ amounts.INTERESTED }}</span>
+            </td>
+        {% endif %}
+    </tr>
+{% endmacro %}
+{% import _self as evmacros %}
+
+{% block body %}
+
+{# hacks, blame laziness #}
+{% if upcoming %}
+    <table class="sortable_table table table-hover table-sm" data-order='[[ 1, "asc" ]]'>
+{% elseif past %}
+    <table class="sortable_table table table-hover table-sm" data-order='[[ 1, "desc" ]]'>
+{% else %}
+    <table class="sortable_table table table-hover table-sm" data-order='[[ 1, "asc" ]]'>
+{% endif %}
+
+        <thead>
+        <tr>
+            <th class="no-sort">&nbsp;</th>
+            <th>When</th>
+            <th>Event</th>
+            <th>Location</th>
+            <th>Status</th>
+    {% if not past %}
+            <th class="no-sort">Amounts</th>
+    {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+
+    {% if past %}
+        {% set dateformat = 'd M Y H:i' %}
+    {% else %}
+        {% set dateformat = 'd M H:i' %}
+    {% endif %}
+
+    {% for event in events %}
+      {% if not event.parent %}
+        {% if past %}
+            {{ evmacros.print_event_tr(event, dateformat, false, false) }}
+        {% else %}
+            {{ evmacros.print_event_tr(event, dateformat, true, true) }}
+            {% for child in event.children %}
+                {{ evmacros.print_event_tr(child, dateformat, false, true) }}
+            {% endfor %}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    </tbody>
+ </table>
+<script>
+
+function expandSubs(event_id) {
+    $(".event_parent_" + event_id).show();
+    $("#expand_subs_" + event_id).hide();
+    $("#collapse_subs_" + event_id).show();
+}
+function collapseSubs(event_id) {
+    $(".event_parent_" + event_id).hide();
+    $("#collapse_subs_" + event_id).hide();
+    $("#expand_subs_" + event_id).show();
+}
+
+$(document).ready(function() {
+    if ($("#readycheckbox").prop('checked') == true) {
+        $(".READY_state").hide();
+    }
+    $(".event_child").hide();
+    $(".collapse_subs").hide();
+});
+</script>
+
+{% endblock %}

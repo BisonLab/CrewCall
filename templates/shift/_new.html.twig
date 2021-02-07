@@ -1,0 +1,35 @@
+{# Don't like to add the access like this, but these templates are for ajax, alas I can just as well admit it. #}
+{% form_theme form 'form_div_layout.html.twig' %}
+{{ form_start(form, {'action': path('shift_new', {'access': 'ajax'}), 'attr': {'id':'newShiftForm', 'class': 'ccCompactForm'}}) }}
+<fieldset>
+    <label>Start
+    {{ form_widget(form.start) }}
+    </label>
+    <label>End
+{{ form_widget(form.end) }}
+    </label>
+    <label>Status
+{{ form_widget(form.state) }}
+    </label>
+    <label>Amount
+{{ form_widget(form.amount) }}
+    </label>
+    <label>Function
+{{ form_widget(form.function) }}
+    </label>
+    <label>&nbsp;
+    <input id="submitNewShift" type="submit" value="Add" />
+    </label>
+</fieldset>
+{{ form_end(form) }}
+
+<script>
+$(document).ready(function() {
+    // First, close them all.. looks stupid but it's because they are not
+    // populated and ends up as just a small white stripe.
+    $( "#shift_event").prev().hide();
+    $( "#shift_event" ).hide();
+    // Had a "Grab job lists" function here, but it should be enough
+    // having this in event/handling ready ( handleJobLists() ) 
+});
+</script>

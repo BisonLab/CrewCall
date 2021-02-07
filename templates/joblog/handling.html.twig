@@ -1,0 +1,141 @@
+<script>
+
+function grabNewJobLogForm(job_id, shift_id) {
+    url = "{{ path('joblog_new', { 'access': 'ajax' }) }}";
+    if (job_id == "shift") {
+        url = url + "?shift=" + shift_id;
+    } else {
+        url = url + "?job=" + job_id;
+    }
+    $.get(url, function( content ) {
+        popat = "#addJobLog_"+job_id;
+        if (job_id == "shift") {
+            popat = "#addJobLog_shift_"+shift_id;
+        }
+        $( popat ).popover({
+            html: true,
+            placement: 'left',
+            title: 'Add Work  <a href="#" class="close" data-dismiss="alert"><span style="font-size: 15px" class="fas fa-times-circle"></span></a>',
+            content: content
+        });
+        $( popat ).popover("show");
+        $( "#crewcallbundle_joblog_job").hide();
+        $( "#crewcallbundle_joblog_job").prev().hide();
+        $( "#crewcallbundle_joblog_shift").hide();
+        $( "#crewcallbundle_joblog_shift").prev().hide();
+        $( "#newJobLogForm" ).submit(function( event ) {
+            event.preventDefault();
+            submitNewJobLogForm(shift_id);
+        });
+        $(document).on("click", ".popover .close" , function(){
+            $(this).parents(".popover").popover('hide');
+            return false;
+        });
+    });
+    return false;
+}
+
+function grabEditJobLogForm(joblog_id, shift_id) {
+    url = "{{ path('joblog_edit', { 'access': 'ajax', 'id': 'XXX' }) }}";
+    url = url.replace('XXX', joblog_id);
+    $.get(url, function( content ) {
+        $( "#editJobLog_"+joblog_id ).popover({
+            html: true,
+            placement: 'left',
+            title: 'Edit <a href="#" class="close" data-dismiss="alert">&times;</a>',
+            content: content
+        });
+        $( "#editJobLog_"+joblog_id ).popover("show");
+        $( "#crewcallbundle_joblog_job").hide();
+        $( "#crewcallbundle_joblog_job").prev().hide();
+        $( "#editJobLogForm" ).submit(function( event ) {
+            event.preventDefault();
+            submitEditJobLogForm(joblog_id, shift_id);
+        });
+        $(document).on("click", ".popover .close" , function(){
+            $(this).parents(".popover").popover('hide');
+            return false;
+        });
+    });
+    return false;
+}
+
+function submitNewJobLogForm(shift_id) {
+    newJobLogFormData = $( "#newJobLogForm" ).serialize();
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        type: "POST",
+        url: "{{ path('joblog_new', { 'access': 'ajax' }) }}",
+        data: newJobLogFormData,
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+            if (xhr.status == 201) {
+                grabJobList(shift_id)
+            } else {
+                alert(xhr.responseText);
+            }
+      }).fail(function(xhr, status, error) {
+            errmsg = "Failed adding job\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+    });
+    return false;
+}
+
+function submitEditJobLogForm(joblog_id, shift_id) {
+    editJobLogFormData = $( "#editJobLogForm" ).serialize();
+    url = "{{ path('joblog_edit', { 'access': 'ajax', 'id': 'XXX' }) }}";
+    url = url.replace('XXX', joblog_id);
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        type: "POST",
+        url: url,
+        data: editJobLogFormData,
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+            if (xhr.status == 200) {
+                grabJobList(shift_id)
+            } else {
+                alert(xhr.responseText);
+            }
+      }).fail(function(xhr, status, error) {
+            errmsg = "Failed saving\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+    });
+    return false;
+}
+
+function deleteJobLog(joblog_id, shift_id) {
+    newJobLogFormData = $( "#newJobLogForm" ).serialize();
+    url = "{{ path('joblog_delete', { 'access': 'ajax', 'id': 'XXX' }) }}";
+    url = url.replace('XXX', joblog_id);
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        type: "DELETE",
+        url: url,
+        data: '',
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+            if (xhr.status == 200) {
+                grabJobList(shift_id)
+            } else {
+                alert(xhr.responseText);
+            }
+      }).fail(function(xhr, status, error) {
+            errmsg = "Delete failed\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+    });
+    return false;
+}
+</script>

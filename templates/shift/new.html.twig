@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% block title %}New Shift{% endblock %}
+{% block body %}
+<script>
+$(document).ready(function()
+    {
+    $("#crewcallbundle_shift_start_date input").each(function(){
+        $(this).attr("readonly","readonly");
+    });
+    $("#crewcallbundle_shift_end_date input").each(function(){
+        $(this).attr("readonly","readonly");
+    });
+});
+</script>
+    <h1>Shift creation</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <input type="submit" value="Add" />
+{#         <input type="submit" value="Add" onclick="this.value='Adding';this.disabled=true;" /> #}
+    {{ form_end(form) }}
+
+    <ul>
+        <li>
+            <a href="{{ path('shift_index') }}">Cancel</a>
+        </li>
+    </ul>
+{% endblock %}

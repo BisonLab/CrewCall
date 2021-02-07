@@ -1,0 +1,11 @@
+{% extends 'user_base.html.twig' %}
+
+{% block title %}CrewCall{% endblock %}
+
+{% block body %}
+<script>
+$(document).ready(function() {
+    return getCContent('{{ path('uf_me') }}');
+});
+</script>
+{% endblock %}

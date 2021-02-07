@@ -1,0 +1,56 @@
+{#    {{ form_start(update_form, {'attr': {'id': 'pickerForm', 'onSubmit': 'return submitPicker();'}}) }} #}
+{{ form_start(update_form, {'attr': {'id': 'pickerForm'}}) }}
+<div id="functionPicker" class="row">
+    <div class="col-4">
+        <h3>Picked</h3>
+        <select name="has_functions[]" id="undo_redo" class="form-control" size="40" multiple="multiple">
+        {% for has in has_functions  %}
+            <option value="{{ has.id }}">{{ has.name }}</option>
+        {% endfor %}
+        </select>
+    </div>
+    <div class="col-3">
+        <h3>&nbsp;</h3>
+        <button id="undo_redo_undo" class="btn btn-primary btn-block">Undo</button>
+        <button id="undo_redo_rightAll" class="btn btn-default btn-block"><i class="fas fa-forward"></i></button>
+        <button id="undo_redo_rightSelected" class="btn btn-default btn-block"><i class="fas fa-chevron-right"></i></button>
+        <button id="undo_redo_leftSelected" class="btn btn-default btn-block"><i class="fas fa-chevron-left"></i></button>
+        <button id="undo_redo_leftAll" class="btn btn-default btn-block"><i class="fas fa-backward"></i></button>
+        <button id="undo_redo_redo" class="btn btn-warning btn-block">Redo</button>
+        <button id="submit_update_form" class="btn btn-success btn-block">Save</button>
+    </div>
+    <div class="col-4">
+        <h3>Available</h3>
+        <select name="functions[]" id="undo_redo_to" class="form-control" size="40" multiple="multiple">
+        {% for f in functionEntities %}
+          {% if f.id not in has_f_ids %}
+            <option value="{{ f.id }}">{{ f.name }}</option>
+          {% endif %}
+        {% endfor %}
+        </select>
+    </div>
+</div>
+{{ form_rest(update_form) }}
+
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    $('#undo_redo').multiselect();
+});
+
+/*
+ * Interfering the multiselect JS and makes a mess.
+ * Not bothered for now.
+function submitPicker()
+{
+    var form = $('#pickerForm');
+    $.ajax({
+        type: form.attr('method'),
+        url: form.attr('action'),
+        data: form.serialize()
+    });
+    $('.nav-tabs #functab').tab('show');
+    grabFunctionPickerTab();
+}
+ */
+
+</script>

@@ -1,0 +1,51 @@
+parameters:
+    #
+    # Configure the dashboard elements each role needs.
+    # TODO: Consider using functions aswell.
+    #
+    crewcall.dashboarder:
+        #
+        # Going backwards through the roles. The one hitting the user first,
+        # is used.
+        # cols is the bootstrap grid columns. 12 per row.
+        roles:
+            ROLE_ADMIN:
+                # Row 1
+                - dashie: "Dummy"
+                  cols: 3
+                - dashie: "Search"
+                  cols: 8
+                - dashie: "Dummy"
+                  cols: 1
+                # Row 2
+                - dashie: "Dummy"
+                  cols: 2
+                #- dashie: "ComboWall"
+                #  cols: 3
+                - dashie: "EventsCalendar"
+                  cols: 8
+                - dashie: "Dummy"
+                  cols: 2
+                # Row 3
+                - dashie: "Dummy"
+                  cols: 1
+                # Should this be PublicMessages or PublicWall?
+                # On top of that, it uses the "Front page logged in" message
+                # type. (Historical reasons, should change it)
+                - dashie: "Announcements"
+                  cols: 3
+                - dashie: "AdminWall"
+                  cols: 3
+                - dashie: "ToDo"
+                  cols: 3
+                #- dashie: "PersonalMessages"
+                #  cols: 4
+                #- dashie: "AdminUpcomingShifts"
+                #  cols: 9
+            ROLE_USER:
+                - dashie: "Announcements"
+                  cols: 3
+                - dashie: "PersonalMessages"
+                  cols: 3
+                - dashie: "UpcomingJobs"
+                  cols: 3

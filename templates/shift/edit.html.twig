@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+{% block title %}Edit {{ shift }}{% endblock %}
+{% block body %}
+    <h1>Shift edit</h1>
+{% include '/shift/_edit.html.twig' with { 'edit_form': edit_form}  %}
+    <a href="{{ path('shift_index') }}" class="btn-sm btn-dark">Cancel</a><br>
+    {{ form_start(delete_form) }}
+        <input class="btn-sm btn-danger" type="submit" value="Delete">
+    {{ form_end(delete_form) }}
+{% endblock %}

@@ -1,0 +1,98 @@
+{% include '/dashboarder/handling.html.twig' %}
+<div id="tododash">
+  <div class="row">
+    <div class="col-sm-12">
+    <h3>Todo</h3>
+    </div>
+  </div><!-- End row -->
+{% set criterias = {
+    'message_types': ['TODO'],
+    'states': ['UNREAD', 'UNCHECKED', 'CHECKED', 'SHOW'],
+    }
+%}
+{% for message in sakonnin_messages.messages(criterias) %}
+  {% if is_granted('show', message) %}
+<div id="sakonninmessage_{{ message.id}}">
+
+  <div class="row noteText">
+   <div class="col-sm-9">
+        <em>{{ message.createdAt | date('Y-m-d') }} - {{ message.createdBy }}</em>
+   </div>
+{% if is_granted('edit', message) %}
+    {% set action = path('message_edit', { 'message_id': message.messageid, 'access': 'ajax' }) %}
+  <div class="d-none">
+    {% set mdelform = sakonnin_messages.getCreateDeleteForm(message, true) %}
+    <form id="deletemessageform_{{ message.id }}" onSubmit="return deleteSakonninMessage('{{ message.messageid }}');">
+    {{ form_rest(mdelform) }}
+    <input id="deltodo{{ message.id }}" type="submit">
+    </form>
+  </div>
+   <div class="col-sm-3" align="right">
+        <div class="dropdown">
+          <button class="fas fa-bars" id='actionburger' type="button" data-toggle="dropdown">
+          <span></span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right">
+             <a class="dropdown-item" href="#" onClick="return setStateOnSakonninMessage('{{ message.messageid }}', 'ARCHIVED');">Archive</a>
+             <a class="dropdown-item" href="#" onClick="return grabEditSakonninMessageForm('{{ message.messageid }}',{'title':'Edit Todo'});">Edit</a>
+             <a class="dropdown-item" href="#" onClick='return $("#deltodo{{ message.id }}").click();'>Delete</a>
+          </div><!-- dropdown-menu -->
+        </div><!-- dropdown -->
+   </div>
+{% endif %}
+ </div><!-- End first row -->
+
+ <div class="row noteText">
+   <div class="col-sm-9">
+<pre wrap id="sakonninmessagebody_{{ message.id }}">
+{{ message.body }}
+</pre>
+   </div>
+
+<div class="col-sm-3 align-bottom" align="right">
+    {% set checked = false %}
+    {% set last_reply = message.replies | last %}
+    {% if last_reply %}
+        {% if last_reply.state == "CHECKED" %}
+            {% set checked = true %}
+        {% else %}
+            {% set checked = false %}
+        {% endif %}
+    {% endif %}
+
+        <label class="checkSwitch">
+          <input type="checkbox" id="todocheck_{{ message.id }}" onChange="setCheckboxState('{{ message.messageid }}', 'TODO', this)" {% if checked %}checked{% endif %}/>
+          <span class="checkSlider round" title="Todo"></span>
+        </label>
+    {% if checked %}
+        <br>
+        <em style="font-size: 70%;">
+        {{ last_reply.createdAt | date('Y-m-d H:i') }}
+        {{ last_reply.createdBy }}
+        </em>
+    {% endif %}
+    </div>
+  </div>
+ {% endif %}
+<div class="row">&nbsp;</div> <!-- Cheating or lazyness? -->
+{% endfor %}
+</div>
+<div class="row">
+  <div class="col-5" style="margin-left: 20px; padding: 7px;">
+    <a href="#" onClick='return createSakonninCheck("todocheck");' class="btn-dash btn-dark">Add another</a>
+  </div>
+  <div class="col-2" style="padding: 7px;">
+    <a href="#" class="btn-dash btn-light" title="Add ToDo" onClick="return openSakonninMessageLogBox('{{ path('messages_list', {'sort': 'DESC', 'access': 'ajax', 'states': ['ARCHIVED'], 'message_types':['TODO']  }) }}', 'Archive')">Archive</a>
+  </div>
+</div>
+
+    {% set mconf = {'mconfig': {
+            'formname': 'todocheck',
+            'reload_after_post': true,
+            'message_type': 'TODO',
+            'submit': 'Save'
+            }
+        }
+    %}
+{% include '@BisonLabSakonnin/Message/_create_check.html.twig' with mconf %}
+</div>

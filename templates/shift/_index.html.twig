@@ -1,0 +1,134 @@
+<table id="shiftTable_{{ event.id }}" class="table shiftTable table-sm">
+<tbody>
+{% for shift in event.shifts %}
+    <tr id="shiftRow_{{ shift.id }}">
+        <td data-order="{{ shift.start | date('U')}}" >
+            {{ shift.start|date('d M H:i') }}
+            <span class="fas fa-arrow-right"></span> 
+            {%  if shift.end | date('Y-m-d') == shift.start | date('Y-m-d') %}
+            {{ shift.end|date('H:i') }}
+            {% else %}
+                {{ shift.end | date('d M H:i') }}
+            {% endif %}
+        <td>
+{% set mlogcontext = {
+            'system': 'crewcall',
+            'object_name': 'shift',
+            'external_id': shift.id
+    }
+%}
+{% if sakonnin_messages.contexthasmessages(mlogcontext) %}
+        <a href="#" title="Notes" onClick="return openSakonninMessageLogBox('{{ path('message_context_search', {'access': 'ajax', 'system': mlogcontext.system, 'object_name': mlogcontext.object_name, 'external_id': mlogcontext.external_id }) }}', 'Notes')">
+        <span style="font-size: 15px" class="fas fa-file"></span>
+        </a>
+{% endif %}
+        <a tabindex="0" href="#" id="popSummary_event_{{ shift.event.id }}{{ shift.id }}" onClick="return popSummary('event', {{ shift.event.id }}, {{ shift.id }});"><span style="font-size: 15px" class="fas fa-info-circle"></span></a>
+        {{ shift.function }}
+        </td>
+        <td align="right">
+        <label class="ccSwitch">
+          <input title="Open or close the shift for registration" type="checkbox" id="shiftstatecheck_{{ shift.id }}" onChange="setStateOnShiftCheckbox({{ shift.id }}, {{ shift.event.id }}, this)" {% if shift.open %}checked{% endif %}/>
+          <span class="ccSlider round" title="Open or close the shift"></span>
+        </label>
+        </td>
+        <td align="left">
+          <div id="openclose_{{ shift.id }}">{% if shift.open %}Open for registration{% else %}Closed for registration{% endif %}</div>
+        </td>
+        <td align="right">
+        {% set amounts = shift.jobsamountbystate %}
+<!-- TODO: Probably remove this one
+        <span title="All shifts booked" class="fas fa-ok" {% if shift.amount - amounts.CONFIRMED != 0 %}style="opacity: 0;"{% endif %}"></span>&nbsp;
+-->
+        <span id="shift_counter_amount_{{ shift.id }}" title="Total needing" class="ccAmount left ccTotal">{{ shift.amount }}</span>
+        <span id="shift_counter_needing_{{ shift.id }}" title="Still needing" class="ccAmount ccNeeded">{{ shift.amount - shift.bookedamount }}</span>
+        <span id="shift_counter_CONFIRMED_{{ shift.id }}"  title="Amount Confirmed" class="ccAmount ccConfirmed">{{ amounts.CONFIRMED }}</span>
+        <span id="shift_counter_ASSIGNED_{{ shift.id }}" title="Amount Assigned" class="ccAmount ccAssigned">{{ amounts.ASSIGNED }}</span>
+        <span id="shift_counter_INTERESTED_{{ shift.id }}" title="Amount Interested" class="ccAmount right ccInterested">{{ amounts.INTERESTED }}</span>
+        </td>
+        <td align="right">
+        {% if shift.registeredamount > 0 %}
+        {# TODO: Toggle + and - #}
+        <a href="#jobList_{{ shift.id }}" onClick="return grabJobList({{ shift.id }});"><span id="plus_job_list_{{ shift.id }}" class="fas fa-plus" /></a>
+        <a href="#jobList_{{ shift.id }}" onClick="return hideJobList({{ shift.id }});"><span id="minus_job_list_{{ shift.id }}" class="collapse fas fa-minus" /></a>
+        {% else %}
+            &nbsp;
+        {% endif %}
+        </td>
+        <td align="right">
+        <div class="dropdown">
+          <button class="fas fa-bars" id='shift_{{ shift.id }}_actionburger' type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span></span>
+          </button>
+        <div class="dropdown-menu dropdown-menu-right">
+            <a class="dropdown-item" href="#" onClick="return openMessageToEventModal('shift', {{ shift.id }});">Send a message</a>
+            <a class="dropdown-item" href="#" onClick="return grabNewJobForm({{shift.id}});">Add person</a>
+            <a class="dropdown-item" href="#" onClick="return grabNewShiftOrganizationForm({{shift.id}});">Add crew from an organization</a>
+{% if sakonnin_messages.contexthasmessages(mlogcontext) %}
+            <a class="dropdown-item" href="#" onClick="return openSakonninMessageLogBox('{{ path('message_context_search', {'access': 'ajax', 'system': mlogcontext.system, 'object_name': mlogcontext.object_name, 'external_id': mlogcontext.external_id }) }}')">Notes</a>
+{% endif %}
+            <a class="dropdown-item" href="#" onClick='return createSakonninMessage("shiftnote_{{ shift.id }}");'>Add information</a>
+            <a class="dropdown-item" href="#" onClick='return createSakonninCheck("shiftinformcheck_{{ shift.id }}");'>Add an information checkbox</a>
+            <a class="dropdown-item" href="#" onClick='return createSakonninCheck("shiftconfirmcheck_{{ shift.id }}");'>Add a confirm checkbox</a>
+            <a tabindex="0" class="dropdown-item" href="#" title="Log Summary" id="popLogSummary_shift_{{ shift.id }}" onClick="return popLogSummary('shift', {{ shift.id }});">Changelog</a>
+            <a class="dropdown-item" href="#" onClick="return grabEditShiftForm({{ shift.id }}, {{ shift.event.id }});">Edit</a>
+            <a class="dropdown-item" href="#" onClick="return deleteShift({{ shift.id }});">Delete</a>
+      </div>
+      </div>
+     </td>
+    </tr>
+    <tr class="jobList" id="jobList_{{ shift.id }}">
+    <td class="jobListTd" colspan="7">
+    <div id="jobTable_{{ shift.id }}">
+    </div>
+    </td>
+    </tr>
+{% set mconf = {'mconfig': {
+        'formname': 'shiftnote_' ~ shift.id,
+        'reload_after_post': true,
+        'subject': "",
+        'to_field': false,
+        'from_field': false,
+        'to_type': "NONE",
+        'from_type': "NONE",
+        'message_type': 'Note',
+        'submit': 'Save',
+        'context': {
+            'system': 'crewcall',
+            'object_name': 'shift',
+            'external_id': shift.id
+            }
+        }
+    }
+%}
+{% include '@BisonLabSakonnin/Message/_create_popup.html.twig' with mconf %}
+{% set mconf = {'mconfig': {
+        'formname': 'shiftconfirmcheck_' ~ shift.id,
+        'reload_after_post': true,
+        'message_type': 'ConfirmCheck',
+        'submit': 'Save',
+        'context': {
+            'system': 'crewcall',
+            'object_name': 'shift',
+            'external_id': shift.id
+            }
+        }
+    }
+%}
+{% include '@BisonLabSakonnin/Message/_create_check.html.twig' with mconf %}
+{% set mconf = {'mconfig': {
+        'formname': 'shiftinformcheck_' ~ shift.id,
+        'reload_after_post': true,
+        'message_type': 'InformCheck',
+        'submit': 'Save',
+        'context': {
+            'system': 'crewcall',
+            'object_name': 'shift',
+            'external_id': shift.id
+            }
+        }
+    }
+%}
+{% include '@BisonLabSakonnin/Message/_create_check.html.twig' with mconf %}
+{% endfor %}
+</tbody>
+</table>
