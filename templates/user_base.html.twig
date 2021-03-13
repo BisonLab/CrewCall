@@ -75,6 +75,11 @@
     Sign up
     <span id="signupCount" class="badge badge-danger">0</span>
   </a>
+{% if crew is defined and crew %}
+  <a id="crewLink" class="footerlink navbar-footer-item flex-fill" href="#" onClick="return getCContent('{{ path('cm_my_crew', {'view': 'opportunities'}) }}', 'crewLink');">
+    My Crew
+  </a>
+{% endif %}
  </nav>
 </footer>
 {% endblock %}

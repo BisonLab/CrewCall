@@ -32,8 +32,9 @@ class UserController extends CommonController
      */
     public function index(Request $request): Response
     {
+        // TODO: Check if crew should be true or not.
         return $this->render('user/index.html.twig', [
-            'controller_name' => 'UserPlayController',
+            'crew' => true,
         ]);
     }
 

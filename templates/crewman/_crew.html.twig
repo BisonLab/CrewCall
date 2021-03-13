@@ -1,0 +1,23 @@
+<h4 class="text-uppercase font-weight-bold mt-4">My Crew</h4>
+<div class="row mb-4">
+<div class="col-12">
+<table class="profile-table table-sm table-striped">
+<thead>
+<tr>
+<th>Name</th>
+<th>Job</th>
+<th>In/Out</th>
+</tr>
+</thead>
+<tbody>
+{% for job in crewjobs %}
+<tr>
+<td>{{ job.person }}</a></td>
+<td>{{ job }}</td>
+<td>Sign in first, then out.</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
