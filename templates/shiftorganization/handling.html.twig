@@ -48,8 +48,8 @@ function grabNewShiftOrganizationForm(shift_id) {
         $( "#soModalBody" ).html(data);
         $( "#soModalTitle" ).html("Add crew from org");
         $( "#soModal" ).modal();
-        $( "#newShiftOrganizationForm #crewcallbundle_shiftorganization_shift").prev().hide();
-        $( "#newShiftOrganizationForm #crewcallbundle_shiftorganization_shift").hide();
+        $( "#newShiftOrganizationForm #shiftorganization_shift").prev().hide();
+        $( "#newShiftOrganizationForm #shiftorganization_shift").hide();
         $( "#newShiftOrganizationForm" ).submit(function( event ) {
             event.preventDefault();
             submitNewShiftOrganizationForm(shift_id);

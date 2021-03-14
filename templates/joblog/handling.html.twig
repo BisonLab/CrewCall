@@ -19,10 +19,10 @@ function grabNewJobLogForm(job_id, shift_id) {
             content: content
         });
         $( popat ).popover("show");
-        $( "#crewcallbundle_joblog_job").hide();
-        $( "#crewcallbundle_joblog_job").prev().hide();
-        $( "#crewcallbundle_joblog_shift").hide();
-        $( "#crewcallbundle_joblog_shift").prev().hide();
+        $( "#joblog_job").hide();
+        $( "#joblog_job").prev().hide();
+        $( "#joblog_shift").hide();
+        $( "#joblog_shift").prev().hide();
         $( "#newJobLogForm" ).submit(function( event ) {
             event.preventDefault();
             submitNewJobLogForm(shift_id);
@@ -46,8 +46,8 @@ function grabEditJobLogForm(joblog_id, shift_id) {
             content: content
         });
         $( "#editJobLog_"+joblog_id ).popover("show");
-        $( "#crewcallbundle_joblog_job").hide();
-        $( "#crewcallbundle_joblog_job").prev().hide();
+        $( "#joblog_job").hide();
+        $( "#joblog_job").prev().hide();
         $( "#editJobLogForm" ).submit(function( event ) {
             event.preventDefault();
             submitEditJobLogForm(joblog_id, shift_id);

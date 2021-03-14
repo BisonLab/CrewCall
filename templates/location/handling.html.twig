@@ -3,17 +3,17 @@ function grabAddExistingPersonForm() {
     url = "{{ path('location_add_person', { 'access': 'ajax', 'id': location.id }) }}";
     $.get(url, function( data ) {
         $( "#addExistingPerson" ).html(data);
-        $( "#crewcallbundle_pfl_location").hide();
-        $( "#crewcallbundle_pfl_location").prev().hide();
-        $( "#crewcallbundle_add_new_person_loc_location").hide();
-        $( "#crewcallbundle_add_new_person_loc_location").prev().hide();
+        $( "#pfl_location").hide();
+        $( "#pfl_location").prev().hide();
+        $( "#add_new_person_loc_location").hide();
+        $( "#add_new_person_loc_location").prev().hide();
         $( "#submitAddExistingPerson").hide();
         $( "#pfl_notfound" ).hide();
         $( "#addExistingPersonForm" ).submit(function( event ) {
             event.preventDefault();
             submitAddExistingPersonForm();
         });
-        $( "#crewcallbundle_pfl_person" ).autocomplete({
+        $( "#pfl_person" ).autocomplete({
           source: "{{ path('person_search', {'access': 'ajax', 'value_with_all': true }) }}",
           minLength: 2,
           response: function(event, ui) {
@@ -25,7 +25,7 @@ function grabAddExistingPersonForm() {
           },
           select: function(event, ui) {
                 $("#submitAddExistingPerson").show();
-                $( "#addExistingPersonForm #crewcallbundle_pfl_person" ).val(ui.item.value);
+                $( "#addExistingPersonForm #pfl_person" ).val(ui.item.value);
                 $( "#addExistingPersonForm #username" ).val(ui.item.username);
           }
          });
@@ -35,7 +35,7 @@ function grabAddExistingPersonForm() {
 
 function submitAddExistingPersonForm() {
     username = $( "#addExistingPersonForm #username" ).val();
-    $( "#addExistingPersonForm #crewcallbundle_pfl_person" ).val(username);
+    $( "#addExistingPersonForm #pfl_person" ).val(username);
     formData = $( "#addExistingPersonForm" ).serialize();
     $.ajax({
         beforeSend: function(req) {

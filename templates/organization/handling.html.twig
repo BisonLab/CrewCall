@@ -3,17 +3,17 @@ function grabAddExistingPersonForm() {
     url = "{{ path('organization_add_person', { 'access': 'ajax', 'id': organization.id }) }}";
     $.get(url, function( data ) {
         $( "#addExistingPerson" ).html(data);
-        $( "#crewcallbundle_pfo_organization").hide();
-        $( "#crewcallbundle_pfo_organization").prev().hide();
-        $( "#crewcallbundle_add_new_person_org_organization").hide();
-        $( "#crewcallbundle_add_new_person_org_organization").prev().hide();
+        $( "#pfo_organization").hide();
+        $( "#pfo_organization").prev().hide();
+        $( "#add_new_person_org_organization").hide();
+        $( "#add_new_person_org_organization").prev().hide();
         $( "#submitAddExistingPerson").hide();
         $( "#pfo_notfound" ).hide();
         $( "#addExistingPersonForm" ).submit(function( event ) {
             event.preventDefault();
             submitAddExistingPersonForm();
         });
-        $( "#crewcallbundle_pfo_person" ).autocomplete({
+        $( "#pfo_person" ).autocomplete({
           source: "{{ path('person_search', {'access': 'ajax', 'value_with_all': true }) }}",
           minLength: 2,
           response: function(event, ui) {
@@ -25,7 +25,7 @@ function grabAddExistingPersonForm() {
           },
           select: function(event, ui) {
                 $("#submitAddExistingPerson").show();
-                $( "#addExistingPersonForm #crewcallbundle_pfo_person" ).val(ui.item.value);
+                $( "#addExistingPersonForm #pfo_person" ).val(ui.item.value);
                 $( "#addExistingPersonForm #username" ).val(ui.item.username);
           }
          });
@@ -35,7 +35,7 @@ function grabAddExistingPersonForm() {
 
 function submitAddExistingPersonForm() {
     username = $( "#addExistingPersonForm #username" ).val();
-    $( "#addExistingPersonForm #crewcallbundle_pfo_person" ).val(username);
+    $( "#addExistingPersonForm #pfo_person" ).val(username);
     formData = $( "#addExistingPersonForm" ).serialize();
     $.ajax({
         beforeSend: function(req) {

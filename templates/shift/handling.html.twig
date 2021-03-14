@@ -67,13 +67,13 @@ function grabNewShiftForm(event_id = false, from_shift_id = false) {
          * submitNewShiftForm function directly, but then it woule be called
          * immediately.  Aka, I have to read up on this..
          */
-        $( "#crewcallbundle_shift_event").prev().hide();
-        $( "#crewcallbundle_shift_event").hide();
+        $( "#shift_event").prev().hide();
+        $( "#shift_event").hide();
         /* This is tempting for reducing the form elements, but it may create
          * an issue even if I do add one day when time is below start time.
          * (Which will not validate as the validation is set up right now.)
-        $( "#crewcallbundle_shift_end_date").prev().hide();
-        $( "#crewcallbundle_shift_end_date").hide();
+        $( "#shift_end_date").prev().hide();
+        $( "#shift_end_date").hide();
          */
         $( "#newShiftForm" ).submit(function( event ) {
             event.preventDefault();
