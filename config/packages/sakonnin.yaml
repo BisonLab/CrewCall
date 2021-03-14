@@ -13,6 +13,11 @@ parameters:
     sakonnin.expire_method: "Archive"
     # And when the message type expunge hits:
     sakonnin.expunge_method: "Delete"
+    
+    # Gotta be overridden in your custombundle sakonnin.yaml
+    # (But better put password in .env.local :=)
+    sakonnin.sms:
+        sender: dummy
 
     # The simplest file types. Need to set it here to override the ones in the
     # Sakonnin Bundle.
@@ -41,3 +46,9 @@ parameters:
         UNKNOWN:
             chooseable: true
             thumbnailable: false
+
+services:
+    sakonnin.sms_handler:
+        public: true
+        class: BisonLab\SakonninBundle\Service\SmsHandler
+        arguments: ['@service_container', '%sakonnin.sms%']
