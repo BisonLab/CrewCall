@@ -11,6 +11,9 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 
+/*
+ * Odd name? BC relic from when fosuserbundle were used. Need it for now.
+ */
 class ChangePasswordFosType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)

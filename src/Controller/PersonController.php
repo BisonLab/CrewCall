@@ -542,33 +542,6 @@ class PersonController extends CommonController
                 array('id' => $person->getId()));
     }
 
-
-    /**
-     * @param UserInterface $user
-     * @Route("/{id}/reset_password", name="person_reset_password")
-     */
-    public function resetPasswordAction(Person $person, $access)
-    {
-        if (null === $person->getConfirmationToken()) {
-            $tokenGenerator = $this->get('fos_user.util.token_generator');
-            $person->setConfirmationToken($tokenGenerator->generateToken());
-        }
-
-        // send email you requested
-        $mailer = $this->get('fos_user.mailer');
-        $mailer->sendResettingEmailMessage($person);
-
-        // this depends on requirements
-        $person->setPasswordRequestedAt(new \DateTime());
-        $userManager = $this->get('fos_user.user_manager');
-        $userManager->updateUser($person);
-        if ($this->isRest($access)) {
-            // Format for autocomplete.
-            return new Response('OK', 200);
-        }
-        return $this->redirectToRoute('person_show', array('id' => $person->getId()));
-    }
-
     /**
      * @Route("/search", name="person_search", methods={"GET"})
      */
@@ -579,38 +552,19 @@ class PersonController extends CommonController
 
         // Gotta be able to handle two-letter usernames.
         if (strlen($term) > 1) {
-            $userManager = $this->container->get('fos_user.user_manager');
-            /* No searching for users in the manager. */
-            // $users = $userManager->findUserByUsername($term);
-            $class = $userManager->getClass();
-            $em = $this->getDoctrine()->getManagerForClass($class);
-            $repo = $em->getRepository($class);
+            $em = $this->getDoctrine()->getManager();
+            $repo = $em->getRepository("App:Person");
 
             $q = $repo->createQueryBuilder('u')
-                ->where('lower(u.usernameCanonical) LIKE :term')
-                ->orWhere('lower(u.emailCanonical) LIKE :term')
-                ->setParameter('term', strtolower($term) . '%');
-
-
-            if (property_exists($class, 'full_name')) {
-                $q->orWhere('lower(u.full_name) LIKE :full_name')
-                ->setParameter('full_name', '%' . strtolower($term) . '%');
-            }
-
-            if (property_exists($class, 'mobile_phone_number')) {
-                $q->orWhere('lower(u.mobile_phone_number) LIKE :mobile_phone_number')
-                ->setParameter('mobile_phone_number', '%' . strtolower($term) . '%');
-            }
-
-            if (property_exists($class, 'phone_number')) {
-                $q->orWhere('lower(u.phone_number) LIKE :phone_number')
-                ->setParameter('phone_number', '%' . strtolower($term) . '%');
-            }
-
-            if (property_exists($class, 'phone_number')) {
-                $q->orWhere('lower(u.phone_number) LIKE :phone_number')
-                ->setParameter('phone_number', '%' . strtolower($term) . '%');
-            }
+                ->where('lower(u.username) LIKE :term')
+                ->orWhere('lower(u.email) LIKE :term')
+                ->setParameter('term', strtolower($term) . '%')
+                ->orWhere('lower(u.full_name) LIKE :full_name')
+                ->setParameter('full_name', '%' . strtolower($term) . '%')
+                ->orWhere('lower(u.mobile_phone_number) LIKE :mobile_phone_number')
+                ->setParameter('mobile_phone_number', '%' . strtolower($term) . '%')
+                ->orWhere('lower(u.home_phone_number) LIKE :home_phone_number')
+                ->setParameter('home_phone_number', '%' . strtolower($term) . '%');
 
             $people = [];
             if ($users = $q->getQuery()->getResult()) {

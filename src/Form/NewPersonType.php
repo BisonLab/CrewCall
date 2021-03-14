@@ -74,14 +74,6 @@ class NewPersonType extends PersonType
         ));
     }
 
-    public function getParent()
-    {
-        return 'FOS\UserBundle\Form\Type\RegistrationFormType';
-
-        // Or for Symfony < 2.8
-        // return 'fos_user_registration';
-    }
-
     /**
      * {@inheritdoc}
      */

@@ -53,7 +53,7 @@ class UserFrontController extends CommonController
             '_username' => "",
             "_password" => '',
             "_remember_me" => "on",
-            "login_url" => $this->generateUrl('fos_user_security_check', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            "login_url" => $this->generateUrl('app_login', [], UrlGeneratorInterface::ABSOLUTE_URL)
             ],
             Response::HTTP_OK);
     }
@@ -702,8 +702,15 @@ class UserFrontController extends CommonController
             }
             $form->submit($data);
             if ($form->isSubmitted() && $form->isValid()) {
-                $userManager = $this->get('fos_user.user_manager');
-                $userManager->updateUser($user);
+                $password = $form->get('plainPassword')->getData();
+                // Encode the plain password, and set it.
+                $passwordEncoder = $this->get('security.password_encoder');
+                $encodedPassword = $passwordEncoder->encodePassword(
+                    $user, $password
+                );
+                $user->setPassword($encodedPassword);
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->flush();
                 return new JsonResponse(["OK" => "Well done"], Response::HTTP_OK);
             }
             $errors = $this->handleFormErrors($form);

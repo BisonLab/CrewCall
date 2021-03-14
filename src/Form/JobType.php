@@ -7,6 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 use App\Lib\ExternalEntityConfig;
 
@@ -18,7 +19,10 @@ class JobType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('person', UsernameFormType::class, array('label' => "Person", 'required' => true, 'attr' => ['class' => 'ui-front']))
+            ->add('pname', TextType::class, array(
+                'label' => "Person",
+                'mapped' => false,
+                'required' => true, 'attr' => ['class' => 'ui-front']))
             ->add('state', ChoiceType::class, array(
                 'label' => 'Status',
                 'choices' => ExternalEntityConfig::getStatesAsChoicesFor('Job')))

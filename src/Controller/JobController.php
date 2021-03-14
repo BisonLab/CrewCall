@@ -155,6 +155,10 @@ class JobController extends CommonController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+            $person_repo = $em->getRepository('App:Person');
+            if (!$person = $person_repo->find($form->get('pname')->getData()))
+                return $this->returnNotFound($request, 'No person to tie the jobs to');
+            $job->setPerson($person);
 
             $conflicts = [];
             if ($job->isBooked() && $overlap = $em->getRepository('App:Job')->checkOverlapForPerson($job, ['same_day' => true, 'booked_only' => true, 'return_jobs' => true])) {
