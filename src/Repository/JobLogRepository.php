@@ -2,11 +2,21 @@
 
 namespace App\Repository;
 
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+
+use App\Entity\Organization;
+
 /**
  *
  */
-class JobLogRepository extends \Doctrine\ORM\EntityRepository
+class JobLogRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, JobLog::class);
+    }
+
     public function checkOverlapForPerson($joblog)
     {
         $person = $joblog->getJob()->getPerson();

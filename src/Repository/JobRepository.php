@@ -2,15 +2,22 @@
 
 namespace App\Repository;
 
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+
 use App\Entity\Person;
 use App\Lib\ExternalEntityConfig;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  *
  */
-class JobRepository extends \Doctrine\ORM\EntityRepository
+class JobRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Job::class);
+    }
     /*
      * Find'em all, or fewer.
      */
@@ -151,6 +158,12 @@ class JobRepository extends \Doctrine\ORM\EntityRepository
                 $qb->andWhere('s.end >= :from')
                     ->setParameter('from', $from);
             }
+        }
+        if (isset($options['today'])) {
+            $today = new \DateTime();
+            $qb->orWhere('s.end = :today')
+                ->orWhere('s.start >= :today')
+                ->setParameter('today', $today);
         }
 
         // Unless there are a set timeframe, use "from now".

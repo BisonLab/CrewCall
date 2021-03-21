@@ -2,11 +2,21 @@
 
 namespace App\Repository;
 
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+
+use App\Entity\Event;
+
 /**
  *
  */
-class EventRepository extends \Doctrine\ORM\EntityRepository
+class EventRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Event::class);
+    }
+
     /*
      * Find'em all, or fewer.
      */

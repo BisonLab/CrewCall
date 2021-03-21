@@ -2,11 +2,21 @@
 
 namespace App\Repository;
 
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+
+use App\Entity\ShiftOrganization;
+
 /**
  *
  */
-class ShiftOrganizationRepository extends \Doctrine\ORM\EntityRepository
+class ShiftOrganizationRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, ShiftOrganization::class);
+    }
+
     /*
      * Find'em all, or fewer.
      * Blatantly nicked from the Job repo and I wish I could use the same code.

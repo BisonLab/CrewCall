@@ -2,12 +2,32 @@
 
 namespace App\Repository;
 
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
+
+use App\Entity\Organization;
+
 /**
  *
  */
-class OrganizationRepository extends \Doctrine\ORM\EntityRepository
+class OrganizationRepository extends ServiceEntityRepository
 {
     use \BisonLab\CommonBundle\Entity\ContextRepositoryTrait;
+
+    private $params;
+
+    public function __construct(ManagerRegistry $registry, ContainerBagInterface $params)
+    {
+        $this->params = $params;
+        parent::__construct($registry, Organization::class);
+    }
+
+    public function getInternalOrganization()
+    {
+        $io_config = $this->params->get('internal_organization');
+        return $this->findOneBy(['name' => $io_config['name']]);
+    }
 
     /* This is very common for all repos. Could be in a trait aswell. */
     public function searchByField($field, $value)

@@ -2,13 +2,22 @@
 
 namespace App\Repository;
 
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+
+use App\Entity\Shift;
 use App\Lib\ExternalEntityConfig;
 
 /**
  *
  */
-class ShiftRepository extends \Doctrine\ORM\EntityRepository
+class ShiftRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Shift::class);
+    }
+
     /*
      * TODO: Add timeframe and default with from now
      */

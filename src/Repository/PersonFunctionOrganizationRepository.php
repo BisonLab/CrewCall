@@ -2,9 +2,18 @@
 
 namespace App\Repository;
 
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+
+use App\Entity\PersonFunctionOrganization;
+
 /**
  *
  */
-class PersonFunctionOrganizationRepository extends \Doctrine\ORM\EntityRepository
+class PersonFunctionOrganizationRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, PersonFunctionOrganization::class);
+    }
 }
