@@ -6,7 +6,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 
-use App\Entity\Person;
+use App\Entity\Job;
 use App\Lib\ExternalEntityConfig;
 
 /**
