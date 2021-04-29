@@ -198,13 +198,13 @@ class PersonController extends CommonController
     {
         $em = $this->getDoctrine()->getManager();
         $person = new Person();
-        $person->addRole('ROLE_USER');
+        $person->setSystemRole('ROLE_USER');
         $addressing_config = $this->container->getParameter('addressing');
         $addressing = $this->container->get('crewcall.addressing');
         $address_elements = $addressing->getFormElementList($person);
         $internal_organization_config = $this->container->getParameter('internal_organization');
-        $first_org = $em->getRepository('App:Organization')->findOneBy(array('name' => $internal_organization_config['name']));
-        $first_role = $em->getRepository('App:Role')->findOneBy(array('name' => $internal_organization_config['default_role']));
+        $first_org = $em->getRepository('App:Organization')->getInternalOrganization();
+        $first_role = $em->getRepository('App:Role')->getDefaultRole();
 
         $form = $this->createForm('App\Form\NewPersonType',
             $person, [

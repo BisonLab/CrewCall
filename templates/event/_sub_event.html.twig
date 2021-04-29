@@ -56,12 +56,34 @@
             <tr class="event_contacts">
                 <th>Contacts</th>
                 <td>
-{% for pfe in event.personroleevents() %}
-   {{ pfe.person }}{% if pfe.person.mobilephonenumber %} - {{ pfe.person.mobilephonenumber }}{% endif %}
-   <a href="{{ path('event_remove_contact', { 'id': pfe.id }) }}"><span class="remove_glyph"></span></a>
-<br />
-{% endfor %}
-    <a href="#" id="addContactLink" onClick="return openAddContact({{ event.id }});">Add</a>
+    {% for pre in event.personroleevents() %}
+        <form method="POST" action="{{ path('event_remove_contact', { 'id': pre.id, 'access': 'web' }) }}">
+        <a href="{{ path('person_show', { 'id': pre.person.id }) }}">
+       {{ pre.person }}</a>{% if pre.person.mobilephonenumber %} - {{ pre.person.mobilephonenumber }}{% endif %}
+        <button class="btn btn-link" type="submit">
+            <span class="remove_glyph"></span>
+        </button>
+        </form>
+    {% endfor %}
+    <a href="#" id="addContactLink" onClick="return openAddContact({{ event.id }});">Add Contact Person</a>
+                </td>
+            </tr>
+{% endif %}
+{# If there is no add contact form, there should be no contacts to show #}
+{% if add_crewman_form is not null %}
+            <tr class="event_crewmans">
+                <th>Crew Managers</th>
+                <td>
+    {% for pre in event.personroleevents() %}
+        <form method="POST" action="{{ path('event_remove_crewmanager', { 'id': pre.id, 'access': 'web' }) }}">
+        <a href="{{ path('person_show', { 'id': pre.person.id }) }}">
+       {{ pre.person }}</a>{% if pre.person.mobilephonenumber %} - {{ pre.person.mobilephonenumber }}{% endif %}
+        <button class="btn btn-link" type="submit">
+            <span class="remove_glyph"></span>
+        </button>
+        </form>
+    {% endfor %}
+                <a href="#" id="addCrewManagerLink" onClick="return openAddCrewManager({{ event.id }});">Add Crew Manager</a>
                 </td>
             </tr>
 {% endif %}

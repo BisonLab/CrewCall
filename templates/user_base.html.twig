@@ -76,7 +76,7 @@
     <span id="signupCount" class="badge badge-danger">0</span>
   </a>
 {% if crew is defined and crew %}
-  <a id="crewLink" class="footerlink navbar-footer-item flex-fill" href="#" onClick="return getCContent('{{ path('cm_my_crew', {'view': 'opportunities'}) }}', 'crewLink');">
+  <a id="crewLink" class="footerlink navbar-footer-item flex-fill" href="#" onClick="return getCContent('{{ path('cm_my_crew') }}', 'crewLink');">
     My Crew
   </a>
 {% endif %}
@@ -134,7 +134,10 @@ $(document).ready(function() {
 {% endif %}
 
 </script>
+
 <link rel="stylesheet" href="{{ asset('css/uf.css') }}" type="text/css" media="all" />
+<link rel="stylesheet" href="{{ asset('css/time-pick-light.css') }}" type="text/css" media="all" />
+<script src="{{ asset('js/time-pick.js') }}"></script>
 
 {% endblock %}
 {% endblock %}

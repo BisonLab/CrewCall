@@ -54,17 +54,17 @@ class Role
     private $description;
 
     /**
-     * @ORM\OneToMany(targetEntity="PersonRoleOrganization", mappedBy="function", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="PersonRoleOrganization", mappedBy="role", cascade={"remove"})
      */
     private $person_role_organizations;
 
     /**
-     * @ORM\OneToMany(targetEntity="PersonRoleLocation", mappedBy="function", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="PersonRoleLocation", mappedBy="role", cascade={"remove"})
      */
     private $person_role_locations;
 
     /**
-     * @ORM\OneToMany(targetEntity="PersonRoleEvent", mappedBy="function", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="PersonRoleEvent", mappedBy="role", cascade={"remove"})
      */
     private $person_role_events;
 
@@ -288,6 +288,7 @@ class Role
     {
         $people = new ArrayCollection();
         foreach ($this->person_role_organizations as $pfo) {
+            if (!$pfo->getPerson()) continue;
             if ($active_only && !in_array($pfo->getPerson()->getState(),
                     ExternalEntityConfig::getActiveStatesFor('Person')))
                 continue;
@@ -295,6 +296,7 @@ class Role
                 $people->add($pfo->getPerson());
         }
         foreach ($this->person_role_locations as $pfl) {
+            if (!$pfl->getPerson()) continue;
             if ($active_only && !in_array($pfl->getPerson()->getState(),
                     ExternalEntityConfig::getActiveStatesFor('Person')))
                 continue;
@@ -302,6 +304,7 @@ class Role
                 $people->add($pfl->getPerson());
         }
         foreach ($this->person_role_events as $pfe) {
+            if (!$pfe->getPerson()) continue;
             if ($active_only && !in_array($pfe->getPerson()->getState(),
                     ExternalEntityConfig::getActiveStatesFor('Person')))
                 continue;

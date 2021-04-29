@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 
 use App\Entity\Job;
+use App\Entity\Person;
 use App\Lib\ExternalEntityConfig;
 
 /**
@@ -159,15 +160,18 @@ class JobRepository extends ServiceEntityRepository
                     ->setParameter('from', $from);
             }
         }
-        if (isset($options['today'])) {
-            $today = new \DateTime();
-            $qb->orWhere('s.end = :today')
-                ->orWhere('s.start >= :today')
-                ->setParameter('today', $today);
-        }
 
         // Unless there are a set timeframe, use "from now".
         $from = new \DateTime();
+
+        if (isset($options['on_date'])) {
+            $on_date = $options['on_date'];
+            if (!$on_date instanceOf \DateTime)
+                $on_date = new \DateTime($on_date);
+            // Kinda cheating.
+            $options['from'] = $on_date;
+            $options['to'] = clone($on_date);
+        }
 
         // And from(!) here it can be overridden
 

@@ -1,0 +1,10 @@
+{% block body %}
+    {{ form_start(form, { 'action': path('event_add_crewmanager', {'id': event.id }), 'attr': {'id':'addCrewManagerForm'}}) }}
+    {{ form_widget(form.person) }}
+    <div class="d-none">
+    {{ form_widget(form.role) }}
+    </div>
+    <input type="hidden" name="username" id="username">
+    <input id="submitAddExistingPerson" type="submit" value="Add" />
+    {{ form_end(form) }}
+{% endblock %}

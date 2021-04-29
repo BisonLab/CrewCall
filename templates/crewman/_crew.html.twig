@@ -1,23 +1,186 @@
 <h4 class="text-uppercase font-weight-bold mt-4">My Crew</h4>
 <div class="row mb-4">
 <div class="col-12">
+<table class="profile-table table-sm">
+<tr>
+<td align="center" onClick="return getCContent('{{ path('cm_my_crew', { 'date': day_before }) }}');">
+    <span class="fas fa-arrow-left"></span>
+</td>
+<td align="center">
+<strong>{{ day }}</strong>
+</td>
+<td align="center" onClick="return getCContent('{{ path('cm_my_crew', { 'date': day_after }) }}');">
+    <span class="fas fa-arrow-right"></span>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="row mb-4">
+<div class="col-12">
 <table class="profile-table table-sm table-striped">
 <thead>
 <tr>
 <th>Name</th>
-<th>Job</th>
-<th>In/Out</th>
+<th>In</th>
+<th>&nbsp;</th> 
+<th>Times</th>
+{#
+  <th>Out</th>
+  <th>&nbsp;</th> 
+ #}
 </tr>
 </thead>
 <tbody>
-{% for job in crewjobs %}
+{% for cshift in crewshifts %}
+<tr>
+<td colspan="4">
+<strong>{{ cshift.shift }}</strong>
+</td>
+</tr>
+{% for job in cshift.jobs %}
 <tr>
 <td>{{ job.person }}</a></td>
-<td>{{ job }}</td>
-<td>Sign in first, then out.</td>
+{% if job.working %}
+<td>
+{{ job.joblogs.last.in | date('H:i') }}
+</td>
+<td>
+      <a id="job_signout_{{ job.id }}" role="button" href="#" onClick="return openSignJob({{job.id}}, 'out');">
+        <span class="ccButtonSmall">Out</span>
+      </a>
+</td>
+{% else %}
+<td>
+      <a id="job_signin_{{ job.id }}" role="button" href="#" onClick="return openSignJob({{job.id}}, 'in');">
+        <span class="ccButtonSmall">In</span>
+      </a>
+</td>
+<td>&nbsp;</td>
+{% endif %}
+<td>
+{% if job.joblogs.count == 0 %}
+&nbsp;
+{% endif %}
+{% for log in job.joblogs %}
+{% if log.in and log.out %}
+{{ log.in | date('H:i') }} <span class="fas fa-arrow-right"></span> {{ log.out | date('H:i') }}
+      <a id="delete_joblog_{{ log.id }}" role="button" href="#" onClick="return deleteJobLog({{log.id}});">
+        <span class="remove_glyph"></span>
+      </a>
+<br />
+{% endif %}
+{% endfor %}
+{% endfor %}
+</td>
 </tr>
 {% endfor %}
 </tbody>
 </table>
 </div>
 </div>
+
+<div id="signinModalBody" class="d-none">
+    <input class="d-none" size="5" type="text" id="c_signin_input" value="{{ "now" |  date('H:m') }}"/>
+    <div id="c_signin_cont"></div>
+    <button id="ok_signin_button" class="ccButtonSmall">In</button>
+</div>
+
+<div id="signoutModalBody" class="d-none">
+    <input class="d-none" size="5" type="text" id="c_signout_input" value="{{ "now" |  date('H:m') }}"/>
+    <div id="c_signout_cont"></div>
+    <button id="ok_signout_button" class="ccButtonSmall">Out</button>
+</div>
+
+<script>
+
+function deleteJobLog(joblog_id) {
+
+    cheat_url = "{{ path('cm_delete_joblog', { 'id': 0, 'access': 'ajax' }) }}";
+    url = cheat_url.replace("0", joblog_id);
+    data = { '_csrf_token': '{{ deletejoblogtoken }}' };
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        url: url,
+        data: data,
+        type: "DELETE",
+        async: true,
+        dataType: 'json',
+      }).done( function( cont, textStatus, xhr ) {
+        return getCContent('{{ path('cm_my_crew') }}');
+      }).fail(function(xhr, status, error) {
+        errmsg = "Failed removing time \n";
+{% if app.user.admin %}
+        errmsg = errmsg + xhr.responseText + "\n";
+{% endif %}
+        alert(errmsg);
+        return false;
+    });
+
+    return false;
+}
+
+function openSignJob(job_id, inout) {
+
+    ccbody = $( "#sign" + inout + "ModalBody" ).html();
+
+    $( "#ccModalBody" ).html(ccbody);
+    $( "#ccModalTitle" ).html("Sign " + inout);
+    $( "#ccModal" ).modal('show');
+
+    id = tp.attach({
+      target: "c_sign" + inout + "_input",
+      wrap: "c_sign" + inout + "_cont",
+      okButton: "ok_sign" + inout + "_button",
+    });
+
+    $( "#ok_sign" + inout + "_button" ).click(function(){
+      tp.set(id);
+      signJob(job_id, inout);
+      $( "#ccModalBody" ).html("");
+      $( "#ccModalTitle" ).html("");
+      $( "#ccModal" ).modal('hide');
+    });
+
+    return false;
+}
+
+function signJob(job_id, inout) {
+    url = "";
+    data = {};
+    if (inout == "in") {
+        cheat_url = "{{ path('cm_signin_job', { 'id': 0, 'access': 'ajax' }) }}";
+        url = cheat_url.replace("0", job_id);
+        time = $( "#c_signin_input").val();
+        data = { '_csrf_token': '{{ signintoken}}', 'time': time };
+    }
+    if (inout == "out") {
+        cheat_url = "{{ path('cm_signout_job', { 'id': 0, 'access': 'ajax' }) }}";
+        url = cheat_url.replace("0", job_id);
+        time = $( "#c_signout_input").val();
+        data = { '_csrf_token': '{{ signouttoken}}', 'time': time };
+    }
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        url: url,
+        data: data,
+        type: "POST",
+        async: true,
+        dataType: 'json',
+      }).done( function( cont, textStatus, xhr ) {
+        return getCContent('{{ path('cm_my_crew') }}');
+      }).fail(function(xhr, status, error) {
+        errmsg = "Failed signing " + inout + "\n";
+{% if app.user.admin %}
+        errmsg = errmsg + xhr.responseText + "\n";
+{% endif %}
+        alert(errmsg);
+        return false;
+    });
+    return false;
+}
+</script>

@@ -33,9 +33,9 @@ class PersonRoleEvent
 
     /**
      * @ORM\ManyToOne(targetEntity="Role", inversedBy="person_role_events")
-     * @ORM\JoinColumn(name="function_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="role_id", referencedColumnName="id", nullable=false)
      */
-    private $function;
+    private $role;
 
     /**
      * @ORM\ManyToOne(targetEntity="Event", inversedBy="person_role_events")
@@ -69,20 +69,20 @@ class PersonRoleEvent
 
     public function getRole()
     {
-        return $this->function;
+        return $this->role;
     }
 
-    public function setRole(Role $function = null)
+    public function setRole(Role $role = null)
     {
-        if ($this->function !== null) {
-            $this->function->removePersonRoleEvent($this);
+        if ($this->role !== null) {
+            $this->role->removePersonRoleEvent($this);
         }
 
-        if ($function !== null) {
-            $function->addPersonRoleEvent($this);
+        if ($role !== null) {
+            $role->addPersonRoleEvent($this);
         }
 
-        $this->function = $function;
+        $this->role = $role;
         return $this;
     }
 
@@ -107,6 +107,11 @@ class PersonRoleEvent
     public function getEvent()
     {
         return $this->event;
+    }
+
+    public function getRoleName()
+    {
+        return (string)$this->getRole();
     }
 
     public function __toString()

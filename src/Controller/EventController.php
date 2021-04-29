@@ -142,21 +142,34 @@ class EventController extends CommonController
             ));
         }
 
-        $rolerepo = $em->getRepository('App:Role');
+        $role_repo = $em->getRepository('App:Role');
+        $function_repo = $em->getRepository('App:FunctionEntity');
         $pre = new PersonRoleEvent();
         $pre->setEvent($event);
-        if ($contact = $rolerepo->findOneByName('Contact'))
+        if ($contact = $role_repo->findOneByName('Contact'))
             $pre->setRole($contact);
         // Gotta find all available people
-        $people = $event->getOrganization()->getPeople();
+        $contacts = $event->getOrganization()->getPeople();
         foreach ($event->getLocation()->getPeople() as $p) {
-            if (!$people->contains($p))
-                $people->add($p);
+            if (!$contacts->contains($p))
+                $contacts->add($p);
         }
 
         $add_contact_form = null;
-        if (count($people) > 0) {
-            $add_contact_form = $this->createForm('App\Form\PersonEventType', $pre, ['people' => $people])->createView();
+        if (count($contacts) > 0) {
+            $add_contact_form = $this->createForm('App\Form\PersonEventType', $pre, ['people' => $contacts])->createView();
+        }
+
+        /*
+         * This may look weird, but it's probably not.
+         * But the only way to find who can be used as crew managers on an
+         * event is to use the function.
+         */
+        $add_crewman_form = null;
+        $crewman_role = $role_repo->findOneByName('Crew Manager');
+        $crewman_function = $function_repo->findOneByName('Crew Manager');
+        if ($crewman_role && $crewman_function) {
+            $add_crewman_form = true;
         }
 
         $deleteForm  = $this->createDeleteForm($event);
@@ -166,6 +179,7 @@ class EventController extends CommonController
             'last_shift' => !empty($event->getShifts()) ? $event->getShifts()->last() : false,
             'delete_form' => $deleteForm->createView(),
             'add_contact_form' => $add_contact_form,
+            'add_crewman_form' => $add_crewman_form,
             'state_form' => $stateForm->createView(),
         ));
     }
@@ -329,6 +343,83 @@ class EventController extends CommonController
 
     /**
      * Creates a new PersonRoleEvent entity.
+     * But it's only the Crewmanager role here. Simplicity for now.
+     * Pure REST/AJAX.
+     *
+     * @Route("/{id}/add_crewmanager", name="event_add_crewmanager", methods={"GET", "POST"})
+     */
+    public function addCrewManagerAction(Request $request, Event $event, $access)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $pre = new PersonRoleEvent();
+        $pre->setEvent($event);
+
+        $role_repo = $em->getRepository('App:Role');
+        $function_repo = $em->getRepository('App:FunctionEntity');
+        $role = $role_repo->findOneByName('Crew Manager');
+        $function = $function_repo->findOneByName('Crew Manager');
+        if (!$role && !$function) {
+            return new JsonResponse(array("status" => "No role or function"), Response::HTTP_NOT_FOUND);
+        }
+        $pre->setRole($role);
+
+        $people = $function->getPeople();
+        foreach ($event->getOrganization()->getPeople() as $p) {
+            if (!$people->contains($p))
+                $people->add($p);
+        }
+        foreach ($event->getLocation()->getPeople() as $p) {
+            if (!$people->contains($p))
+                $people->add($p);
+        }
+        $add_crewmanager_form = null;
+        if (count($people) > 0) {
+            $form = $this->createForm('App\Form\PersonEventType', $pre, ['people' => $people]);
+        } else {
+            $form = $this->createForm('App\Form\PersonEventType', $pre);
+        }
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($pre);
+            $em->flush($pre);
+
+            return new JsonResponse(array("status" => "OK"), Response::HTTP_CREATED);
+        }
+
+        return $this->render('event/_new_pre.html.twig', array(
+            'pre'   => $pre,
+            'role'  => $role,
+            'event' => $event,
+            'form'  => $form->createView(),
+        ));
+    }
+
+    /**
+     * Removes a PersonRoleEvent entity.
+     * Pure REST/AJAX.
+     *
+     * @Route("/{id}/remove_crewmanager", name="event_remove_crewmanager", methods={"DELETE", "POST"})
+     */
+    public function removeCrewmanagerAction(Request $request, PersonRoleEvent $pfe, $access)
+    {
+        $event = $pfe->getEvent();
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($pfe);
+        $em->flush($pfe);
+        if ($this->isRest($access)) {
+            return new JsonResponse(array("status" => "OK"),
+                Response::HTTP_OK);
+        }
+        if ($event->getParent())
+            return $this->redirectToRoute('event_show', array('id' => $event->getParent()->getId()));
+        else
+            return $this->redirectToRoute('event_show', array('id' => $event->getId()));
+    }
+
+    /**
+     * Creates a new PersonRoleEvent entity.
      * But it's only the Contact role here. Simplicity for now.
      * Pure REST/AJAX.
      *
@@ -358,41 +449,29 @@ class EventController extends CommonController
             $em->persist($pre);
             $em->flush($pre);
 
-            if ($this->isRest($access)) {
-                return new JsonResponse(array("status" => "OK"), Response::HTTP_CREATED);
-            } else {
-                if ($event->getParent())
-                    return $this->redirectToRoute('event_show', array('id' => $event->getParent()->getId()));
-                else
-                    return $this->redirectToRoute('event_show', array('id' => $event->getId()));
-            }
+            return new JsonResponse(array("status" => "OK"), Response::HTTP_CREATED);
         }
 
-        if ($this->isRest($access)) {
-            return $this->render('event/_new_pfe.html.twig', array(
-                'pre' => $pre,
-                'event' => $event,
-                'form' => $form->createView(),
-            ));
-        }
-        if ($event->getParent())
-            return $this->redirectToRoute('event_show', array('id' => $event->getParent()->getId()));
-        else
-            return $this->redirectToRoute('event_show', array('id' => $event->getId()));
+        return $this->render('event/_new_pre.html.twig', array(
+            'pre'   => $pre,
+            'role'  => $role,
+            'event' => $event,
+            'form'  => $form->createView(),
+        ));
     }
 
     /**
      * Removes a PersonRoleEvent entity.
      * Pure REST/AJAX.
      *
-     * @Route("/{id}/remove_contact", name="event_remove_contact", methods={"GET", "DELETE", "POST"})
+     * @Route("/{id}/remove_contact", name="event_remove_contact", methods={"DELETE", "POST"})
      */
-    public function removeContactAction(Request $request, PersonRoleEvent $pfe, $access)
+    public function removeContactAction(Request $request, PersonRoleEvent $pre, $access)
     {
-        $event = $pfe->getEvent();
+        $event = $pre->getEvent();
         $em = $this->getDoctrine()->getManager();
-        $em->remove($pfe);
-        $em->flush($pfe);
+        $em->remove($pre);
+        $em->flush($pre);
         if ($this->isRest($access)) {
             return new JsonResponse(array("status" => "OK"),
                 Response::HTTP_OK);

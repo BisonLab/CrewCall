@@ -538,14 +538,14 @@ class Event
      * what they do in the event.
      * And this is people connected to the event, not shifts/jobs
      */
-    public function getPeople($function_name = null)
+    public function getPeople($role_name = null)
     {
         $persons = new ArrayCollection();
         foreach ($this->getPersonRoleEvents() as $pre) {
             if ($persons->contains($pre->getPerson()))
                 continue;
-            if ($function_name 
-                && $function_name != $pre->getFunction()->getName())
+            if ($role_name 
+                && $role_name != $pre->getRole()->getName())
                     continue;
             $persons->add($pre->getPerson());
         }

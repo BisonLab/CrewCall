@@ -174,6 +174,46 @@ function openAddContact(event_id) {
         });
         return false;
     });
+    $( "#addContactModal" ).modal('show');
+    return false;
+}
+
+function openAddCrewManager(event_id) {
+    url = "{{ path('event_add_crewmanager', {'access': 'ajax', 'id': "XXX" }) }}".replace("XXX", event_id);
+
+    $.get(url, function( content ) {
+        $( "#eventModalTitle" ).html('Add Crew Manager');
+        $( "#eventModalBody" ).html(content);
+        $( "#eventModal" ).modal();
+
+        $( "#eventModalBody form" ).each(function() {
+            var url = this.action;
+            var form_id = this.id;
+            $( "#"+form_id ).submit(function( event ) {
+                // Actually, there is nothing to serialize, but in case.
+                postdata = $( "#"+form_id ).serialize();
+                event.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    data: postdata,
+                    url: url,
+                    success: function(data)
+                    {
+                        parent.location.reload();
+                    },
+                    error: function(data)
+                    {
+                        alert("Failed Adding Crew Manager.\n" + data.responseText);
+                        $( "#eventModal" ).modal("hide");
+                        $( "#eventModalTitle" ).html("");
+                        $( "#eventModalBody" ).html("");
+                    }
+                });
+                event.preventDefault();
+            });
+        });
+    });
+    event.preventDefault();
     return false;
 }
 

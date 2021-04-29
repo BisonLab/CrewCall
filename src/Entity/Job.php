@@ -315,6 +315,20 @@ class Job
         return in_array($this->getState(), ExternalEntityConfig::getBookedStatesFor('Job'));
     }
 
+    /*
+     * This is simple. You'd say I should check if this is way after the job
+     * should have been concluded. But it will show an open joblog, which is
+     * the main point here. A joblog that should be closed.
+     */
+    public function isWorking()
+    {
+        foreach ($this->getJobLogs() as $jl) {
+            if ($jl->getIn() && !$jl->getOut())
+                return true;
+        }
+        return false;
+    }
+
     public function __toString()
     {
         return (string)$this->getFunction();

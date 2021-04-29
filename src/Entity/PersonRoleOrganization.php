@@ -30,9 +30,9 @@ class PersonRoleOrganization
 
     /**
      * @ORM\ManyToOne(targetEntity="Role", inversedBy="person_role_organizations")
-     * @ORM\JoinColumn(name="function_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="role_id", referencedColumnName="id", nullable=false)
      */
-    private $function;
+    private $role;
 
     /**
      * @ORM\ManyToOne(targetEntity="Organization", inversedBy="person_role_organizations")
@@ -87,20 +87,20 @@ class PersonRoleOrganization
 
     public function getRole()
     {
-        return $this->function;
+        return $this->role;
     }
 
-    public function setRole(Role $function = null)
+    public function setRole(Role $role = null)
     {
-        if ($this->function !== null) {
-            $this->function->removePersonRoleOrganization($this);
+        if ($this->role !== null) {
+            $this->role->removePersonRoleOrganization($this);
         }
 
-        if ($function !== null) {
-            $function->addPersonRoleOrganization($this);
+        if ($role !== null) {
+            $role->addPersonRoleOrganization($this);
         }
 
-        $this->function = $function;
+        $this->role = $role;
         return $this;
     }
 
@@ -174,6 +174,11 @@ class PersonRoleOrganization
     public function getOrganization()
     {
         return $this->organization;
+    }
+
+    public function getRoleName()
+    {
+        return (string)$this->getRole();
     }
 
     public function __toString()

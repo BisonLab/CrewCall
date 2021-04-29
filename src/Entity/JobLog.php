@@ -201,8 +201,12 @@ class JobLog
         // Presume they ended their shift when it's ended.
         // TODO: Consider setting this so there is always something in the
         // table.
+        /*
+         * But this must go. "isWorking" relies on no out set, and also real
+         * time check in and out.
         if (!$this->out && $this->getShift())
             return $this->getShift()->getEnd();
+         */
         return $this->out;
     }
 

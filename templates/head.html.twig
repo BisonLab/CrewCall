@@ -18,10 +18,6 @@
    <link rel="stylesheet" href="{{ asset('bundles/bisonlabcommon/datatables/datatables.min.css') }}" type="text/css" media="all" />
    <link rel="stylesheet" href="{{ asset('bundles/bisonlabcommon/datatables/dataTables.checkboxes.css') }}" type="text/css" media="all" />
    <link rel="stylesheet" href="{{ asset('bundles/bisonlabsakonnin/css/sakonnin.css') }}" type="text/css" media="all" />
-
-<!--
-   <link rel="stylesheet" href="{{ asset('css/glyphs.css') }}" type="text/css" media="all" />
- -->
    <link rel="stylesheet" href="{{ asset('font-awesome/css/all.min.css') }}" type="text/css" media="all" />
     <!-- The stuff added in the application -->
    <link rel="stylesheet" href="{{ asset('css/crewcall.css') }}" type="text/css" media="all" />
@@ -31,11 +27,11 @@
    <script src="{{ asset('components/jquery/jquery.js') }}"></script>
    <script src="{{ asset('components/jqueryui/jquery-ui.js') }}"></script>
    <script src="{{ asset('bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-   <!-- with datatables.min.js it ends up with the (js-debug)console complaining about mdfmake.min.js.map is missing. -->
+   <!-- with datatables.min.js it ends up with the (js-debug)console complaining about pdfmake.min.js.map is missing. -->
+{% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
    <script src="{{ asset('bundles/bisonlabcommon/datatables/datatables.js') }}"></script>
    <script src="{{ asset('bundles/bisonlabcommon/datatables/dataTables.checkboxes.min.js') }}"></script>
    <script src="{{ asset('bundles/bisonlabcommon/js/multiselect.min.js') }}"></script>
-{% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
     {% include 'scripts.html.twig' %}
 {#    {% include '@BisonLabSakonnin/Message/_message_log_popup.html.twig' %} #}
     {% include '@BisonLabSakonnin/scripts.html.twig' %}

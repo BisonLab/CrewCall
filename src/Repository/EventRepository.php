@@ -6,6 +6,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 use App\Entity\Event;
+use App\Lib\ExternalEntityConfig;
 
 /**
  *
@@ -73,13 +74,23 @@ class EventRepository extends ServiceEntityRepository
         if (isset($options['ongoing'])) {
             $qb->andWhere('e.end >= :today_start')
                ->andWhere('e.start <= :today_end')
-               ->setParameter('today_start', new \DateTime("01:00"),
+               ->setParameter('today_start', new \DateTime("00:01"),
                     \Doctrine\DBAL\Types\Type::DATETIME)
                ->setParameter('today_end', new \DateTime("23:59"),
                     \Doctrine\DBAL\Types\Type::DATETIME);
         }
 
-        // Unless there are a set timeframe, use "from now".
+        if (isset($options['on_date'])) {
+            $on_date = $options['on_date'];
+            if (!$on_date instanceOf \DateTime)
+                $on_date = new \DateTime($on_date);
+            // Kinda cheating.
+            $options['from'] = $on_date;
+            $options['to'] = clone($on_date);
+        }
+dump($options);
+
+        // Unless it's a set timeframe, use "from now".
         $from = new \DateTime();
         // And here it can be overridden
         if (isset($options['from']) || isset($options['to'])) {
@@ -94,8 +105,8 @@ class EventRepository extends ServiceEntityRepository
                     $to = $options['to'];
                 else
                     $to = new \DateTime($options['to']);
-                $qb->andWhere('e.start <= :to')
-                   ->setParameter('to', $to);
+                $qb->andWhere('e.start < :to')
+                   ->setParameter('to', $to->modify("+1 day"));
             }
         }
         // Either the default or what's set above.

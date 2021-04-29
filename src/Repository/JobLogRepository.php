@@ -5,7 +5,7 @@ namespace App\Repository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
-use App\Entity\Organization;
+use App\Entity\JobLog;
 
 /**
  *

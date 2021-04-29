@@ -217,8 +217,10 @@ h3 {
 }
 .navbar-footer-item {
     text-align: center;
+/*
     margin-left: 4px;
     margin-right: 4px;
+ */
 }
 .navbar-footer-item-active {
     text-align: center;
@@ -636,6 +638,8 @@ background-color: #fff;
     padding-right: 8px;
     margin-left: 3px;
     margin-right: 3px;
+    background-color: #555555;
+    color: white;
 }
 
 .ccTotal

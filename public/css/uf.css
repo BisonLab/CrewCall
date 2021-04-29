@@ -46,9 +46,13 @@ img {
     border-style: none;
 }
 
+.profile-table {
+    width: 100%;
+}
+
 .profile-table thead {
- background-color:#343a40;
- color:#ffff
+    background-color: #343a40;
+    color: #ffff;
 }
 
 /*

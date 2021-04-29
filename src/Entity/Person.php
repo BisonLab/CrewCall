@@ -14,6 +14,8 @@ use App\Entity\PersonContext;
 use App\Entity\PersonState;
 use App\Entity\EmbeddableAddress;
 use App\Entity\FunctionEntity;
+use App\Entity\Shift;
+use App\Entity\Event;
 use App\Lib\ExternalEntityConfig;
 
 /**
@@ -809,6 +811,29 @@ class Person implements UserInterface
          * users the wrong way. Or in the CLI, when starting the project.
          */
         return in_array('ROLE_ADMIN', $this->system_roles);
+    }
+
+    public function isCrewManager($frog = null)
+    {
+        // Confirmed for a job as crew manager?
+        if ($frog instanceOf Shift) {
+            foreach ($frog->getJobs() as $j) {
+                if ($j->isBooked() 
+                    && $j->getPerson() === $this
+                    && $j->getFunction()->getName() == "Crew Manager")
+                    return true;
+            }
+            $frog = $frog->getEvent();
+        }
+
+        // Or assigned as a role on the event?
+        if ($frog instanceOf Event) {
+            foreach ($frog->getPersonRoleEvents() as $pre) {
+                if ($pre->getRoleName() == "Crew Manager")
+                    return true;
+            }
+        }
+        return false;
     }
 
     /*
