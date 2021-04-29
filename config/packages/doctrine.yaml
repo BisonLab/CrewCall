@@ -1,9 +1,9 @@
 doctrine:
     dbal:
-        default_connection: crewcall
         connections:
             crewcall:
                 url: '%env(resolve:DATABASE_URL)%'
+        default_connection: crewcall
 
         # IMPORTANT: You MUST configure your server version,
         # either here or in the DATABASE_URL env var (see .env file)
