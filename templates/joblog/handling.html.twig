@@ -30,7 +30,7 @@ function grabNewJobLogForm(job_id, shift_id) {
         $( 'label[for="joblog_shift"]').hide();
         $( "#newJobLogForm" ).submit(function( event ) {
             event.preventDefault();
-            submitNewJobLogForm(shift_id);
+            submitNewJobLogForm(shift_id, popat);
         });
  
         $(document).on("click", ".popover .close" , function(){
@@ -47,6 +47,7 @@ function grabEditJobLogForm(joblog_id, shift_id) {
     $.get(url, function( content ) {
         $( "#editJobLog_"+joblog_id ).popover({
             html: true,
+            sanitize: false,
             placement: 'left',
             title: 'Edit <a href="#" class="close" data-dismiss="alert">&times;</a>',
             content: content
@@ -54,6 +55,7 @@ function grabEditJobLogForm(joblog_id, shift_id) {
         $( "#editJobLog_"+joblog_id ).popover("show");
         $( "#joblog_job").hide();
         $( "#joblog_job").prev().hide();
+        $( 'label[for="joblog_job"]').hide();
         $( "#editJobLogForm" ).submit(function( event ) {
             event.preventDefault();
             submitEditJobLogForm(joblog_id, shift_id);
@@ -66,7 +68,7 @@ function grabEditJobLogForm(joblog_id, shift_id) {
     return false;
 }
 
-function submitNewJobLogForm(shift_id) {
+function submitNewJobLogForm(shift_id, popat) {
     newJobLogFormData = $( "#newJobLogForm" ).serialize();
     $.ajax({
         beforeSend: function(req) {
@@ -88,6 +90,7 @@ function submitNewJobLogForm(shift_id) {
             errmsg = errmsg + xhr.responseText + "\n";
             alert(errmsg);
     });
+    $( popat ).popover("hide");
     return false;
 }
 
@@ -115,6 +118,7 @@ function submitEditJobLogForm(joblog_id, shift_id) {
             errmsg = errmsg + xhr.responseText + "\n";
             alert(errmsg);
     });
+    $( "#editJobLog_"+joblog_id ).popover("hide");
     return false;
 }
 

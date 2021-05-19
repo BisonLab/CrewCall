@@ -238,6 +238,7 @@ function jvGrabNewJobLogForm(job_id) {
         popat = "#addJobLog_"+job_id;
         $( popat ).popover({
             html: true,
+            sanitize: false,
             placement: 'left',
             title: 'Add Work  <a href="#" class="close" data-dismiss="alert"><span style="font-size: 15px" class="fas fa-times-circle"></span></a>',
             content: content
@@ -265,6 +266,7 @@ function jvGrabEditJobLogForm(joblog_id, job_id) {
     $.get(url, function( content ) {
         $( "#editJobLog_"+joblog_id ).popover({
             html: true,
+            sanitize: false,
             placement: 'left',
             title: 'Edit <a href="#" class="close" data-dismiss="alert">&times;</a>',
             content: content
