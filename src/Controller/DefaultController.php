@@ -11,9 +11,22 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class DefaultController extends AbstractController
 {
     /**
-     * @Route("/admin/dashboard", name="dashboard")
+     * @Route("/", name="index")
      */
     public function indexAction(Request $request)
+    {
+        if ($user = $this->getUser()) {
+            if ($user->isAdmin())
+                return $this->redirectToRoute('dashboard');
+            else
+                return $this->redirectToRoute('user_view');
+        }
+        return $this->redirectToRoute('app_login');
+    }
+    /**
+     * @Route("/admin/dashboard", name="dashboard")
+     */
+    public function dashboardAction(Request $request)
     {
         $dashboarder = $this->get('crewcall.dashboarder');
         return $this->render('default/index.html.twig',
