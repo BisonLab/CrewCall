@@ -161,15 +161,13 @@ EOT
         $org->setName($internal_organization_config['name']);
         $org->setState("ACTIVE");
         $this->crewcall_em->persist($org);
-        $role = new FunctionEntity();
+        $role = new Role();
         $role->setName($internal_organization_config['default_role']);
-        $role->setState("VISIBLE");
         $this->crewcall_em->persist($role);
 
         $output->writeln('Then, roles.');
         foreach ($this->roles as $role_arr) {
             $role = new Role();
-            $role->setState("VISIBLE");
             $role->setName($role_arr['name']);
             $role->setDescription($role_arr['description']);
             $this->crewcall_em->persist($role);
