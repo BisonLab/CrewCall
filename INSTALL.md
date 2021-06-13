@@ -1,4 +1,4 @@
-CrewCall - Installation.
+erewCall - Installation.
 ======================
 
 This is a howto for installing and setting up CrewCall on a Debian/Ubuntu server. Installing on other Linux/Unix distributions is no problem, just find the right packages.
@@ -116,11 +116,15 @@ And the ones below can be run separately or with  ..
 
 $ ./bin/reload.sh
 
-The argument "with-user" will create the crewcall user with the not very good password "cc":
+.. for preparing the database, insert some fixtures.
 
 $ ./bin/reload.sh with-user
 
-.. for preparing the database, insert some fixtures and optionally create the crewcall user with the too simple "cc" password.
+does the same as above but also creates a user with the second argument as username and third as email address. No second or third will create a user with $USER as username and email.
+
+It will attempt to send a password reset email, which will fail if smtp servicer is not configured. .env.local is the right place for that part.
+
+The password email will most probably have "http://localhost".. as URL. change it to whatever your (vurtial) host is when pasting it into your browser. Reason for this is that there is no hard coding of URL's and the application will only know how it was accessed if it's through the web server.
 
 $ ./bin/console doctrine:schema:create
 
