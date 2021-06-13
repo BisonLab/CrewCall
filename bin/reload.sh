@@ -7,9 +7,15 @@ rm -rf var/cache/*
 ./bin/console --em=sakonnin doctrine:schema:create
 ./bin/console cache:clear --no-warmup
 ./bin/console once:create-base-data
-if [ "$1" == "with-user" ]
+if [ "$1" = "with-user" ]
  then
-    ./bin/console crewcall:user:create --role=ADMIN crewcall crewcall@localhost crewcall
+    user=$USER
+    email=$USER
+    [ -n "$2" ] && user=$2
+    [ -n "$3" ] && email=$3
+    ./bin/console crewcall:user:create --role=ADMIN $user $email
+    echo Created user $user. Sending passwoerd email to $email 
+    ./bin/console crewcall:user:send-passwordmail thomasez
 fi
 
-rm -rf var/cache/*
+#rm -rf var/cache/*
