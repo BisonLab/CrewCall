@@ -84,8 +84,6 @@
   <div class="col-2" style="padding: 7px;">
     <a href="#" class="btn-dash btn-light" title="Add ToDo" onClick="return openSakonninMessageLogBox('{{ path('messages_list', {'sort': 'DESC', 'access': 'ajax', 'states': ['ARCHIVED'], 'message_types':['TODO']  }) }}', 'Archive')">Archive</a>
   </div>
-</div>
-
     {% set mconf = {'mconfig': {
             'formname': 'todocheck',
             'reload_after_post': true,
