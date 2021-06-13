@@ -7,8 +7,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
-use App\Form\AddressType;
 use App\Lib\ExternalEntityConfig;
+use App\Form\AddressType;
+use App\Entity\Location;
 
 class LocationType extends AbstractType
 {
@@ -33,7 +34,7 @@ class LocationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'App\Entity\Location',
+            'data_class' => Location::class,
             'address_elements' => []
         ));
     }

@@ -8,8 +8,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
-use App\Form\AddressType;
 use App\Lib\ExternalEntityConfig;
+use App\Form\AddressType;
+use App\Entity\Organization;
 
 class OrganizationType extends AbstractType
 {
@@ -44,7 +45,7 @@ class OrganizationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'App\Entity\Organization',
+            'data_class' => Organization::class,
             'address_elements' => [],
             'addressing_config' => []
         ));

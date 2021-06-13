@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Lib\ExternalEntityConfig;
+use App\Entity\PersonOrganization;
 
 class ExistingPersonOrganizationType extends AbstractType
 {
@@ -34,7 +35,7 @@ class ExistingPersonOrganizationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'App\Entity\PersonRoleOrganization'
+            'data_class' => PersonRoleOrganization::class
         ));
     }
 

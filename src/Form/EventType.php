@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Lib\ExternalEntityConfig;
+use App\Entity\Event;
 
 class EventType extends AbstractType
 {
@@ -73,7 +74,7 @@ class EventType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'App\Entity\Event'
+            'data_class' => Event::class
         ));
     }
 

@@ -30,7 +30,7 @@ class RoleType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'App\Entity\Role'
+            'data_class' => Role::class
         ));
     }
 

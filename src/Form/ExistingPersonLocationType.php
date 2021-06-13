@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Lib\ExternalEntityConfig;
+use App\Entity\PersonRoleLocation;
 
 class ExistingPersonLocationType extends AbstractType
 {
@@ -34,7 +35,7 @@ class ExistingPersonLocationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'App\Entity\PersonRoleLocation'
+            'data_class' => PersonRoleLocation::class
         ));
     }
 

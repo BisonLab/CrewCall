@@ -15,6 +15,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Lib\ExternalEntityConfig;
+use App\Entity\Shift;
 
 class ShiftType extends AbstractType
 {
@@ -57,7 +58,7 @@ class ShiftType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'App\Entity\Shift'
+            'data_class' => Shift::class
         ));
     }
 

@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Lib\ExternalEntityConfig;
+use App\Entity\PersonOrganization;
 
 class PersonEventType extends AbstractType
 {
@@ -38,7 +39,7 @@ class PersonEventType extends AbstractType
     {
         $resolver->setDefaults(array(
             'people' => [],
-            'data_class' => 'App\Entity\PersonRoleEvent'
+            'data_class' => PersonRoleEvent::class
         ));
     }
 

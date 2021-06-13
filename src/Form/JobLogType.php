@@ -15,6 +15,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 use App\Lib\ExternalEntityConfig;
+use App\Entity\JobLog;
 
 class JobLogType extends AbstractType
 {
@@ -48,7 +49,7 @@ class JobLogType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'App\Entity\JobLog',
+            'data_class' => JobLog::class,
             'allow_extra_fields' => true
         ));
     }

@@ -9,6 +9,8 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
+use App\Entity\ShiftOrganization;
+
 class ShiftOrganizationType extends AbstractType
 {
     /**
@@ -36,7 +38,7 @@ class ShiftOrganizationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'App\Entity\ShiftOrganization'
+            'data_class' => ShiftOrganization::class
         ));
     }
 

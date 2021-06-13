@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 
 use App\Lib\ExternalEntityConfig;
 use App\Form\AddressType;
+use App\Entity\Person;
 
 class PersonType extends AbstractType
 {
@@ -21,7 +22,6 @@ class PersonType extends AbstractType
         $builder
             ->add('username')
             ->add('email')
-            ->add('isVerified')
             ->add('first_name')
             ->add('last_name')
             ->add('date_of_birth', BirthdayType::class, array('required' => false))
