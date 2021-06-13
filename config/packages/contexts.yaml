@@ -1,5 +1,7 @@
 parameters:
     app.contexts:
+        App:
+            Person: []
         BisonLabSakonninBundle:
             Message:
                 crewcall:
