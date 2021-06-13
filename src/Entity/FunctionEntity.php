@@ -59,6 +59,7 @@ class FunctionEntity
      * @ORM\Column(name="state", type="string", length=40, nullable=true)
      * @Gedmo\Versioned
      * @Assert\Choice(callback = "getStatesList")
+     * @Assert\NotBlank
      */
     private $state;
 
