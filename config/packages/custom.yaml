@@ -1,8 +1,14 @@
-# This is made for your config stuff not common with CrewCall Base.
-# parameters.yml is for the instance-specific config (DB username and password
-# better not be common between dev and prod for example) , this is for the
-# application specific.
-
+#
+# This is a kinda "defaults" config.
+# These variables should probably be changed, but as this is in mainline git,
+# it's not very useful to edit here.
+#
+# Simplest (for now) wat to change this is through the CustomBundle, but
+# I will try to come up with a way to change values here without installing
+# the CustomBundle.
+#
+# Guess this is possible to get from .env(.local)
+#
 parameters:
     # You may want to change these.
     # Languange - No translations yet, so this is mere sugar.
@@ -45,6 +51,9 @@ parameters:
         # Mostly, postal address as an extra address is not used. If you want
         # it, set it to true.
         use_postal_address: false
+        # But I'll stick with Norway as there is enough US centric software out
+        # there. Choosing FR or DE would end up in a diplomatic conflict in
+        # Strasbourg.
         default_country_code: NO
         default_country_name: Norway
         format:
@@ -63,7 +72,6 @@ parameters:
 
     bisonlab_reports.report_classes:
         - App\Lib\Reports\Reports
-        # - CustomBundle\Lib\Reports\Reports
     # For generated reports, usuaslly uuseful to be able to grab from the web.
     bisonlab_reports.default_filestore: '%kernel.project_dir%/public/reports'
 
