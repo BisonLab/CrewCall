@@ -75,19 +75,19 @@ class JobRepository extends ServiceEntityRepository
             ->setParameter('persons', $options['persons']);
         }
 
-        if (isset($options['wishlist'])) {
+        if ($options['wishlist'] ?? false) {
             $states = ExternalEntityConfig::getWishlistStatesFor('Job');
             $qb->andWhere('j.state in (:state)')
             ->setParameter('states', $states);
         }
 
-        if (isset($options['booked'])) {
+        if ($options['booked'] ?? false) {
             $states = ExternalEntityConfig::getBookedStatesFor('Job');
             $qb->andWhere('j.state in (:states)')
                 ->setParameter('states', $states);
         }
 
-        if (isset($options['past'])) {
+        if ($options['past'] ?? false) {
             if (!isset($options['to'])) {
                 $to = new \DateTime();
                 $qb->andWhere('s.end <= :to')
@@ -116,8 +116,12 @@ class JobRepository extends ServiceEntityRepository
                    ->setParameter('to', $to->modify("+1 day"));
             }
         }
-        // Either the default or what's set above.
-        $qb->andWhere('s.end >= :from')->setParameter('from', $from);
+        // This makes the result not include jobs started the day before but
+        // ending the from-day.
+        if ($options['without_rollover'] ?? false)
+            $qb->andWhere('s.start >= :from')->setParameter('from', $from);
+        else
+            $qb->andWhere('s.end >= :from')->setParameter('from', $from);
         $qb->orderBy('s.start', 'ASC');
         return $qb->getQuery()->getResult();
     }
@@ -144,13 +148,13 @@ class JobRepository extends ServiceEntityRepository
             ->setParameter('states', $options['states']);
         }
 
-        if (isset($options['wishlist'])) {
+        if ($options['without_rollover'] ?? false) {
             $states = ExternalEntityConfig::getWishlistStatesFor('Job');
             $qb->andWhere('j.state in (:state)')
             ->setParameter('states', $states);
         }
 
-        if (isset($options['booked'])) {
+        if ($options['without_rollover'] ?? false) {
             $states = ExternalEntityConfig::getBookedStatesFor('Job');
             $qb->andWhere('j.state in (:states)')
                 ->setParameter('states', $states);
@@ -164,7 +168,7 @@ class JobRepository extends ServiceEntityRepository
         // Unless there are a set timeframe, use "from now".
         $from = new \DateTime();
 
-        if (isset($options['on_date'])) {
+        if ($options['without_rollover'] ?? false) {
             $on_date = $options['on_date'];
             if (!$on_date instanceOf \DateTime)
                 $on_date = new \DateTime($on_date);
@@ -175,7 +179,7 @@ class JobRepository extends ServiceEntityRepository
 
         // And from(!) here it can be overridden
 
-        if (isset($options['past'])) {
+        if ($options['without_rollover'] ?? false) {
             // If the "to" option is set, use it and not "past".
             if (!isset($options['to'])) {
                 $to = new \DateTime();
@@ -270,11 +274,9 @@ class JobRepository extends ServiceEntityRepository
             ->setParameter('person', $person);
 
         /*
-         * This should be default, but I'll just spread it around instead.
-         * It's more understandable than the other way round with som "Exact"
-         * or better option name.
+         * Options. More or less useful.
          */
-        if (isset($options['same_day'])) {
+        if ($options['same_day'] ?? false) {
             $from_day = clone($from);
             // This just looks so wrong.
             $qb
@@ -292,7 +294,7 @@ class JobRepository extends ServiceEntityRepository
             ;
         }
 
-        if (isset($options['booked_only'])) {
+        if ($options['booked_only'] ?? false) {
             $states = ExternalEntityConfig::getBookedStatesFor('Job');
             $qb->andWhere('j.state in (:states)')
                 ->setParameter('states', $states);
@@ -308,13 +310,13 @@ class JobRepository extends ServiceEntityRepository
                     $one_booked = true;
             }
         }
-        if (isset($options['any_overlap'])) {
-            if (isset($options['return_jobs'])) {
+        if ($options['any_overlap'] ?? false) {
+            if ($options['return_jobs'] ?? false) {
                 return $a;
             }
             return count($a) > 0;
         }
-        if (isset($options['return_jobs'])) {
+        if ($options['return_jobs'] ?? false) {
             if ($one_booked)
                 return $a;
             else

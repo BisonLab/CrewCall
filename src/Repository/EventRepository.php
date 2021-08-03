@@ -27,7 +27,7 @@ class EventRepository extends ServiceEntityRepository
         $qb->select('e')
             ->from($this->_entityName, 'e');
 
-        if (isset($options['parents_only'])) {
+        if ($options['parents_only'] ?? false) {
             $qb->andWhere('e.parent is null');
         }
 
@@ -41,14 +41,14 @@ class EventRepository extends ServiceEntityRepository
             ->setParameter('states', $options['states']);
         }
 
-        if (isset($options['booked'])) {
+        if ($options['booked'] ?? false) {
             $states = ExternalEntityConfig::getBookedStatesFor('Event');
             $qb->andWhere('e.state in (:states)')
                 ->setParameter('states', $states);
         }
 
         $order = "ASC";
-        if (isset($options['past'])) {
+        if ($options['past'] ?? false) {
             $qb->andWhere('e.end < :today')
                ->setParameter('today', new \DateTime(),
                     \Doctrine\DBAL\Types\Type::DATETIME);
@@ -64,14 +64,14 @@ class EventRepository extends ServiceEntityRepository
          * as it is now, including today?
          * Or should I add "upcoming" so we have one including and one not.
          */
-        if (isset($options['future'])) {
+        if ($options['future'] ?? false) {
             $today = new \DateTime();
             $qb->andWhere('e.end > :yesterday')
                 ->setParameter('yesterday', new \DateTime('yesterday'),
                     \Doctrine\DBAL\Types\Type::DATETIME);
         }
 
-        if (isset($options['ongoing'])) {
+        if ($options['ongoing'] ?? false) {
             $qb->andWhere('e.end >= :today_start')
                ->andWhere('e.start <= :today_end')
                ->setParameter('today_start', new \DateTime("00:01"),
@@ -80,7 +80,7 @@ class EventRepository extends ServiceEntityRepository
                     \Doctrine\DBAL\Types\Type::DATETIME);
         }
 
-        if (isset($options['on_date'])) {
+        if ($options['on_date'] ?? false) {
             $on_date = $options['on_date'];
             if (!$on_date instanceOf \DateTime)
                 $on_date = new \DateTime($on_date);

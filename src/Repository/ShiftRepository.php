@@ -33,15 +33,20 @@ class ShiftRepository extends ServiceEntityRepository
         }
 
         $qb = $this->_em->createQueryBuilder();
+        $qb->select('s')->from($this->_entityName, 's');
+
         // We want to include running shifts. In case of late needs.
-        $qb->select('s')
-            ->from($this->_entityName, 's')
-            ->where(
+        // But also have an option not to.
+        if ($options['without_rollover'] ?? false) {
+            $qb->where('s.start >= :from');
+        } else {
+            $qb->where(
                 $qb->expr()->orX(
                     $qb->expr()->gte('s.start', ':from'),
                     $qb->expr()->between(':from', 's.start', 's.end')
-               ) )
-           ->setParameter('from', $from);
+               ) );
+        }
+        $qb->setParameter('from', $from);
 
         if (isset($options['to'])) {
             if ($options['to'] instanceof \DateTime )
@@ -53,7 +58,7 @@ class ShiftRepository extends ServiceEntityRepository
         }
 
         // There are a few options here. Well, one for now, "open".
-        if (isset($options['open'])) {
+        if ($options['open'] ?? false) {
             $states = ExternalEntityConfig::getOpenStatesFor('Shift');
             $qb->andWhere('s.state in (:states)')
                ->setParameter('states', $states);
@@ -102,7 +107,7 @@ class ShiftRepository extends ServiceEntityRepository
         }
 
         // There are a few options here. Well, one for now, "booked".
-        if (isset($options['booked'])) {
+        if ($options['booked'] ?? false) {
             $states = ExternalEntityConfig::getBookedStatesFor('Shift');
             $qb->andWhere('s.state in (:states)')
                ->setParameter('states', $states);

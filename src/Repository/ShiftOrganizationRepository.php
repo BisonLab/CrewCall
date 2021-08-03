@@ -69,19 +69,19 @@ class ShiftOrganizationRepository extends ServiceEntityRepository
             ->setParameter('states', $options['states']);
         }
 
-        if (isset($options['wishlist'])) {
+        if ($options['wishlist'] ?? false) {
             $states = ExternalEntityConfig::getWishlistStatesFor('Job');
             $qb->andWhere('j.state in (:state)')
             ->setParameter('states', $states);
         }
 
-        if (isset($options['booked'])) {
+        if ($options['booked'] ?? false) {
             $states = ExternalEntityConfig::getBookedStatesFor('Job');
             $qb->andWhere('j.state in (:states)')
                 ->setParameter('states', $states);
         }
 
-        if (isset($options['past'])) {
+        if ($options['past'] ?? false) {
             if (!isset($options['to'])) {
                 $to = new \DateTime();
                 $qb->andWhere('s.end <= :to')
