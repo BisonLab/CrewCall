@@ -207,7 +207,7 @@ class OrganizationController extends CommonController
                 $person->setEmail($new_form_data['email']);
             $person->setFirstName($new_form_data['first_name']);
             $person->setLastName($new_form_data['last_name']);
-            $person->setPlainPassword(sprintf("%16x", rand()));
+            $person->setPassword(sprintf("%16x", rand()));
 
             $em->persist($person);
             $pro->setPerson($person);
