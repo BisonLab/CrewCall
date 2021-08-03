@@ -70,7 +70,7 @@ class JobController extends CommonController
         $em = $this->getDoctrine()->getManager();
 
         $conflicts = [];
-        if ($job->isBooked() && $overlap = $em->getRepository('App:Job')->checkOverlapForPerson($job, ['same_day' => true, 'booked_only' => true, 'return_jobs' => true])) {
+        if ($job->isBooked() && $overlap = $em->getRepository('App:Job')->checkOverlapForPerson($job, ['booked_only' => true, 'return_jobs' => true])) {
             foreach ($overlap as $ojob) {
                 $overlapped = $ojob->getShift();
                 $conflicts[] = 
@@ -120,7 +120,7 @@ class JobController extends CommonController
             if (!$job = $jobrepo->find($job_id))
                 return new JsonResponse(array("status" => "NOT FOUND"), Response::HTTP_NOT_FOUND);
             $job->setState($state);
-            if ($job->isBooked() && $overlap = $jobrepo->checkOverlapForPerson($job, ['same_day' => true, 'booked_only' => true, 'return_jobs' => true])) {
+            if ($job->isBooked() && $overlap = $jobrepo->checkOverlapForPerson($job, ['booked_only' => true, 'return_jobs' => true])) {
                 foreach ($overlap as $ojob) {
                     $overlapped = $ojob->getShift();
                     $conflicts[] = 
@@ -161,7 +161,7 @@ class JobController extends CommonController
             $job->setPerson($person);
 
             $conflicts = [];
-            if ($job->isBooked() && $overlap = $em->getRepository('App:Job')->checkOverlapForPerson($job, ['same_day' => true, 'booked_only' => true, 'return_jobs' => true])) {
+            if ($job->isBooked() && $overlap = $em->getRepository('App:Job')->checkOverlapForPerson($job, ['booked_only' => true, 'return_jobs' => true])) {
                 foreach ($overlap as $ojob) {
                     $overlapped = $ojob->getShift();
                     $conflicts[] = 
