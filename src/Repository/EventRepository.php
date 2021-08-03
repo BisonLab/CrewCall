@@ -88,7 +88,6 @@ class EventRepository extends ServiceEntityRepository
             $options['from'] = $on_date;
             $options['to'] = clone($on_date);
         }
-dump($options);
 
         // Unless it's a set timeframe, use "from now".
         $from = new \DateTime();
