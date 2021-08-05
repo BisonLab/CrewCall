@@ -179,10 +179,8 @@ class Calendar
             $fc['borderColor'] = $cal['borderColor'];
         if (isset($cal['textColor']))
             $fc['textColor'] = $cal['textColor'];
-        if (isset($cal['allDay']))
-            $fc['allDay'] = $cal['allDay'];
-        else
-            $fc['allDay'] = false;
+
+        $fc['allDay'] = $cal['allDay'] ?? false;
         $fc['overlap'] = false;
         $fc['editable'] = false;
         $fc['startEditable'] = false;
