@@ -759,7 +759,7 @@ class Person implements UserInterface
             // For now.
             if ($next) break;
         }
-        if (isset($options['last_and_next'])) {
+        if ($options['last_and_next'] ?? false) {
             if ($last) $states->add($last);
             if ($current) $states->add($current);
             if ($next) $states->add($next);

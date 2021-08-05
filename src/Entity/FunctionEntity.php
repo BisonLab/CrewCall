@@ -301,7 +301,7 @@ class FunctionEntity
         // The simplest one.
         if (empty($options))
             return $this->personfunctions->count();
-        if (isset($options['by_state'])) {
+        if ($options['by_state'] ?? false) {
             $states = [];
             foreach ($this->getPeople(false) as $p) {
                 if (!isset($states[$p->getState()]))
