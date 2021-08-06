@@ -42,7 +42,7 @@
   <div class="col-10" style="margin-left: 20px; padding: 7px;">
     <a href="#" onClick='return createSakonninMessage("c_adminwall");' class="btn-dash btn-dark">Add an Admin Wall post</a>
   </div>
-</div>
+</div><!-- row -->
       {% set mconf = {'mconfig': {
               'formname': 'c_adminwall',
               'reload_after_post': true,
@@ -58,4 +58,4 @@
           }
       %}
 {% include '@BisonLabSakonnin/Message/_create_popup.html.twig' with mconf %}
-</div><!-- admin-wall -->
+</div><!-- admin_wall -->
