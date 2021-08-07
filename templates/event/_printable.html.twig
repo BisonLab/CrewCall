@@ -57,7 +57,8 @@
 
 <table id="printEventTable" class="printable-table">
 
-{% for shift in event.shifts if shift.jobs | length > 0%}
+{% for shift in event.shifts %}
+{% if shift.jobs | length > 0%}
 <thead>
   <tr class="shifthead">
     <td colspan="4">
@@ -88,7 +89,8 @@
 </thead>
 
 <tbody class="jobsbody">
-  {% for job in shift.jobs({'sort_by': 'last_name'}) if state is empty or job.state == state %}
+  {% for job in shift.jobs({'sort_by': 'last_name'}) %}
+   {% if state is empty or job.state == state %}
     <tr class="jobs">
         <td nowrap="nowrap" class="epName">{{ job.person.name }}</td>
 {% if all or Mobile is defined %}
@@ -119,7 +121,7 @@
         'system': 'crewcall',
         'object_name': 'job',
         'external_id': job.id
-}
+    }
 %}
         <td nowrap="nowrap" class="epChecks">
 {% for note in sakonnin_messages.MessagesForContext(jobinfocontext) %}
@@ -141,8 +143,11 @@
         </td>
 {% endif %}
     </tr>
+   {% endif %}
   {% endfor %}
   </tbody>
+
+{% endif %}
 
 {% endfor %}
 </table>
