@@ -12,6 +12,8 @@ parameters:
                     url_template: "/web/person/{{external_id}}"
                     url_from_method: template
                     default: false
+                    unique: false
+                    one_per_owner: false
                   -
                     label: "Front page"
                     object_name: frontpage
@@ -19,6 +21,8 @@ parameters:
                     url_template: "/"
                     url_from_method: template
                     default: false
+                    unique: false
+                    one_per_owner: false
                   -
                     label: "Event"
                     object_name: event
@@ -26,6 +30,8 @@ parameters:
                     url_template: "/web/event/{{external_id}}"
                     url_from_method: template
                     default: false
+                    unique: false
+                    one_per_owner: false
                   -
                     label: "Location"
                     object_name: location
@@ -33,6 +39,8 @@ parameters:
                     url_template: "/web/location/{{external_id}}"
                     url_from_method: template
                     default: false
+                    unique: false
+                    one_per_owner: false
                   -
                     label: "Organization"
                     object_name: organization
@@ -40,6 +48,8 @@ parameters:
                     url_template: "/web/organization/{{external_id}}"
                     url_from_method: template
                     default: false
+                    unique: false
+                    one_per_owner: false
                   -
                     label: "Shift"
                     object_name: shift
@@ -47,6 +57,8 @@ parameters:
                     url_template: "/web/shift/{{external_id}}"
                     url_from_method: template
                     default: false
+                    unique: false
+                    one_per_owner: false
                   -
                     label: "Job"
                     object_name: job
@@ -54,3 +66,5 @@ parameters:
                     url_template: "/web/job/{{external_id}}"
                     url_from_method: template
                     default: false
+                    unique: false
+                    one_per_owner: false
