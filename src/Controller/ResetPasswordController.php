@@ -18,10 +18,12 @@ use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 
+use BisonLab\CommonBundle\Controller\CommonController as CommonController;
+
 /**
  * @Route("/reset_password")
  */
-class ResetPasswordController extends AbstractController
+class ResetPasswordController extends CommonController
 {
     use ResetPasswordControllerTrait;
 

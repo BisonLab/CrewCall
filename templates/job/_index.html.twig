@@ -155,7 +155,7 @@
             }
         %}
         {% include '@BisonLabSakonnin/Message/_create_popup.html.twig' with jnconfig %}
-        <a href="#" onClick='return createSakonninMessage("jobnote_{{ job.id }}");' title="Add an Admin Note"><span class="fas fa-pencil"></span></a>
+        <a href="#" onClick='return createSakonninMessage("jobnote_{{ job.id }}");' title="Add an Admin Note"><span class="fas fa-edit"></span></a>
         {% set cjobcontext = {
                 'message_group': 'Notes',
                 'system': 'crewcall',
@@ -165,7 +165,7 @@
         %}
         {% set jcmessages = sakonnin_messages.MessagesForContext(cjobcontext) %}
         {% if jcmessages | length > 0 %}
-           <a href="#" title="Person Notes" onClick="return openSakonninMessageLogBox('{{ path('message_context_search', {'access': 'ajax', 'system': cjobcontext.system, 'object_name': cjobcontext.object_name, 'external_id': cjobcontext.external_id, 'criterias': {'message_group': 'Notes' }}) }}', 'Notes')"><span style="font-size: 15px" class="fas fa-file"></span></a>
+           <a href="#" title="Notes" onClick="return openSakonninMessageLogBox('{{ path('message_context_search', {'access': 'ajax', 'system': cjobcontext.system, 'object_name': cjobcontext.object_name, 'external_id': cjobcontext.external_id, 'criterias': {'message_group': 'Notes' }}) }}', 'Notes')"><span style="font-size: 15px" class="fas fa-file"></span></a>
         {% else %}
             &nbsp;
         {% endif %}

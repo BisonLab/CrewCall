@@ -7,8 +7,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 
-class DefaultController extends AbstractController
+class DefaultController extends CommonController
 {
     /**
      * @Route("/", name="index")

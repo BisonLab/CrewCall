@@ -7,7 +7,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
-class SecurityController extends AbstractController
+use BisonLab\CommonBundle\Controller\CommonController as CommonController;
+
+class SecurityController extends CommonController
 {
     /**
      * @Route("/login", name="app_login")

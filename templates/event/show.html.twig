@@ -26,25 +26,17 @@
   </div>
 </div> <!-- / row -->
 
-  <table class="showTable">
-    <tbody>
-        <tr>
-            <th>Start</th>
-            <td>{% if event.start %}{{ event.start|date('Y-m-d H:i:s') }}{% endif %}</td>
-        </tr>
-        <tr>
-            <th>End</th>
-            <td>{% if event.end %}{{ event.end|date('Y-m-d H:i:s') }}{% endif %}</td>
-        </tr>
-        <tr>
-            <th>Status</th>
-            <td>
-                {{ event.statelabel }}
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
+{#
+ # Undecided. We started wit no accordion for the main/parent event, then I
+ # added it if there was other children/dub events, now I do not want it
+ # again.
+ # The reason I have comt to that conclusion is that the menu options
+ # for the main event should include all sub events, while the same menu
+ # options for the sub events is only for them.
+ # But with all in accodrions, the menu items is for the single event always,
+ # which means there are no "Print the whole event" or "Send messages to
+ # everyone involved" which should be a top meny thingie, alas the main event.
+ #
 {% if event.children | length > 0 %}
   <!-- Group them all -->
   <div class="accordion">
@@ -56,10 +48,19 @@
   <!-- Group them all, including main event. -->
   <div class="accordion">
 {% endif %}
+ #}
+
+<div class="card-body">
+    {% include '/event/_sub_event.html.twig' with { 'event': event}  %}
+</div>
+{% if event.children | length > 0 %}
+  <!-- Start the accordion bonanza.. -->
+  <div class="accordion">
         {% for child in event.children %}
             {% include '/event/_accordion.html.twig' with { 'event': child}  %}
         {% endfor %}
     </div><!-- End accordion -->
+{% endif %}
 </div>
 
 {% if add_contact_form is not null %}

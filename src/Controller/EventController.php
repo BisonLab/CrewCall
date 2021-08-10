@@ -271,11 +271,21 @@ class EventController extends CommonController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $events = $this->container->get('crewcall.events');
-            $clone = $events->cloneEvent($event, $clone);
             $em = $this->getDoctrine()->getManager();
-            $em->persist($clone);
-            $em->flush($clone);
+            $events = $this->container->get('crewcall.events');
+
+            $em->getConnection()->beginTransaction();
+            try {
+                $clone = $events->cloneEvent($event, $clone);
+                $em->persist($clone);
+                $em->flush($clone);
+                $em->getConnection()->commit();
+            } catch (\Exception $e) {
+                error_log("cloneAction ERROR:" . $e->getMessage());
+                $em->getConnection()->rollback();
+                $em->close();
+                throw $e;
+            }
             return $this->redirectToRoute('event_show', array('id' => $clone->getId()));
         }
 
@@ -543,6 +553,17 @@ class EventController extends CommonController
                 $people->add($j->getPerson());
         }
 
+        // Including sub events, unless.
+        if (!$request->request->get('no_children')
+            && !$request->get('no_children')) {
+            foreach ($event->getChildren() as $child) {
+                foreach ($child->getJobs($filter) as $j) {
+                    if (!$people->contains($j->getPerson()))
+                        $people->add($j->getPerson());
+                }
+            }
+        }
+
         $person_contexts = array_map(function($person) {
             return [
                 'system' => 'crewcall',
@@ -554,7 +575,7 @@ class EventController extends CommonController
         $sm->postMessage(array(
             'subject' => $subject,
             'body' => $body,
-            'from' => $this->getParameter('system_emails_address'),
+            'from' => $this->parameter_bag->get('mailfrom'),
             'message_type' => $message_type,
             'to_type' => "INTERNAL",
             'from_type' => "EMAIL",
@@ -615,11 +636,12 @@ class EventController extends CommonController
         $params = $fields;
         $params['all'] = false;
         $params['event'] = $event;
+        $params['state'] = $request->get('state');
 
         if ($mailForm->isSubmitted() && $mailForm->isValid()) {
             $fd = $mailForm->getData();
             $params['state'] = $fd['state'];
-            $resp = $this->render('event/_printable.html.twig', $params);
+            $resp = $this->render('event/mailable.html.twig', $params);
             $html = $resp->getContent();
             $tmpdir = sys_get_temp_dir() . "/mpdf";
             $mpdf = new \Mpdf\Mpdf(['tempDir' => $tmpdir]);
@@ -633,7 +655,7 @@ class EventController extends CommonController
                 'subject' => $event->getName(),
                 'body' => $body,
                 'to' => $fd['email'],
-                'from' => $this->getParameter('system_emails_address'),
+                'from' => $this->parameter_bag->get('mailfrom'),
                 'message_type' => "List Sent",
                 'to_type' => "EMAIL",
                 'from_type' => "EMAIL",
@@ -649,7 +671,6 @@ class EventController extends CommonController
             );
             $params['message'] = "Mail sendt to " . $fd['email'];
         }
-
         $params['all'] = true;
         $params['mailform'] = $mailForm->createView();
         return $this->render('event/printable.html.twig', $params);

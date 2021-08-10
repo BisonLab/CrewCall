@@ -29,6 +29,7 @@ services:
         tags: ['controller.service_arguments']
         calls:
             - [ setContainer, ['@service_container'] ]
+            - [ setParameterBag, ['@parameter_bag'] ]
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
@@ -44,7 +45,7 @@ services:
     crewcall.events:
         class: App\Service\Events
         public: true
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager", "@sakonnin.messages"]
 
     crewcall.jobs:
         class: App\Service\Jobs

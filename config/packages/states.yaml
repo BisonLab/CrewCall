@@ -52,10 +52,16 @@ parameters:
                 # Active states is all those that is used on a person still a
                 # member of the crew (or contact)
                 active_states: ['ACTIVE', 'OCCUPIED', 'VACATION', 'SICKLEAVE', 'LOCKED']
+                # Gotta have this one too. 
+                # This is the explicit states you have to be in to be available
+                # for taking a job.
+                # TODO: occupied or available - states?
+                # one, fewer states to list.
+                available_states: ['ACTIVE']
                 # Choosing "All active" in crew list makes this look odd.
                 # active_states: ['ACTIVE', 'OCCUPIED', 'VACATION', 'SICKLEAVE', 'LOCKED', 'LEAVE']
-                # This is what enabled the user to log in. Basically, the ones
-                # above except LOCKED.
+                # This is what enabled the user to log in. Basically, the
+                # active states except LOCKED.
                 enable_login: ['ACTIVE', 'OCCUPIED', 'VACATION', 'SICKLEAVE']
             Event:
                 states:
@@ -178,5 +184,6 @@ parameters:
                     DEFAULT:
                         label: "Prospect"
                 active_states: []
+                available_states: []
                 booked_states: []
                 wishlist_states: []

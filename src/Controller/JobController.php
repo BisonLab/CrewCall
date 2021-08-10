@@ -313,7 +313,7 @@ class JobController extends CommonController
         $sm->postMessage(array(
             'subject' => $subject,
             'body' => $body,
-            'from' => $this->getParameter('system_emails_address'),
+            'from' => $this->parameter_bag->get('mailfrom'),
             'message_type' => $message_type,
             'to_type' => "INTERNAL",
             'from_type' => "INTERNAL",
