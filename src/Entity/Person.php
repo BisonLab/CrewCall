@@ -744,6 +744,7 @@ class Person implements UserInterface
             return $this->person_states ?: new ArrayCollection();
 
         $states = new ArrayCollection();
+        $from_now = new ArrayCollection();
         $last = null;
         $current = null;
         $next = null;
@@ -755,16 +756,19 @@ class Person implements UserInterface
             }
             // Are we left with the only viable state now?
             if ($current)
-                $next = $ps;
+                if (!$next)
+                    $next = $ps;
             else
                 $current = $ps;
-            // For now.
-            if ($next) break;
+            $from_now->add($ps);
         }
         if ($options['last_and_next'] ?? false) {
             if ($last) $states->add($last);
             if ($current) $states->add($current);
             if ($next) $states->add($next);
+        }
+        if ($options['from_now'] ?? false) {
+            return $from_now;
         }
         return $states;
     }
