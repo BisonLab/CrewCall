@@ -869,9 +869,11 @@ input:checked + .ccSlider:before {
 .card-right {
     float: right;
 }
+
 .card-centerish {
     margin-left: 50px;
 }
+
 .card-body {
     padding-left: 0px;
     padding-right: 0px;
@@ -881,13 +883,21 @@ input:checked + .ccSlider:before {
     /* background-color: #f8f8f8; */
 }
 
+.card-custom .fa-comment {
+    font-size: 39px;
+}
+
 .delete-btn {
     text-decoration: underline;
     font-weight: 400;
 }
 
-.card-custom .fa-comment {
-    font-size: 39px;
+.tabbable {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background-color: white;
 }
 
 /*
