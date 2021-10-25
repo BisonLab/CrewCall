@@ -31,14 +31,14 @@
 {% endblock %}
 </header>
 
-<div class="container p-4 mb-5">
+<div class="container-fluid p-4 mb-5">
   {% block flashmessage %}
 <div class="flashmessageblock">
  {% include 'flash.html.twig' with { 'close': true } %}
 </div>
   {% endblock %}
   {% block lmenu %}{% endblock %}
-<div class="container contentblock">
+<div class="container-fluid contentblock">
   {% block content %}{% endblock %}
   {% block body %}{% endblock %}
 </div>

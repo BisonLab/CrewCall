@@ -3,7 +3,7 @@
 <div class="row p-2">
 {% for note in notes.general %}
   {% if (note.state == "SHOW" or note.state == "UNREAD") %}
-  <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-12 noteCard" id="sakonninnote_{{ note.id}}">
+  <div class="col-md-6 col-lg-4 col-xl-3 noteCard" id="sakonninnote_{{ note.id}}">
    <p><strong>{{ note.createdAt | date('Y-m-d') }} - {{ note.createdBy }}</strong></p>
 <p>{{ note.body }}</p>
    </div>
@@ -17,7 +17,7 @@
 <div class="row p-2">
 {% for note in notes.personal %}
   {% if (note.state == "SHOW" or note.state == "UNREAD") %}
-  <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-12 noteCard" id="sakonninnote_{{ note.id}}">
+  <div class="col-md-6 col-lg-4 col-xl-3 noteCard" id="sakonninnote_{{ note.id}}">
    <p><strong>{{ note.createdAt | date('Y-m-d') }} - {{ note.createdBy }}</strong></p>
 <p>{{ note.body }}</p>
    </div>

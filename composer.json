@@ -23,7 +23,7 @@
         "composer/package-versions-deprecated": "1.11.99.1",
         "doctrine/annotations": "^1.0",
         "doctrine/doctrine-bundle": "^2.2",
-        "doctrine/doctrine-migrations-bundle": "^2.2",
+        "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.7",
         "eluceo/ical": "^0.13.0",
         "fortawesome/font-awesome": "^5.15",
@@ -75,7 +75,7 @@
         "symfony/stopwatch": "^5.3",
         "symfony/var-dumper": "^5.3",
         "symfony/web-profiler-bundle": "^5.3",
-        "friendsofphp/php-cs-fixer": "3.0.x-dev"
+        "friendsofphp/php-cs-fixer": "^3.0"
     },
     "config": {
         "optimize-autoloader": true,

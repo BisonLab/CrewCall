@@ -18,26 +18,28 @@ parameters:
                 - dashie: "Dummy"
                   cols: 1
                 # Row 2
-                - dashie: "Dummy"
-                  cols: 2
                 #- dashie: "ComboWall"
                 #  cols: 3
+                - dashie: "Announcements"
+                  cols: 4
+                - dashie: "ToDo"
+                  cols: 0
                 - dashie: "EventsCalendar"
                   cols: 8
-                - dashie: "Dummy"
-                  cols: 2
+                #- dashie: "Dummy"
+                #  cols: 2
                 # Row 3
                 - dashie: "Dummy"
                   cols: 1
                 # Should this be PublicMessages or PublicWall?
                 # On top of that, it uses the "Front page logged in" message
                 # type. (Historical reasons, should change it)
-                - dashie: "Announcements"
-                  cols: 4
-                - dashie: "ToDo"
-                  cols: 3
-                - dashie: "AdminWall"
-                  cols: 3
+                #- dashie: "Announcements"
+                #  cols: 4
+                #- dashie: "ToDo"
+                #  cols: 3
+                #- dashie: "AdminWall"
+                #  cols: 3
                 - dashie: "Dummy"
                   cols: 1
                 #- dashie: "PersonalMessages"
