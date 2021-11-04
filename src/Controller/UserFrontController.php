@@ -361,29 +361,20 @@ class UserFrontController extends CommonController
             'url' => $this->generateUrl('uf_confirm_job', ['id' => 'ID'], UrlGeneratorInterface::ABSOLUTE_URL)
         ];
 
-$then = microtime(true);
         $retarr['interested'] = $this->jobsForPersonAsArray($user, [
             'from' => $from, 'to' => $to,
             'state' => 'INTERESTED']);
         $retarr['interested_count'] = count($retarr['interested']);
-$now = microtime(true);
-dump("INTERESTED:" . $now - $then);
 
-$then = microtime(true);
         $retarr['assigned'] = $this->jobsForPersonAsArray($user, [
             'from' => $from, 'to' => $to,
             'state' => 'ASSIGNED']);
         $retarr['assigned_count'] = count($retarr['assigned']);
-$now = microtime(true);
-dump("ASSIGNED:" . $now - $then);
 
-$then = microtime(true);
         $retarr['confirmed'] = $this->jobsForPersonAsArray($user, [
             'from' => $from, 'to' => $to,
             'state' => 'CONFIRMED']);
         $retarr['confirmed_count'] = count($retarr['confirmed']);
-$now = microtime(true);
-dump("CONFIRMED:" . $now - $then);
 
         if ($as_array)
             return $retarr;
@@ -838,10 +829,7 @@ dump("CONFIRMED:" . $now - $then);
         $ccjobs = $this->container->get('crewcall.jobs');
 
         $opps = [];
-$then = microtime(true);
         $opportunities = $ccjobs->opportunitiesForPerson($person, $options);
-$now = microtime(true);
-dump("opportunitiesForPerson:" . $now - $then);
 
         foreach ($ccjobs->opportunitiesForPerson($person, $options) as $o) {
             $arr = [
@@ -853,8 +841,6 @@ dump("opportunitiesForPerson:" . $now - $then);
             else
                 $opps[] = array_merge($arr, $this->getShiftArr($o));
         }
-$now = microtime(true);
-dump("opportunitiesForPersonAsArray:" . $now - $then);
         return $opps;
     }
 
@@ -865,7 +851,6 @@ dump("opportunitiesForPersonAsArray:" . $now - $then);
 
         // So, what do we need here? To be continued..
         if (!isset($this->shiftcache[$shift->getId()])) {
-$then = microtime(true);
             $event = $shift->getEvent();
             $eventparent = $event->getParent();
             $location = $event->getLocation();
@@ -938,11 +923,7 @@ $then = microtime(true);
                 'checks' => $checks,
                 'confirm_notes' => $confirm_notes
             ];
-if(count($confirm_notes) > 0)
-dump($confirm_notes);
             $this->shiftcache[$shift->getId()] = $shiftarr;
-$now = microtime(true);
-dump("shiftcache:" . $now - $then);
         }
         return $this->shiftcache[$shift->getId()];
     }
