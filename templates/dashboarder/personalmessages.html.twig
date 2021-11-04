@@ -17,7 +17,7 @@
 {% set messages = messages | merge(sakonnin_messages.MessagesForUser(app.user, {'state': 'UNREAD'})) %}
 {% for message in messages %}
 {% if is_granted('show', message) %}
-<div id="sakonninmessage_{{ message.id}}">
+<div id="sakonninmessage_{{ message.messageid}}">
  <div class="noteText row">
     <div class="col-6">
         {# While we wait for a message type label. 
@@ -36,7 +36,7 @@
 </pre>
  </div>
   <div class="col-4">
-    <a href="#" onClick="return setStateOnSakonninMessage({{ message.id }}, 'ARCHIVED');" class="btn-dash btn-success">Read it!</a>
+    <a href="#" onClick="return setStateOnSakonninMessage({{ message.messageid }}, 'ARCHIVED');" class="btn-dash btn-success">Read it!</a>
   </div>
 </div>
 </div> <!--sakonninmessage -->

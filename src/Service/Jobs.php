@@ -108,7 +108,10 @@ class Jobs
         // Hopefully Doctrine does the job just as good, so I won't for now.
         $opportunities = new ArrayCollection();
         $jobshift = new ArrayCollection();
+$then = microtime(true);
         $jobs = $this->jobsForPerson($person, $options);
+$now = microtime(true);
+dump("jobsForPerson:" . $now - $then);
         foreach ($jobs as $job) {
             $jobshift->add($job->getShift());
         }
@@ -120,9 +123,13 @@ class Jobs
             $functions[] = $pf->getFunction();
         }
         $options['open'] = true;
+$then = microtime(true);
         $shifts = $this->em->getRepository('App:Shift')
             ->findUpcomingForFunctions($functions, $options);
+$now = microtime(true);
+dump("findUpcomingForFunctions:" . $now - $then);
 
+$then = microtime(true);
         foreach ($shifts as $sf) {
             // If not open for registration, don't.
             if (!$sf->isOpen())
@@ -144,6 +151,8 @@ class Jobs
                 $opportunities->add($sf);
             }
         }
+$now = microtime(true);
+dump("foreach:" . $now - $then);
         return $opportunities;
     }
 

@@ -208,19 +208,17 @@
             }
         %}
         {% for note in sakonnin_messages.MessagesForContext(mlogcontext) %}
-        <div id="sakonninmessage_{{ note.id }}">
+        <div id="sakonninmessage_{{ note.messageid }}">
             {% set mdelform = sakonnin_messages.getCreateDeleteForm(note, true) %}
-            <form id="deletemessageform_{{ note.id }}" onSubmit="return deleteSakonninMessage({{ note.id }});">
+            <form id="deletemessageform_{{ note.messageid }}" onSubmit="return deleteSakonninMessage('{{ note.messageid }}');">
             {{ form_start(mdelform) }}
             {{ form_rest(mdelform) }}
-            <a href="#" title="{{ note.messagetype.description }}">{{ note.messagetype }}</a>
+                <a href="#" title="{{ note.messagetype.description }}">{{ note.messagetype }}</a>
             <button type="submit" class="btn btn-link">
                 <span class="remove_glyph"></span>
             </button>
             </form>
-            <ul>
-            <li><strong>{{ note.body }}</strong></li>
-            </ul>
+            <strong>{{ note.body }}</strong>
         </div>
         {% endfor %}
         <br>

@@ -42,11 +42,11 @@
 {% for message in sakonnin_messages.messages(criterias) %}
  {% if is_granted('edit', message) %}
   {% set emform = sakonnin_messages.getEditForm( message, true ) %}
-  {% set action = path('message_edit', { 'id': message.id, 'access': 'ajax' }) %}
-  {{ cmac.print_comboedit(emform, action, message.id, message.messagetype ) }}
+  {% set action = path('message_edit', { 'id': message.messageid, 'access': 'ajax' }) %}
+  {{ cmac.print_comboedit(emform, action, message.messageid, message.messagetype ) }}
  {% endif %}
  {% if is_granted('show', message) %}
-   <div id="sakonninmessage_{{ message.id}}">
+   <div id="sakonninmessage_{{ message.messageid}}">
      <div class="noteText row">
         <div class="col-sm-9">
             <em>{{ message.createdAt | date('Y-m-d') }} - {{ message.createdBy }}</em>
@@ -54,9 +54,9 @@
       {% if is_granted('edit', message) %}
 <div class="d-none">
 {% set mdelform = sakonnin_messages.getCreateDeleteForm(message, true) %}
-<form id="deletemessageform_{{ message.id }}" onSubmit="return deleteSakonninMessage({{ message.id }});">
+<form id="deletemessageform_{{ message.messageid }}" onSubmit="return deleteSakonninMessage('{{ message.messageid }}');">
 {{ form_rest(mdelform) }}
-<input id="delcombo_{{ message.id }}" type="submit">
+<input id="delcombo_{{ message.messageid }}" type="submit">
 </form>
 </div>
         <div class="col-sm-3">
@@ -65,9 +65,9 @@
              <span></span>
              </button>
              <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" href="#" onClick="return setStateOnSakonninMessage({{ message.id }}, 'ARCHIVED');">Archive</a>
-                <a class="dropdown-item" href="#" onClick='return editCombo({{ message.id }});'>Edit</a>
-                <a class="dropdown-item" href="#" onClick='return $("#delcombo_{{ message.id }}").click();'>Delete</a>
+                <a class="dropdown-item" href="#" onClick="return setStateOnSakonninMessage({{ message.messageid }}, 'ARCHIVED');">Archive</a>
+                <a class="dropdown-item" href="#" onClick='return editCombo({{ message.messageid }});'>Edit</a>
+                <a class="dropdown-item" href="#" onClick='return $("#delcombo_{{ message.messageid }}").click();'>Delete</a>
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@
      </div>
      <div class="noteText row">
 <div class="col-sm-9">
-<pre wrap id="sakonninmessagebody_{{ message.id }}">
+<pre wrap id="sakonninmessagebody_{{ message.messageid }}">
 {{ message.body }}
 </pre>
 </div>
@@ -93,7 +93,7 @@
           {% endif %}
 
           <label class="checkSwitch">
-            <input type="checkbox" id="todocheck_{{ message.id }}" onChange="setCheckboxState('{{ message.messageid }}', 'TODO', this)" {% if checked %}checked{% endif %}/>
+            <input type="checkbox" id="todocheck_{{ message.messageid }}" onChange="setCheckboxState('{{ message.messageid }}', 'TODO', this)" {% if checked %}checked{% endif %}/>
             {% if checked %}
                 <span class="checkSlider round" title="{{ last_reply.createdAt | date('Y-m-d H:i') }} - {{ last_reply.createdBy }}"></span>
                 </label><br>

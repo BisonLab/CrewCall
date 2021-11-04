@@ -1,4 +1,4 @@
-<div class="card-custom mb-4 col-md-6 col-lg-4 col-xl-3" id="item-{{ job.id }}">
+<div class="card-custom mb-4 col-md-6 col-lg-6 col-xl-4" id="item-{{ job.id }}">
   <div class="card-custom-header row">
     <div class="col-10">
       <div class="row">
@@ -15,7 +15,7 @@
       </a>
    </div>
   </div><!-- end row -->
-  <div class="card-custom-content p-3 row">
+  <div class="card-custom-content p-2 row">
     <div class="col-10 col-lg-11">
       <span class="d-block">{{ job.event.location.name }} - {{ job.event.organization.name }}</span>
       <h4 class="text-uppercase font-weight-bold">{{ job.event.name }}</h4>
@@ -23,7 +23,7 @@
     </div>
     <div class="col-2 col-lg-1">
       <a class="collapsed" data-toggle="collapse" data-target="#hidden_{{ job.id }}" aria-expanded="false" aria-controls="hidden_{{ job.id }}">
-        <span class="cardplusminus"</span>
+        <span class="cardplusminus"></span>
       </a>
     </div>
   </div><!-- end row -->
@@ -45,7 +45,19 @@
         </div>
       </div>
     </div>
+  </div><!-- end collapsed row -->
+
+{% for note in job.confirm_notes %}
+  <div class="row p-1">
+    <div class="col-12">
+    <i class="fas fa-info-circle text-secondary"></i>
+    <span class="ml-1">
+        {{ note.body }}
+    </span>
+    </div>
   </div><!-- end row -->
+{% endfor %}
+
 {% if view == "opportunities" %}
 <form id="interest_form_{{ job.id }}" action="#" onSubmit="return submitInterest({{ job.id }});">
 <input type="hidden" value="{{ signup_shift._csrf_token }}" name="_csrf_token">
@@ -54,7 +66,7 @@
   </div><!-- end row -->
 {% set disabled = false %}
 {% for check in job.checks %}
-<div class="row ">
+<div class="row p-1">
 {% if check.type == "ConfirmCheck" %}
 {% set disabled = true %}
 <fieldset class="col-12">
@@ -81,7 +93,7 @@
 </div><!-- end row -->
 {% endfor %}
   <div class="row ">
-    <div class="col-6 p-3">
+    <div class="col-12">
       <button id="signup_button_{{ job.id }}" class="{% if disabled %}disabled {% endif %}btn btn-dark ml-3" type="submit"><i class="fas fa-check text-success"></i> Sign Up</button>
       <a class="collapsed" data-toggle="collapse" data-target="#comment_{{ job.id }}" aria-expanded="false" aria-controls="comment_{{ job.id }}">
         <span class="fas fa-comment"</span>

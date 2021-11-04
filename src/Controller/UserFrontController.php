@@ -298,8 +298,15 @@ class UserFrontController extends CommonController
         $from = new \DateTime($request->get('from') ?? null);
         $to = new \DateTime($request->get('to') ?? '+1 year');
         $state = $request->get('state') ?? null;
-        // Hack, by request.
-        if ($month = $request->get('month')) {
+
+        $month = $request->get('month');
+        // This is only useful for opportunities, which can be way too much
+        // otherwise.
+        if (!$month && $view == 'opportunities') {
+            $month = date("m");
+        }
+
+        if ($month) {
             $year = date("Y");
             $now_month = date("m");
             if ($month < $now_month)
@@ -308,7 +315,6 @@ class UserFrontController extends CommonController
             $to = clone($from);
             $to->modify('last day of this month');
         }
-        
 
         // Either way, never go below today. Historical jobs will be handled
         // somewhere else or with a query option to override.
@@ -340,7 +346,7 @@ class UserFrontController extends CommonController
         ];
         $retarr['opportunities'] = $this->opportunitiesForPersonAsArray(
             $user,
-            [ 'from' => $from, 'to' => $to ]
+            [ 'from' => $from, 'to' => $to, 'no_shift_data' => $as_array ]
             );
         $retarr['opportunities_count'] = count($retarr['opportunities']);
             
@@ -349,25 +355,35 @@ class UserFrontController extends CommonController
             '_csrf_token' => $ditoken,
             'url' => $this->generateUrl('uf_delete_interest', ['id' => 'ID'], UrlGeneratorInterface::ABSOLUTE_URL)
         ];
-        $retarr['interested'] = $this->jobsForPersonAsArray($user, [
-            'from' => $from, 'to' => $to,
-            'state' => 'INTERESTED']);
-        $retarr['interested_count'] = count($retarr['interested']);
-
         $confirmtoken = $csrfman->getToken('confirm-job')->getValue();
         $retarr['confirm_job'] = [
             '_csrf_token' => $confirmtoken,
             'url' => $this->generateUrl('uf_confirm_job', ['id' => 'ID'], UrlGeneratorInterface::ABSOLUTE_URL)
         ];
+
+$then = microtime(true);
+        $retarr['interested'] = $this->jobsForPersonAsArray($user, [
+            'from' => $from, 'to' => $to,
+            'state' => 'INTERESTED']);
+        $retarr['interested_count'] = count($retarr['interested']);
+$now = microtime(true);
+dump("INTERESTED:" . $now - $then);
+
+$then = microtime(true);
         $retarr['assigned'] = $this->jobsForPersonAsArray($user, [
             'from' => $from, 'to' => $to,
             'state' => 'ASSIGNED']);
         $retarr['assigned_count'] = count($retarr['assigned']);
+$now = microtime(true);
+dump("ASSIGNED:" . $now - $then);
 
+$then = microtime(true);
         $retarr['confirmed'] = $this->jobsForPersonAsArray($user, [
             'from' => $from, 'to' => $to,
             'state' => 'CONFIRMED']);
         $retarr['confirmed_count'] = count($retarr['confirmed']);
+$now = microtime(true);
+dump("CONFIRMED:" . $now - $then);
 
         if ($as_array)
             return $retarr;
@@ -822,13 +838,23 @@ class UserFrontController extends CommonController
         $ccjobs = $this->container->get('crewcall.jobs');
 
         $opps = [];
+$then = microtime(true);
+        $opportunities = $ccjobs->opportunitiesForPerson($person, $options);
+$now = microtime(true);
+dump("opportunitiesForPerson:" . $now - $then);
+
         foreach ($ccjobs->opportunitiesForPerson($person, $options) as $o) {
             $arr = [
                 'name' => (string)$o,
                 'id' => $o->getId(),
             ];
-            $opps[] = array_merge($arr, $this->getShiftArr($o));
+            if ($options['no_shift_data'] ?? false)
+                $opps[] = $arr;
+            else
+                $opps[] = array_merge($arr, $this->getShiftArr($o));
         }
+$now = microtime(true);
+dump("opportunitiesForPersonAsArray:" . $now - $then);
         return $opps;
     }
 
@@ -839,40 +865,37 @@ class UserFrontController extends CommonController
 
         // So, what do we need here? To be continued..
         if (!isset($this->shiftcache[$shift->getId()])) {
+$then = microtime(true);
             $event = $shift->getEvent();
             $eventparent = $event->getParent();
             $location = $event->getLocation();
             $organization = $event->getOrganization();
             $confirm_notes = [];
             $checks = [];
-            $scnc = [
+
+            $scontext = [
                 'system' => 'crewcall',
                 'object_name' => 'shift',
-                'message_types' => ['Note'],
                 'external_id' => $shift->getId(),
             ];
-            foreach ($sakonnin->getMessagesForContext($scnc) as $c) {
-                $confirm_notes[] = [
-                    'id' => $c->getId(),
-                    'subject' => $c->getSubject(),
-                    'confirm_required' => false,
-                    'body' => $c->getBody()
-                    ];
+            foreach ($sakonnin->getMessagesForContext($scontext) as $message) {
+                if ($message->getMessageType() == 'Note') {
+                    $confirm_notes[] = [
+                        'id' => $message->getId(),
+                        'subject' => $message->getSubject(),
+                        'confirm_required' => false,
+                        'body' => $message->getBody()
+                        ];
+                } elseif (in_array($message->getMessageType(), ['ConfirmCheck', 'InformCheck'])) {
+                    $checks[] = [
+                        'id' => $message->getId(),
+                        'type' => (string)$message->getMessageType(),
+                        'confirm_required' => (string)$message->getMessageType() == "ConfirmCheck" ? true : false,
+                        'body' => $message->getBody()
+                        ];
+                }
             }
-            $sccc = [
-                'system' => 'crewcall',
-                'object_name' => 'shift',
-                'message_types' => ['ConfirmCheck', 'InformCheck'],
-                'external_id' => $shift->getId(),
-            ];
-            foreach ($sakonnin->getMessagesForContext($sccc) as $c) {
-                $checks[] = [
-                    'id' => $c->getId(),
-                    'type' => (string)$c->getMessageType(),
-                    'confirm_required' => (string)$c->getMessageType() == "ConfirmCheck" ? true : false,
-                    'body' => $c->getBody()
-                    ];
-            }
+
             $eventarr = $this->getEventArr($event);
             if (count($eventarr['checks']) > 0) {
                 $checks = array_merge($checks, $eventarr['checks']);
@@ -915,7 +938,11 @@ class UserFrontController extends CommonController
                 'checks' => $checks,
                 'confirm_notes' => $confirm_notes
             ];
+if(count($confirm_notes) > 0)
+dump($confirm_notes);
             $this->shiftcache[$shift->getId()] = $shiftarr;
+$now = microtime(true);
+dump("shiftcache:" . $now - $then);
         }
         return $this->shiftcache[$shift->getId()];
     }
@@ -938,52 +965,41 @@ class UserFrontController extends CommonController
                 $all_events[] = $eventparent;
             }
             foreach ($all_events as $e) {
-                $ecnc = [
+                $event_context = [
                     'system' => 'crewcall',
                     'object_name' => 'event',
-                    'message_types' => ['Note'],
                     'external_id' => $e->getId(),
                 ];
-                foreach ($sakonnin->getMessagesForContext($ecnc) as $c) {
-                    $confirm_notes[] = [
-                        'id' => $c->getId(),
-                        'subject' => $c->getSubject(),
-                        'confirm_required' => false,
-                        'body' => $c->getBody()];
-                }
-                $eccc = [
-                    'system' => 'crewcall',
-                    'object_name' => 'event',
-                    'message_types' => ['ConfirmCheck', 'InformCheck'],
-                    'external_id' => $e->getId(),
-                ];
-                foreach ($sakonnin->getMessagesForContext($eccc) as $c) {
-                    $checks[] = [
-                        'id' => $c->getId(),
-                        'type' => (string)$c->getMessageType(),
-                        'confirm_required' => (string)$c->getMessageType() == "ConfirmCheck" ? true : false,
-                        'body' => $c->getBody()
+                foreach ($sakonnin->getMessagesForContext($event_context) as $message) {
+                    if (in_array($message->getMessageType(), ['Note'])) {
+                        $confirm_notes[] = [
+                            'id' => $message->getId(),
+                            'subject' => $message->getSubject(),
+                            'confirm_required' => false,
+                            'body' => $message->getBody()
                         ];
-                }
-                $cic = [
-                    'system' => 'crewcall',
-                    'object_name' => 'event',
-                    'message_types' => ['Contact Info'],
-                    'external_id' => $e->getId(),
-                ];
-                foreach ($sakonnin->getMessagesForContext($cic) as $ci) {
-                    $contact_info[] = [
-                        'id' => $ci->getId(),
-                        'subject' => $ci->getSubject(),
-                        'confirm_required' => false,
-                        'body' => $ci->getBody()
-                    ];
-                    $contacts[] = [
-                        'name' => $ci->getBody(),
-                        'mobile_phone_number' => ''
-                    ];
+                    } elseif (in_array($message->getMessageType(), ['Contact Info'])) {
+                        $contact_info[] = [
+                            'id' => $message->getId(),
+                            'subject' => $message->getSubject(),
+                            'confirm_required' => false,
+                            'body' => $message->getBody()
+                        ];
+                        $contacts[] = [
+                            'name' => $message->getBody(),
+                            'mobile_phone_number' => ''
+                        ];
+                    } elseif (in_array($message->getMessageType(), ['ConfirmCheck', 'InformCheck'])) {
+                        $checks[] = [
+                            'id' => $message->getId(),
+                            'type' => (string)$message->getMessageType(),
+                            'confirm_required' => (string)$message->getMessageType() == "ConfirmCheck" ? true : false,
+                            'body' => $message->getBody()
+                            ];
+                    }
                 }
             }
+
             $eventarr = [
                 'name' => (string)$event,
                 'id' => $event->getId(),

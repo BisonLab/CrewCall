@@ -6,7 +6,7 @@
   </div><!-- End row -->
 {% for message in sakonnin_messages.messagetype('Front page logged in').messages %}
   {% if (message.state == "SHOW" or message.state == "UNREAD") and is_granted('show', message) %}
- <div id="sakonninmessage_{{ message.id}}">
+ <div id="sakonninmessage_{{ message.messageid}}">
   <div class="row noteText">
 
   {% if is_granted('edit', message) %}
@@ -15,9 +15,9 @@
     </div>
     <div class="d-none">
     {% set mdelform = sakonnin_messages.getCreateDeleteForm(message, true) %}
-    <form id="deletemessageform_{{ message.id }}" onSubmit="return deleteSakonninMessage({{ message.id }});">
+    <form id="deletemessageform_{{ message.messageid }}" onSubmit="return deleteSakonninMessage('{{ message.messageid }}');">
     {{ form_rest(mdelform) }}
-    <input id="delannounce_{{ message.id }}" type="submit">
+    <input id="delannounce_{{ message.messageid }}" type="submit">
     </form>
     </div>
     <div class="col-sm-3" align="right">
@@ -28,7 +28,7 @@
         <div class="dropdown-menu dropdown-menu-right">
             <a class="dropdown-item" href="#" onClick="return setStateOnSakonninMessage('{{ message.messageid }}', 'ARCHIVED');">Archive</a>
             <a class="dropdown-item" href="#" onClick="return grabEditSakonninMessageForm('{{ message.messageid }}', {'title':'General Annoucement', 'no_subject': true});">Edit</a>
-            <a class="dropdown-item" href="#" onClick='return $("#delannounce_{{ message.id }}").click();'>Delete</a>
+            <a class="dropdown-item" href="#" onClick='return $("#delannounce_{{ message.messageid }}").click();'>Delete</a>
         </div>
       </div>
     </div>
@@ -40,7 +40,7 @@
   </div><!-- end row -->
   <div class="row noteText">
    <div class="col-sm-10">
-<pre wrap id="sakonninmessagebody_{{ message.id }}">
+<pre wrap id="sakonninmessagebody_{{ message.messageid }}">
 {{ message.body }}
 </pre>
    </div>
