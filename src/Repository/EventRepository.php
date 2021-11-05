@@ -51,7 +51,7 @@ class EventRepository extends ServiceEntityRepository
         if ($options['past'] ?? false) {
             $qb->andWhere('e.end < :today')
                ->setParameter('today', new \DateTime(),
-                    \Doctrine\DBAL\Types\Type::DATETIME);
+                    \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE);
             $order = "DESC";
             // And we have to set from to something in the past unless it's 
             // set already.
@@ -68,16 +68,16 @@ class EventRepository extends ServiceEntityRepository
             $today = new \DateTime();
             $qb->andWhere('e.end > :yesterday')
                 ->setParameter('yesterday', new \DateTime('yesterday'),
-                    \Doctrine\DBAL\Types\Type::DATETIME);
+                    \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE);
         }
 
         if ($options['ongoing'] ?? false) {
             $qb->andWhere('e.end >= :today_start')
                ->andWhere('e.start <= :today_end')
                ->setParameter('today_start', new \DateTime("00:01"),
-                    \Doctrine\DBAL\Types\Type::DATETIME)
+                    \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)
                ->setParameter('today_end', new \DateTime("23:59"),
-                    \Doctrine\DBAL\Types\Type::DATETIME);
+                    \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE);
         }
 
         if ($options['on_date'] ?? false) {

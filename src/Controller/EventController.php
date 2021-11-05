@@ -339,8 +339,8 @@ class EventController extends CommonController
                  ->from('App:Event', 'e')
                  ->where('e.end > :from')
                  ->andWhere('e.start < :to')
-                 ->setParameter('from', $from, \Doctrine\DBAL\Types\Type::DATETIME)
-                 ->setParameter('to', $to, \Doctrine\DBAL\Types\Type::DATETIME);
+                 ->setParameter('from', $from, \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)
+                 ->setParameter('to', $to, \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE);
             $events = $qb->getQuery()->getResult();
             
             $calitems = $calendar->toFullCalendarArray($events, $this->getUser());
