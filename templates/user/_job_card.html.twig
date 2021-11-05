@@ -72,7 +72,7 @@
 <fieldset class="col-12">
   <div class="form-check ml-3">
     <input name="id" type="text" class="" hidden="hidden">
-    <input class="form-check-input" name="checked" type="checkbox" required="" onClick="$('#signup_button_{{ job.id }}').toggleClass('disabled');">
+    <input class="form-check-input signup_check_{{ job.id }}" name="checked" type="checkbox" required="" onClick="toggleConfirmCheck(this, {{ job.id }});">
     <label class="form-check-label" for="checked">
       <i class="fas fa-exclamation-triangle text-danger "></i>
       <p class=" d-inline">{{ check.body }}</p>
