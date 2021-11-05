@@ -85,6 +85,11 @@ img {
     font-weight: bold;
 }
 
+.card-bottom {
+    display: flex;
+    align-items: flex-end;
+}
+
 .date-header {
     color: #7b8387;
     font-size: 14.9px;
