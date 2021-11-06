@@ -42,7 +42,7 @@
 {% for message in sakonnin_messages.messages(criterias) %}
  {% if is_granted('edit', message) %}
   {% set emform = sakonnin_messages.getEditForm( message, true ) %}
-  {% set action = path('message_edit', { 'id': message.messageid, 'access': 'ajax' }) %}
+  {% set action = path('message_edit', { 'message_id': message.messageid, 'access': 'ajax' }) %}
   {{ cmac.print_comboedit(emform, action, message.messageid, message.messagetype ) }}
  {% endif %}
  {% if is_granted('show', message) %}
