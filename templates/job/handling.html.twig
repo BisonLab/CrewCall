@@ -192,7 +192,7 @@ function submitNewJobForm(shift_id, force = false) {
 function popPersonJobs(person_id, job_id) {
     url = "{{ path('summary_person_jobs_job', {'access': 'ajax' }) }}?job=" + job_id;
     var popelement = "#popSummary_person_jobs_" + person_id + job_id;
-    poptitle = 'Jobs <a href="#" class="close" data-dismiss="alert"><span style="font-size: 15px" class="fas fa-times-circle"></span></a>';
+    var poptitle = 'Jobs <a href="#" class="close" data-dismiss="alert"><span style="font-size: 15px" class="fas fa-times-circle"></span></a>';
 
     /*
      * I'll rather do this than sanitize: false, which is too wide.
