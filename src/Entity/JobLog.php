@@ -63,7 +63,7 @@ class JobLog
     /**
      * @var array
      *
-     * @ORM\Column(name="attributes", type="json_array")
+     * @ORM\Column(name="attributes", type="json")
      */
     private $attributes = array();
 
