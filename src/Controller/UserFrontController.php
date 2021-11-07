@@ -294,16 +294,23 @@ class UserFrontController extends CommonController
         $csrfman = $this->get('security.csrf.token_manager');
 
         $view  = $request->get('view') ?? null;
+        if ($view && !in_array($view, ['opportunities', 'interested', 'assigned']))
+            throw new \InvalidArgumentException("Funnily enough, I do not acceept your view.");
+
         $today = new \DateTime();
         $from = new \DateTime($request->get('from') ?? null);
         $to = new \DateTime($request->get('to') ?? '+1 year');
         $state = $request->get('state') ?? null;
 
-        $month = $request->get('month');
+        // Do not make the counter at the bottom base itself on just that month.
+        $recount = true;
+        if ($month = $request->get('month'))
+            $recount = false;
         // This is only useful for opportunities, which can be way too much
         // otherwise.
         if (!$month && $view == 'opportunities') {
             $month = date("m");
+            $recount = false;
         }
 
         if ($month) {
@@ -327,6 +334,7 @@ class UserFrontController extends CommonController
         $retarr = [
             'view' => $view,
             'month' => $month,
+            'recount' => $recount,
             'period' => [ 'from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d') ],
             'state' => $state,
             'opportunities' => null,
