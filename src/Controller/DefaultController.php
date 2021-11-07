@@ -24,11 +24,15 @@ class DefaultController extends CommonController
         }
         return $this->redirectToRoute('app_login');
     }
+
     /**
-     * @Route("/admin/dashboard", name="dashboard")
+     * @Route("/dashboard", name="dashboard")
      */
     public function dashboardAction(Request $request)
     {
+        if (!$this->getUser()->isAdmin())
+            return $this->redirectToRoute('user_view');
+
         $dashboarder = $this->get('crewcall.dashboarder');
         return $this->render('default/index.html.twig',
             ['dashboarder' => $dashboarder]);
