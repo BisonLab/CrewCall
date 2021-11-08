@@ -14,6 +14,7 @@
 {% for job in interested %}
 {% if month != job.shift.month %}
 <h5 class="col-12 p-0 mt-2 font-weight-bold">{{ job.shift.month }}</h5>
+{% set month = job.shift.month %}
 {% endif %}
     {% include '/user/_job_card.html.twig' %}
 {% endfor %}
