@@ -47,7 +47,7 @@
     </div>
   </div><!-- end collapsed row -->
 
-{% for note in job.confirm_notes %}
+{% for note in job.inform_notes %}
   <div class="row p-1">
     <div class="col-12">
     <i class="fas fa-info-circle text-secondary"></i>
@@ -72,8 +72,7 @@
 {% set disabled = true %}
 <fieldset class="col-12">
   <div class="form-check ml-3">
-    <input name="id" type="text" class="" hidden="hidden">
-    <input class="form-check-input signup_check_{{ job.id }}" name="checked" type="checkbox" required="" onClick="toggleConfirmCheck(this, {{ job.id }});">
+    <input class="form-check-input signup_check_{{ job.id }}" name="checks[{{ check.id}}]" type="checkbox" required="" onClick="toggleConfirmCheck(this, {{ job.id }});">
     <label class="form-check-label" for="checked">
       <i class="fas fa-exclamation-triangle text-danger "></i>
       <p class=" d-inline">{{ check.body }}</p>
@@ -83,8 +82,7 @@
 {% else %}
 <fieldset class="col-12">
   <div class="form-check ml-3">
-    <input name="id" type="text" class="" hidden="hidden">
-    <input class="form-check-input" name="checked" type="checkbox">
+    <input class="form-check-input" name="checks[{{ check.id}}]" type="checkbox">
     <label class="form-check-label" for="checked">
           <p class=" d-inline">{{ check.body }}</p>
     </label>

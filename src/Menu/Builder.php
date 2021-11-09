@@ -91,9 +91,6 @@ class Builder
                 array('route' => 'sakonnintemplate_index'));
             $adminmenu->addChild('Message Types',
                 array('route' => 'messagetype'));
-
-            // Too much work in progress for being available for now.
-            // $menu->addChild('Jobs view', array('route' => 'jobsview_index'));
         }
         $options['menu']      = $menu;
         $options['container'] = $this->container;

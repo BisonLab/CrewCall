@@ -35,6 +35,7 @@ class Events
             $nsend = clone($shift->getEnd());
             $ns->setEnd($nsend->add($diff));
             $ns->setState(Shift::getStatesList()[0]);
+            $ns->setNotes($shift->getNotes());
             // Cascade persist should have fixed this. But I have to use
             // prePersist for state change handling. (As far as I have found)
             $clone->addShift($ns);
@@ -63,6 +64,9 @@ class Events
     // Clone (almost) all checks, notes and info.
     private function _cloneMessages($orig, $clone)
     {
+        // Now we also have notes.
+        $clone->setNotes($orig->getNotes());
+
         $object_name = "shift";
         if ($orig instanceOf Event)
             $object_name = "event";

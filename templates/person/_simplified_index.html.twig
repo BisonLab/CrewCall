@@ -14,12 +14,12 @@
     <tr>
         <td style="white-space:nowrap;" data-order="{{ person.username }}"><a href="{{ path('person_show', { 'id': person.id }) }}">{{ person.username }}</a></td>
         <td style="white-space:nowrap;" data-order="{{ person.lastname }}"><a href="{{ path('person_show', { 'id': person.id }) }}">{{ person.fullname }}</a></td>
-        <td>{{ person.mobilephonenumber }}</td>
 {% if on_date is defined %}
         <td>{{ person.statelabel(on_date) }}</td>
 {% else %}
         <td>{{ person.statelabel }}</td>
 {% endif %}
+        <td>{{ person.mobilephonenumber }}</td>
         <td>{{ person.email }}</td>
         <td>{{ person.id }}</td>
     </tr>

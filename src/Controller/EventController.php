@@ -493,6 +493,10 @@ class EventController extends CommonController
     }
 
     /**
+     * This is the wrong way to handle contacts for events.
+     * The correct way is to usee the person role event relation with contact
+     * as the role. But I had to make it.
+     * 
      * List all available contact info from location and organization.
      * Pure Ajax for now.
      *
@@ -731,5 +735,82 @@ class EventController extends CommonController
             ->setMethod('POST')
             ->getForm()
         ;
+    }
+
+    /*
+     * Notes stuff.
+     * I'd put it in a trait if it werent for it all being easier this way.
+     * (But I will more or less cut&paste from here to the other places needing
+     * this. Just replace event with i.e. shift.)
+     */
+
+    /**
+     *
+     * @Route("/{event}/add_note", name="event_add_note", methods={"POST"})
+     */
+    public function addNoteAction(Request $request, Event $event, $access)
+    {
+        $token = $request->request->get('_csrf_token');
+
+        if ($token && $this->isCsrfTokenValid('event-add-note', $token)) {
+            // Let's hope csrf token checks is enough.
+            $event->addNote([
+                'id' => $request->request->get('note_id'),
+                'type' => $request->request->get('type'),
+                'subject' => $request->request->get('subject'),
+                'body' => $request->request->get('body')
+            ]);
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+        }
+        if ($event->getParent())
+            return $this->redirectToRoute('event_show', array('id' => $event->getParent()->getId()));
+        else
+            return $this->redirectToRoute('event_show', array('id' => $event->getId()));
+    }
+
+    /**
+     *
+     * @Route("/{event}/{note_id}/edit_note", name="event_edit_note", methods={"POST"})
+     */
+    public function editNoteAction(Request $request, Event $event, $note_id, $access)
+    {
+        $token = $request->request->get('_csrf_token');
+
+        if ($token && $this->isCsrfTokenValid('event-edit-note'.$note_id, $token)) {
+            $event->updateNote([
+                'id' => $note_id,
+                'type' => $request->request->get('type'),
+                'subject' => $request->request->get('subject'),
+                'body' => $request->request->get('body')
+            ]);
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+        }
+
+        if ($event->getParent())
+            return $this->redirectToRoute('event_show', array('id' => $event->getParent()->getId()));
+        else
+            return $this->redirectToRoute('event_show', array('id' => $event->getId()));
+    }
+
+    /**
+     *
+     * @Route("/{event}/{note_id}/remove_note", name="event_remove_note", methods={"POST"})
+     */
+    public function removeNoteAction(Request $request, Event $event, $note_id, $access)
+    {
+        $token = $request->request->get('_csrf_token');
+
+        if ($token && $this->isCsrfTokenValid('event-remove-note'.$note_id, $token)) {
+            $event->removeNote($note_id);
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+        }
+
+        if ($event->getParent())
+            return $this->redirectToRoute('event_show', array('id' => $event->getParent()->getId()));
+        else
+            return $this->redirectToRoute('event_show', array('id' => $event->getId()));
     }
 }

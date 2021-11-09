@@ -1,3 +1,30 @@
+{% for shift in event.shifts %}
+{% include 'shift/_add_note.html.twig' with {'shift': shift, 'type': 'ConfirmCheck', 'subject': false } %}
+{% include 'shift/_add_note.html.twig' with {'shift': shift, 'type': 'InformCheck', 'subject': false  } %}
+{% include 'shift/_add_note.html.twig' with {'shift': shift, 'type': 'InformNote' } %}
+<div class="d-none" id="shiftnotes_{{ shift.id }}">
+    <strong>Confirm checkbox</strong><br>
+    {% for note in shift.notesbytype("ConfirmCheck") %}
+        {% include 'shift/_note.html.twig' with {'shift': shift, 'note': note, 'subject': false  } %}
+    {% endfor %}
+    <br>
+    <a href="#" onClick='return openCcModalFromDiv("shiftaddnoteform_ConfirmCheck", "Add a confirm checkbox");'>Add a confirm checkbox</a><br />
+    <br>
+    <strong>Information checkbox</strong><br>
+    {% for note in shift.notesbytype("InformCheck") %}
+        {% include 'shift/_note.html.twig' with {'shift': shift, 'note': note, 'subject': false  } %}
+    {% endfor %}
+    <br>
+    <a href="#" onClick='return openCcModalFromDiv("shiftaddnoteform_InformCheck", "Add an information checkbox");'>Add an information checkbox</a><br />
+    <br>
+    <strong>Information note</strong><br>
+    {% for note in shift.notesbytype("InformNote") %}
+        {% include 'shift/_note.html.twig' with {'shift': shift, 'note': note, 'subject': false  } %}
+    {% endfor %}
+    <br>
+    <a href="#" onClick='return openCcModalFromDiv("shiftaddnoteform_InformNote");'>Add an information note</a><br />
+</div>
+{% endfor %}
 <table id="shiftTable_{{ event.id }}" class="table shiftTable table-sm">
 <tbody>
 {% for shift in event.shifts %}
@@ -11,14 +38,8 @@
                 {{ shift.end | date('d M H:i') }}
             {% endif %}
         <td>
-{% set mlogcontext = {
-            'system': 'crewcall',
-            'object_name': 'shift',
-            'external_id': shift.id
-    }
-%}
-{% if sakonnin_messages.contexthasmessages(mlogcontext) %}
-        <a href="#" title="Notes" onClick="return openSakonninMessageLogBox('{{ path('message_context_search', {'access': 'ajax', 'system': mlogcontext.system, 'object_name': mlogcontext.object_name, 'external_id': mlogcontext.external_id }) }}', 'Notes')">
+{% if shift.notes | length > 0 %}
+        <a href="#" title="Notes" onClick='return openCcModalFromDiv("shiftnotes_{{ shift.id }}", "Notes on shift");';>
         <span style="font-size: 15px" class="fas fa-file"></span>
         </a>
 {% endif %}
@@ -37,7 +58,7 @@
         <td align="right">
         {% set amounts = shift.jobsamountbystate %}
 <!-- TODO: Probably remove this one
-        <span title="All shifts booked" class="fas fa-ok" {% if shift.amount - amounts.CONFIRMED != 0 %}style="opacity: 0;"{% endif %}"></span>&nbsp;
+        <span title="All shifts booked" class="fas fa-check" {% if shift.amount - amounts.CONFIRMED != 0 %}style="opacity: 0;"{% endif %}"></span>&nbsp;
 -->
         <span id="shift_counter_amount_{{ shift.id }}" title="Total needing" class="ccAmount left ccTotal">{{ shift.amount }}</span>
         <span id="shift_counter_needing_{{ shift.id }}" title="Still needing" class="ccAmount ccNeeded">{{ shift.amount - shift.bookedamount }}</span>
@@ -63,12 +84,7 @@
             <a class="dropdown-item" href="#" onClick="return openMessageToEventModal('shift', {{ shift.id }});">Send a message</a>
             <a class="dropdown-item" href="#" onClick="return grabNewJobForm({{shift.id}});">Add person</a>
             <a class="dropdown-item" href="#" onClick="return grabNewShiftOrganizationForm({{shift.id}});">Add crew from an organization</a>
-{% if sakonnin_messages.contexthasmessages(mlogcontext) %}
-            <a class="dropdown-item" href="#" onClick="return openSakonninMessageLogBox('{{ path('message_context_search', {'access': 'ajax', 'system': mlogcontext.system, 'object_name': mlogcontext.object_name, 'external_id': mlogcontext.external_id }) }}')">Notes</a>
-{% endif %}
-            <a class="dropdown-item" href="#" onClick='return createSakonninMessage("shiftnote_{{ shift.id }}");'>Add information</a>
-            <a class="dropdown-item" href="#" onClick='return createSakonninCheck("shiftinformcheck_{{ shift.id }}");'>Add an information checkbox</a>
-            <a class="dropdown-item" href="#" onClick='return createSakonninCheck("shiftconfirmcheck_{{ shift.id }}");'>Add a confirm checkbox</a>
+            <a class="dropdown-item" href="#" onClick='return openCcModalFromDiv("shiftnotes_{{ shift.id }}", "Notes on shift");';>Notes</a>
             <a tabindex="0" class="dropdown-item" href="#" title="Log Summary" id="popLogSummary_shift_{{ shift.id }}" onClick="return popLogSummary('shift', {{ shift.id }});">Changelog</a>
             <a class="dropdown-item" href="#" onClick="return grabEditShiftForm({{ shift.id }}, {{ shift.event.id }});">Edit</a>
             <a class="dropdown-item" href="#" onClick="return deleteShift({{ shift.id }});">Delete</a>

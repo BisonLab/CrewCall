@@ -20,6 +20,8 @@ use App\Lib\ExternalEntityConfig;
  */
 class Shift
 {
+    use NotesTrait;
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id

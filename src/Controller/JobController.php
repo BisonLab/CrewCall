@@ -328,4 +328,74 @@ class JobController extends CommonController
         $status_text = "Sent '".$body."' to " . count($person_contexts) . " persons.";
         return new Response($status_text, Response::HTTP_OK);
     }
+
+    /*
+     * Notes stuff.
+     * I'd put it in a trait if it werent for it all being easier this way.
+     */
+
+    /**
+     *
+     * @Route("/{job}/add_note", name="job_add_note", methods={"POST"})
+     */
+    public function addNoteAction(Request $request, Job $job, $access)
+    {
+        $token = $request->request->get('_csrf_token');
+
+        if ($token && $this->isCsrfTokenValid('job-add-note', $token)) {
+            // Let's hope csrf token checks is enough.
+            $job->addNote([
+                'id' => $request->request->get('note_id'),
+                'type' => $request->request->get('type'),
+                'subject' => $request->request->get('subject'),
+                'body' => $request->request->get('body')
+            ]);
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+            return new JsonResponse([
+                "status" => "OK",
+                ], Response::HTTP_CREATED);
+        }
+        return new Response("Bad token", Response::HTTP_FORBIDDEN);
+    }
+
+    /**
+     *
+     * @Route("/{job}/{note_id}/edit_note", name="job_edit_note", methods={"POST"})
+     */
+    public function editNoteAction(Request $request, Job $job, $note_id, $access)
+    {
+        $token = $request->request->get('_csrf_token');
+
+        if ($token && $this->isCsrfTokenValid('job-edit-note'.$note_id, $token)) {
+            $job->updateNote([
+                'id' => $note_id,
+                'type' => $request->request->get('type'),
+                'subject' => $request->request->get('subject'),
+                'body' => $request->request->get('body')
+            ]);
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+        }
+        return new JsonResponse([
+            "status" => "OK",
+            ], Response::HTTP_OK);
+    }
+
+    /**
+     *
+     * @Route("/{job}/{note_id}/remove_note", name="job_remove_note", methods={"POST"})
+     */
+    public function removeNoteAction(Request $request, Job $job, $note_id, $access)
+    {
+        $token = $request->request->get('_csrf_token');
+
+        if ($token && $this->isCsrfTokenValid('job-remove-note'.$note_id, $token)) {
+            $job->removeNote($note_id);
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+            return new Response("Deleted", Response::HTTP_NO_CONTENT);
+        }
+        return new Response("Bad token", Response::HTTP_FORBIDDEN);
+    }
 }

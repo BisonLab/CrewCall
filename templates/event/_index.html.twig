@@ -37,7 +37,7 @@
             <td>
             {% set amounts = event.jobsamountbystate %}
 <!-- TODO: Probably remove this one
-            <span title="All shifts booked" class="fas fa-ok" {% if event.needsamount - amounts.CONFIRMED != 0 %}style="opacity: 0;"{% endif %}"></span>&nbsp;
+            <span title="All shifts booked" class="fas fa-check" {% if event.needsamount - amounts.CONFIRMED != 0 %}style="opacity: 0;"{% endif %}"></span>&nbsp;
 -->
             <span title="Total needed" class="ccAmount left ccTotal">{{ event.needsamount }}</span>
             <span title="Still needing" class="ccAmount ccNeeded">{{ event.needsamount - event.bookedamount}}</span>

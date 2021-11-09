@@ -112,9 +112,9 @@ function handleJobLists() {
  */
 function openMessageToEventModal(object, object_id) {
     content = $("#eventmessage_modal").html();
-    $( "#eventModalTitle" ).html('Send Message');
-    $( "#eventModalBody" ).html(content);
-    $( "#eventModal" ).modal();
+    $( "#ccModalTitle" ).html('Send Message');
+    $( "#ccModalBody" ).html(content);
+    $( "#ccModal" ).modal();
     if (object == "event") {
         url = "{{ path('event_send_message', {'access': 'ajax', 'id': "XXX" }) }}".replace("XXX", object_id);
         fselect = $( "#function_select_" + object_id ).html();
@@ -133,17 +133,17 @@ function openMessageToEventModal(object, object_id) {
             success: function(data)
             {
                 alert(data);
-                $( "#eventModal" ).modal("hide");
-                $( "#eventModalTitle" ).html("");
-                $( "#eventModalBody" ).html("");
+                $( "#ccModal" ).modal("hide");
+                $( "#ccModalTitle" ).html("");
+                $( "#ccModalBody" ).html("");
                 document.getElementById("eventMessageForm").reset();
             },
             error: function(data)
             {
                 alert("Failed sending SMS.\n" + data.responseText);
-                $( "#eventModal" ).modal("hide");
-                $( "#eventModalTitle" ).html("");
-                $( "#eventModalBody" ).html("");
+                $( "#ccModal" ).modal("hide");
+                $( "#ccModalTitle" ).html("");
+                $( "#ccModalBody" ).html("");
                 document.getElementById("eventMessageForm").reset();
             }
         });
@@ -182,11 +182,11 @@ function openAddCrewManager(event_id) {
     url = "{{ path('event_add_crewmanager', {'access': 'ajax', 'id': "XXX" }) }}".replace("XXX", event_id);
 
     $.get(url, function( content ) {
-        $( "#eventModalTitle" ).html('Add Crew Manager');
-        $( "#eventModalBody" ).html(content);
-        $( "#eventModal" ).modal();
+        $( "#ccModalTitle" ).html('Add Crew Manager');
+        $( "#ccModalBody" ).html(content);
+        $( "#ccModal" ).modal();
 
-        $( "#eventModalBody form" ).each(function() {
+        $( "#ccModalBody form" ).each(function() {
             var url = this.action;
             var form_id = this.id;
             $( "#"+form_id ).submit(function( event ) {
@@ -204,9 +204,9 @@ function openAddCrewManager(event_id) {
                     error: function(data)
                     {
                         alert("Failed Adding Crew Manager.\n" + data.responseText);
-                        $( "#eventModal" ).modal("hide");
-                        $( "#eventModalTitle" ).html("");
-                        $( "#eventModalBody" ).html("");
+                        $( "#ccModal" ).modal("hide");
+                        $( "#ccModalTitle" ).html("");
+                        $( "#ccModalBody" ).html("");
                     }
                 });
                 event.preventDefault();
@@ -316,11 +316,11 @@ function openAddContactInfo(event_id) {
     url = "{{ path('event_pick_contact_info', {'access': 'ajax', 'id': "XXX" }) }}".replace("XXX", event_id);
 
     $.get(url, function( content ) {
-        $( "#eventModalTitle" ).html('Add Contact Info');
-        $( "#eventModalBody" ).html(content);
-        $( "#eventModal" ).modal();
+        $( "#ccModalTitle" ).html('Add Contact Info');
+        $( "#ccModalBody" ).html(content);
+        $( "#ccModal" ).modal();
 
-        $( "#eventModalBody form" ).each(function() {
+        $( "#ccModalBody form" ).each(function() {
             var url = this.action;
             var form_id = this.id;
             $( "#"+form_id ).submit(function( event ) {
@@ -338,9 +338,9 @@ function openAddContactInfo(event_id) {
                     error: function(data)
                     {
                         alert("Failed Adding contact.\n" + data.responseText);
-                        $( "#eventModal" ).modal("hide");
-                        $( "#eventModalTitle" ).html("");
-                        $( "#eventModalBody" ).html("");
+                        $( "#ccModal" ).modal("hide");
+                        $( "#ccModalTitle" ).html("");
+                        $( "#ccModalBody" ).html("");
                     }
                 });
                 event.preventDefault();
@@ -368,21 +368,17 @@ function checkReadyCheckbox(elem) {
         localStorage.hidereadyevents = hideready;
     }
 }
-</script>
 
-<div class="modal fade" id="eventModal" role="dialog" tabindex='-1'>
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title" id="eventModalTitle"></h4>
-        <button id="eventModalCloseButton" type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <div class="modal-body" id="eventModalBody">
-      </div>
-    </div>
-  </div>
-</div> <!-- / modal -->
+function openNoteModal(modal_content_id, title = "Note") {
+    // Get the content.
+    content = $("#" + modal_content_id).html();
+    $( "#ccModalTitle" ).html(title);
+    $( "#ccModalBody" ).html(content);
+    $( "#ccModal" ).modal();
+    event.preventDefault();
+    return false;
+}
+</script>
 
 <div id="eventmessage_modal" class="d-none">
     <form name="eventmessage_form" id="eventMessageForm" method="POST">

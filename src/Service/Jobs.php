@@ -12,8 +12,6 @@ class Jobs
 {
     private $em;
     private $sakonnin;
-    private $checks_event_cache = [];
-    private $checks_shift_cache = [];
 
     public function __construct($em, $sakonnin)
     {
@@ -30,6 +28,7 @@ class Jobs
      */
     public function checksForJob(Job $job)
     {
+throw new Byttmegut();
         $jcontext = [
             'base_type' => "CHECK",
             'order' => 'DESC',
@@ -45,41 +44,21 @@ class Jobs
      */
     public function checksForShift(Shift $shift)
     {
-        if (!isset($this->checks_shift_cache[$shift->getId()])) {
-            $checks = $this->checksForEvent($shift->getEvent());
-            if ($epar = $shift->getEvent()->getParent()) {
-                    $checks = array_merge($checks,
-                        $this->checksForEvent($epar));
-            }
-            $scontext = [
-                'base_type' => "CHECK",
-                'order' => 'DESC',
-                'system' => 'crewcall',
-                'object_name' => 'shift',
-                'external_id' => $shift->getId()
-            ];
-            if ($sc = $this->sakonnin->getMessagesForContext($scontext))
-                $checks = array_merge($checks, $sc);
-            
-            $this->checks_shift_cache[$shift->getId()] = $checks;
-        }
-        return $this->checks_shift_cache[$shift->getId()];
-    }
+        $inform_checks = $shift->getNotesByType('InformCheck');
+        $confirm_checks = $shift->getNotesByType('ConfirmCheck');
 
-    public function checksForEvent(Event $event)
-    {
-        if (!isset($this->checks_event_cache[$event->getId()])) {
-            $econtext = [
-                'base_type' => "CHECK",
-                'order' => 'DESC',
-                'system' => 'crewcall',
-                'object_name' => 'event',
-                'external_id' => $event->getId()
-            ];
-            $checks = $this->sakonnin->getMessagesForContext($econtext);
-            $this->checks_event_cache[$event->getId()] = $checks;
+        $event = $shift->getEvent();
+        $inform_checks = array_merge($inform_checks,
+            $event->getNotesByType('InformCheck'));
+        $confirm_checks = array_merge($confirm_checks,
+            $event->getNotesByType('ConfirmCheck'));
+        if ($epar = $event->getParent()) {
+                $inform_checks = array_merge($inform_checks,
+                    $epar->getNotesByType('InformCheck'));
+                $confirm_checks = array_merge($confirm_checks,
+                    $epar->getNotesByType('ConfirmCheck'));
         }
-        return $this->checks_event_cache[$event->getId()];
+        return array_merge($inform_checks, $confirm_checks);
     }
 
     /*

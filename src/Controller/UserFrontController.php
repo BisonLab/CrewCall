@@ -442,53 +442,34 @@ class UserFrontController extends CommonController
         $job->setShift($shift);
         $job->setPerson($user);
         $job->setState('INTERESTED');
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($job);
-        $em->flush($job);
 
         if (!$comment = $request->request->get('comment')) {
             $comment = $json_data['comment'] ?? null;
         }
         if ($comment) {
-            $sm = $this->get('sakonnin.messages');
-
-            $message_context = [
-                'system' => 'crewcall',
-                'object_name' => 'job',
-                'external_id' => $job->getId(),
-            ];
-
-            $sm->postMessage(array(
+            $job->addNote([
                 'body' => $comment,
-                'message_type' => 'JobComment',
-                'to_type' => "NONE",
-                'from_type' => "NONE",
-            ), $message_context);
+                'type' => 'JobComment',
+            ]);
         }
-        if (!$checks = $request->request->get('checks')) {
-            $checks = $json_data['checks'] ?? array();
+        if (!$checked_checks = $request->request->get('checks')) {
+            $checked_checks = $json_data['checks'] ?? array();
         }
-        foreach ($checks as $check_data) {
-            $sm = $this->get('sakonnin.messages');
-            $shift_check = $sm->getMessages([
-                'id' => $check_data['id']
-                ]);
-
-            $message_context = [
-                'system' => 'crewcall',
-                'object_name' => 'job',
-                'external_id' => $job->getId(),
-            ];
-
-            $posted = $sm->postMessage(array(
-                'message_type' => $shift_check->getMessageType()->getName(),
-                'body' => $shift_check->getBody(),
-                'in_reply_to' => $shift_check->getMessageId(),
-                'state' => "CHECKED",
-                'to_type' => "NONE",
-                'from_type' => "NONE",
-            ), $message_context);
+        $jobservice = $this->container->get('crewcall.jobs');
+        $shift_checks = $jobservice->checksForShift($job->getShift());
+        foreach ($shift_checks as $check) {
+            if (!isset($checked_checks[$check['id']]))
+                continue;
+            $job->addNote([
+                'body' => $check['body'],
+                'type' => $check['type'],
+                'in_reply_to' => $check['id'],
+                'state' => 'CHECKED'
+            ]);
         }
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($job);
+        $em->flush($job);
         return new JsonResponse(["OK" => "Well done"], Response::HTTP_OK);
     }
 
@@ -863,7 +844,7 @@ class UserFrontController extends CommonController
             $eventparent = $event->getParent();
             $location = $event->getLocation();
             $organization = $event->getOrganization();
-            $confirm_notes = [];
+            $inform_notes = [];
             $checks = [];
 
             $scontext = [
@@ -871,20 +852,24 @@ class UserFrontController extends CommonController
                 'object_name' => 'shift',
                 'external_id' => $shift->getId(),
             ];
-            foreach ($sakonnin->getMessagesForContext($scontext) as $message) {
-                if ($message->getMessageType() == 'Note') {
-                    $confirm_notes[] = [
-                        'id' => $message->getId(),
-                        'subject' => $message->getSubject(),
+            foreach ($shift->getNotes() as $note) {
+                $note_id = $note['id'];
+                $type = $note['type'];
+                $subject = $note['subject'];
+                $body = $note['body'];
+                if (in_array($type, ['InformNote'])) {
+                    $inform_notes[] = [
+                        'id' => $note_id,
+                        'subject' => $subject,
                         'confirm_required' => false,
-                        'body' => $message->getBody()
-                        ];
-                } elseif (in_array($message->getMessageType(), ['ConfirmCheck', 'InformCheck'])) {
+                        'body' => $body
+                    ];
+                } elseif (in_array($type, ['ConfirmCheck', 'InformCheck'])) {
                     $checks[] = [
-                        'id' => $message->getId(),
-                        'type' => (string)$message->getMessageType(),
-                        'confirm_required' => (string)$message->getMessageType() == "ConfirmCheck" ? true : false,
-                        'body' => $message->getBody()
+                        'id' => $note_id,
+                        'type' => $type,
+                        'confirm_required' => $type == "ConfirmCheck" ? true : false,
+                        'body' => $body,
                         ];
                 }
             }
@@ -893,11 +878,11 @@ class UserFrontController extends CommonController
             if (count($eventarr['checks']) > 0) {
                 $checks = array_merge($checks, $eventarr['checks']);
             }
-            if (count($eventarr['confirm_notes']) > 0) {
-                $confirm_notes = array_merge($confirm_notes, $eventarr['confirm_notes']);
+            if (count($eventarr['inform_notes']) > 0) {
+                $inform_notes = array_merge($inform_notes, $eventarr['inform_notes']);
             }
             unset($eventarr['checks']);
-            unset($eventarr['confirm_notes']);
+            unset($eventarr['inform_notes']);
 
             // Let's create some dates.
             // TODO: Ponder if this is useable. (it is, but this is eenglish
@@ -929,7 +914,7 @@ class UserFrontController extends CommonController
                     'end_string' => $endstring,
                 ],
                 'checks' => $checks,
-                'confirm_notes' => $confirm_notes
+                'inform_notes' => $inform_notes
             ];
             $this->shiftcache[$shift->getId()] = $shiftarr;
         }
@@ -947,43 +932,42 @@ class UserFrontController extends CommonController
             $organization = $event->getOrganization();
             $contacts = [];
             $contact_info = [];
-            $confirm_notes = [];
+            $inform_notes = [];
             $checks = [];
             $all_events = [$event];
             if ($eventparent) {
                 $all_events[] = $eventparent;
             }
             foreach ($all_events as $e) {
-                $event_context = [
-                    'system' => 'crewcall',
-                    'object_name' => 'event',
-                    'external_id' => $e->getId(),
-                ];
-                foreach ($sakonnin->getMessagesForContext($event_context) as $message) {
-                    if (in_array($message->getMessageType(), ['Note'])) {
-                        $confirm_notes[] = [
-                            'id' => $message->getId(),
-                            'subject' => $message->getSubject(),
+                foreach ($e->getNotes() as $note) {
+                    $note_id = $note['id'];
+                    $type = $note['type'];
+                    $subject = $note['subject'];
+                    $body = $note['body'];
+                    if (in_array($type, ['InformNote'])) {
+                        $inform_notes[] = [
+                            'id' => $note_id,
+                            'subject' => $subject,
                             'confirm_required' => false,
-                            'body' => $message->getBody()
+                            'body' => $body
                         ];
-                    } elseif (in_array($message->getMessageType(), ['Contact Info'])) {
+                    } elseif (in_array($type, ['Contact Info'])) {
                         $contact_info[] = [
-                            'id' => $message->getId(),
-                            'subject' => $message->getSubject(),
+                            'id' => $note_id,
+                            'subject' => $subject,
                             'confirm_required' => false,
-                            'body' => $message->getBody()
+                            'body' => $note['body'],
                         ];
                         $contacts[] = [
-                            'name' => $message->getBody(),
+                            'name' => $note['body'],
                             'mobile_phone_number' => ''
                         ];
-                    } elseif (in_array($message->getMessageType(), ['ConfirmCheck', 'InformCheck'])) {
+                    } elseif (in_array($type, ['ConfirmCheck', 'InformCheck'])) {
                         $checks[] = [
-                            'id' => $message->getId(),
-                            'type' => (string)$message->getMessageType(),
-                            'confirm_required' => (string)$message->getMessageType() == "ConfirmCheck" ? true : false,
-                            'body' => $message->getBody()
+                            'id' => $note_id,
+                            'type' => $type,
+                            'confirm_required' => $type == "ConfirmCheck" ? true : false,
+                            'body' => $body,
                             ];
                     }
                 }
@@ -1002,7 +986,7 @@ class UserFrontController extends CommonController
                 'contacts' => [],
                 'checks' => $checks,
                 'contact_info' => $contact_info,
-                'confirm_notes' => $confirm_notes
+                'inform_notes' => $inform_notes
             ];
             if ($address = $location->getAddress()) {
                 $addressing = $this->container->get('crewcall.addressing');

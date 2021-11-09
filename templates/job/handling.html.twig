@@ -326,6 +326,25 @@ function popOverlap(job_id) {
     return false;
 }
 
+function submitJobNote(form) {
+    url = $(form).attr("action");
+    formdata = $(form).serialize();
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: formdata,
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+            $( "#ccModal" ).modal('hide'); 
+      }).fail(function(xhr, status, error) {
+            errmsg = "It failed\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+    });
+    return false;
+}
+
 </script>
 
 <div class="modal fade" id="jobModal" role="dialog" tabindex='-1'>

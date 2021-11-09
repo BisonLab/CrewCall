@@ -41,23 +41,13 @@
             <tr class="event_contactinfo">
                 <th>Contact Info</th>
                 <td>
-        {% set cicontext = {
-                    'system': 'crewcall',
-                    'object_name': 'event',
-                    'external_id': event.id
-            }
-        %}
-        {% for mcont in sakonnin_messages.contextHasMessages(cicontext, true) %}
-        {% set note = mcont.owner %}
-        {% if note.messagetype == 'Contact Info' %}
-            <form method="POST" action="{{ path('message_remove_context', { 'id': mcont.id, 'access': 'web' }) }}">
+        {% for note in event.notesbytype("Contact Info") %}
+            <form method="POST" action="{{ path('event_remove_note', { 'event': event.id, 'note_id': note.id, 'access': 'web' }) }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('event-remove-note' ~ note.id) }}">
             <strong>{{ note.subject }}</strong>
-            <button class="btn btn-link" type="submit">
-                <span class="remove_glyph"></span>
-            </button>
+            <button class="btn remove_glyph" type="submit"></button>
             </form>
             <pre>{{ note.body }}</pre>
-        {% endif %}
         {% endfor %}
                 <a href="#" id="addContactLink" onClick="return openAddContactInfo({{ event.id }});">Add Contact Info</a>
                 </td>
@@ -112,10 +102,10 @@
   <div class="col-5 tabbable"> 
       <ul class="nav nav-tabs">
           <li class="nav-item">
-          <a class="nav-link active" href="#notestab_{{ event.id }}" data-toggle="tab">Notes</a>
+          <a class="nav-link active" href="#crewnotestab_{{ event.id }}" data-toggle="tab">Crew Notes</a>
           </li>
           <li class="nav-item">
-          <a class="nav-link" href="#checkstab_{{ event.id }}" data-toggle="tab">Checks</a>
+          <a class="nav-link" href="#adminnotestab_{{ event.id }}" data-toggle="tab">Admin Notes</a>
           </li>
           <li class="nav-item">
           <a class="nav-link" href="#filestab_{{ event.id }}" data-toggle="tab">Files</a>
@@ -129,100 +119,41 @@
 
       <div class="tab-content ">
 
-      <div class="tab-pane active" id="notestab_{{ event.id }}">
-        <br>
-        {% set mconf = {'mconfig': {
-                'formname': 'eventnote_' ~ event.id,
-                'reload_after_post': true,
-                'subject': "",
-                'to_type': "NONE",
-                'from_type': "NONE",
-                'message_type': 'Note',
-                'submit': 'Save',
-                'context': {
-                    'system': 'crewcall',
-                    'object_name': 'event',
-                    'external_id': event.id
-                    }
-                }
-            }
-        %}
-        {% include '@BisonLabSakonnin/Message/_create_popup.html.twig' with mconf %}
-        <p>
-        <a href="#" onClick='return createSakonninMessage("eventnote_{{ event.id }}");'>Add information</a>
-        </p>
-        <p>
-        {% set mlogcontext = {
-                    'system': 'crewcall',
-                    'object_name': 'event',
-                    'message_types': ['Note'],
-                    'external_id': event.id
-            }
-        %}
-        {% for note in sakonnin_messages.MessagesForContext(mlogcontext) %}
-            {% include '/_note.html.twig' %}
-        {% endfor %}
-        </p>
-      </div>
-      <div class="tab-pane" id="checkstab_{{ event.id }}">
+      <div class="tab-pane active" id="crewnotestab_{{ event.id }}">
       <br>
-        {% set mconf = {'mconfig': {
-                'formname': 'eventinformheck_' ~ event.id,
-                'reload_after_post': true,
-                'message_type': 'InformCheck',
-                'submit': 'Save',
-                'context': {
-                    'system': 'crewcall',
-                    'object_name': 'event',
-                    'external_id': event.id
-                    }
-                }
-            }
-        %}
-        {% include '@BisonLabSakonnin/Message/_create_check.html.twig' with mconf %}
-       <p>
-        <a href="#" onClick='return createSakonninCheck("eventinformheck_{{ event.id }}");'>Add an information checkbox</a><br />
-        </p>
-        {% set mconf = {'mconfig': {
-                'formname': 'eventconfirmcheck_' ~ event.id,
-                'reload_after_post': true,
-                'message_type': 'ConfirmCheck',
-                'submit': 'Save',
-                'context': {
-                    'system': 'crewcall',
-                    'object_name': 'event',
-                    'external_id': event.id
-                    }
-                }
-            }
-        %}
-        {% include '@BisonLabSakonnin/Message/_create_check.html.twig' with mconf %}
-       <p>
-        <a href="#" onClick='return createSakonninCheck("eventconfirmcheck_{{ event.id }}");'>Add a confirm checkbox</a><br />
-        </p>
-        {% set mlogcontext = {
-                    'system': 'crewcall',
-                    'object_name': 'event',
-                    'message_types': ['ConfirmCheck', 'InformCheck'],
-                    'external_id': event.id
-            }
-        %}
-        {% for note in sakonnin_messages.MessagesForContext(mlogcontext) %}
-        <div id="sakonninmessage_{{ note.messageid }}">
-            {% set mdelform = sakonnin_messages.getCreateDeleteForm(note, true) %}
-            <form id="deletemessageform_{{ note.messageid }}" onSubmit="return deleteSakonninMessage('{{ note.messageid }}');">
-            {{ form_start(mdelform) }}
-            {{ form_rest(mdelform) }}
-                <a href="#" title="{{ note.messagetype.description }}">{{ note.messagetype }}</a>
-            <button type="submit" class="btn btn-link">
-                <span class="remove_glyph"></span>
-            </button>
-            </form>
-            <strong>{{ note.body }}</strong>
-        </div>
+        <strong>Confirm checkbox</strong><br>
+        {% for note in event.notesbytype("ConfirmCheck") %}
+            {% include 'event/_note.html.twig' with {'event': event, 'note': note, 'subject': false  } %}
         {% endfor %}
         <br>
+       {% include 'event/_add_note.html.twig' with {'event': event, 'type': 'ConfirmCheck', 'subject': false } %}
+        <a href="#" onClick='return openCcModalFromDiv("eventaddnoteform_ConfirmCheck", "Add a confirm checkbox");'>Add a confirm checkbox</a><br />
+        <br>
+        <strong>Information checkbox</strong><br>
+        {% for note in event.notesbytype("InformCheck") %}
+            {% include 'event/_note.html.twig' with {'event': event, 'note': note, 'subject': false  } %}
+        {% endfor %}
+        <br>
+       {% include 'event/_add_note.html.twig' with {'event': event, 'type': 'InformCheck', 'subject': false  } %}
+        <a href="#" onClick='return openCcModalFromDiv("eventaddnoteform_InformCheck", "Add an information checkbox");'>Add an information checkbox</a><br />
+        <br>
+        <strong>Information note</strong><br>
+        {% for note in event.notesbytype("InformNote") %}
+            {% include 'event/_note.html.twig' with {'event': event, 'note': note, 'subject': false  } %}
+        {% endfor %}
+        <br>
+       {% include 'event/_add_note.html.twig' with {'event': event, 'type': 'InformNote' } %}
+        <a href="#" onClick='return openCcModalFromDiv("eventaddnoteform_InformNote");'>Add an information note</a><br />
       </div>
+
+      <div class="tab-pane" id="adminnotestab_{{ event.id }}">
+        <br>
+        {% for note in event.notesbytype("AdminNote") %}
+            {% include 'event/_note.html.twig' %}
+        {% endfor %}
+       {% include 'event/_add_note.html.twig' with {'event': event, 'type': 'AdminNote' } %}
+        <a href="#" onClick='return openCcModalFromDiv("eventaddnoteform_AdminNote", "Add an Admin Note");'>Add an Admin Note</a><br />
+      </div><!-- Notes pane -->
 
       <div class="tab-pane" id="filestab_{{ event.id }}">
         <br>

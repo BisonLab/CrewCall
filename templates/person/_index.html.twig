@@ -22,21 +22,6 @@
         <td>
         {{ person.statelabel(on_date) }}
         </td>
-{#
-        <td>
-          <a href="{{ path('person_show', { 'id': person.id }) }}">Show</a> - 
-          <a href="{{ path('person_edit', { 'id': person.id }) }}">Edit</a>
-    {% set mlogcontext = {
-                'system': 'crewcall',
-                'object_name': 'person',
-                'external_id': person.id
-        }
-    %}
-{% if sakonnin_messages.contexthasmessages(mlogcontext) %}
-    <br><a href="#" onClick="return openSakonninMessageLogBox('{{ path('message_context_search', {'access': 'ajax', 'system': mlogcontext.system, 'object_name': mlogcontext.object_name, 'external_id': mlogcontext.external_id }) }}')">Notes</a>
-{% endif %}
-        </td>
-#}
         <td> {{ person.id }} </td>
     </tr>
 {% endfor %}

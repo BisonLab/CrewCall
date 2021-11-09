@@ -1,5 +1,10 @@
 {% macro ci_form(cinfo, event_id) %}
-<form id="pick_contact_info_{{cinfo.id}}" method="POST" action="{{ path('message_add_context', { 'access': 'web', 'message_id': cinfo.messageid, 'system': 'crewcall', 'object_name': 'event', 'external_id': event_id }) }}">
+<form id="pick_contact_info_{{cinfo.id}}" method="POST" action="{{ path('event_add_note', { 'access': 'web', 'event': event_id }) }}">
+<input type="hidden" name="_csrf_token" value="{{ csrf_token('event-add-note') }}">
+<input type="hidden" name="type" value="Contact Info">
+<input type="hidden" name="subject" value="{{ cinfo.subject }}">
+<input type="hidden" name="note_id" value="{{ cinfo.messageid }}">
+<input type="hidden" name="body" value="{{ cinfo.body }}">
 <div class="row">
   <div class="col-sm-8">
     <strong>{{ cinfo.subject }}</strong>
