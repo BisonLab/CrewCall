@@ -1,0 +1,25 @@
+  <div class="d-none" id="eventaddnoteform_{{ type }}">
+    <form method="POST" action="{{ path('event_add_note', { 'event': event.id, 'access': 'web' }) }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('event-add-note') }}">
+    <input type="hidden" name="type" value="{{ type }}">
+{% if subject is not defined or subject %}
+    <div class="form-group row">
+      <label class="col-form-label col-sm-2">Subject:</label>
+      <div class="col-sm-10">
+        <input class="form-control" type="text" name="subject" size="40"></input>
+      </div>
+    </div>
+{% endif %}
+    <div class="form-group row">
+        <label class="col-form-label col-sm-2 required">Text:</label>
+      <div class="col-sm-10">
+        <textarea class="form-control" type="textarea" name="body" required="required" cols="40" rows="5"></textarea>
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-sm-10">
+        <input class="btn-sm btn-dark" type="submit" value="Save" />
+      </div>
+    </div>
+    </form>
+  </div>
