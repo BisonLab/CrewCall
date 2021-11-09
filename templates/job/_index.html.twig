@@ -126,7 +126,7 @@
             <td id="jobCommentTable_{{ job.id }}">
        {% include 'job/_add_note.html.twig' with {'job': job, 'type': 'AdminNote' } %}
         <a href="#" onClick='return openCcModalFromDiv("jobaddnoteform_AdminNote_{{ job.id }}", "Add an Admin Note"); return false;'><span class="fas fa-pencil-alt"></span></a>
-{% if job.notes | length > 0 %}
+{% if job.notesbytype("AdminNote") | length > 0  or job.notesbytype("JobComment") %}
   <div class="d-none" id="jobcomments_{{ job.id }}">
     <strong>Admin note</strong><br>
     {% for note in job.notesbytype("AdminNote") %}
