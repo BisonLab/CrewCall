@@ -18,7 +18,7 @@ use App\Entity\Event;
 use App\Entity\Shift;
 use App\Entity\Job;
 use App\Form\ChangePasswordFosType;
-use App\Form\ChangePasswordType;
+use App\Form\ChangePasswordFormType;
 
 use App\Model\FullCalendarEvent;
 
@@ -676,75 +676,11 @@ class UserFrontController extends CommonController
     }
 
     /**
-     * Get change password form - The Backward compatible version.
-     * @Route("/me_password", name="uf_me_password", methods={"GET", "POST"})
-     */
-    public function mePassword(Request $request)
-    {
-        $user = $this->getUser();
-        
-        $form = $this->createForm(ChangePasswordFosType::class);
-        $form->add('change_password', SubmitType::class, ['label' => 'Save']);
-        $form->setData($user);
-        $errors = [];
-        if ($data = json_decode($request->getContent(), true)) {
-            // Hack, Angfular does not comply.
-            if (isset($data['first'])) {
-                $data['plainPassword'] = [];
-                $data['plainPassword']['first'] = $data['first'];
-                unset($data['first']);
-                $data['plainPassword']['second'] = $data['second'] ?: null;
-                unset($data['second']);
-            }
-            $form->submit($data);
-            if ($form->isSubmitted() && $form->isValid()) {
-                $password = $form->get('plainPassword')->getData();
-                // Encode the plain password, and set it.
-                $passwordEncoder = $this->get('security.password_encoder');
-                $encodedPassword = $passwordEncoder->encodePassword(
-                    $user, $password
-                );
-                $user->setPassword($encodedPassword);
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->flush();
-                return new JsonResponse(["OK" => "Well done"], Response::HTTP_OK);
-            }
-            $errors = $this->handleFormErrors($form);
-        }
-
-        $form = $form->createView();
-        $csrfman = $this->get('security.csrf.token_manager');
-        $csrfToken = $csrfman->getToken('change_password')->getValue();
-        if (count($errors) > 0) {
-            return new JsonResponse([
-                "ERROR" => [
-                    "errors" => $errors,
-                    "fos_user_change_password" => [
-                        "_token" => $csrfToken,
-                        "current_password" => "",
-                        "plainPassword" => ["first" => "", "second" => "" ]
-                        ]
-                    ]
-                ],
-                Response::HTTP_BAD_REQUEST);
-        }
-
-        return new JsonResponse([
-            "fos_user_change_password" => [
-                "_token" => $csrfToken,
-                "current_password" => "",
-                "plainPassword" => ["first" => "", "second" => "" ]
-                ],
-            ],
-            Response::HTTP_OK);
-    }
-
-    /**
      * Change password on self.
      *
      * @Route("/change_password", name="uf_me_change_password", methods={"GET", "POST"})
      */
-    public function meChangePasswordAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    public function meChangePasswordAction(Request $request, UserPasswordHasherInterface $userPasswordHasher)
     {
         $user = $this->getUser();
 
@@ -754,11 +690,9 @@ class UserFrontController extends CommonController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $password = $form->get('plainPassword')->getData();
-
-            // Encode the plain password, and set it.
-            $encodedPassword = $passwordEncoder->encodePassword(
-                $user, $password
+            $encodedPassword = $userPasswordHasher->hashPassword(
+                $user,
+                $form->get('plainPassword')->getData()
             );
 
             $user->setPassword($encodedPassword);

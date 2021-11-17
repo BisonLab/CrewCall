@@ -11,7 +11,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
@@ -21,15 +21,15 @@ trait CommonCommandFunctions
     private $manager_registry;
     private $crewcall_em;
     private $sakonnin_em;
-    private $passwordEncoder;
+    private $userPasswordHasher;
 
-    public function __construct(ManagerRegistry $manager_registry, UserPasswordEncoderInterface $passwordEncoder, ParameterBagInterface $params)
+    public function __construct(ManagerRegistry $manager_registry, UserPasswordHasherInterface $userPasswordHasher, ParameterBagInterface $params)
     {
         $this->params = $params;
         $this->manager_registry = $manager_registry;
         $this->crewcall_em = $manager_registry->getManager('crewcall');
         $this->sakonnin_em = $manager_registry->getManager('sakonnin');
-        $this->passwordEncoder = $passwordEncoder;
+        $this->userPasswordHasher = $userPasswordHasher;
 
         parent::__construct();
     }

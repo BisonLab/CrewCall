@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -27,7 +28,7 @@ use App\Lib\ExternalEntityConfig;
  * @UniqueEntity(fields={"username", "email"}, message="There is already an account with this username or email address")
  * @Gedmo\Loggable
  */
-class Person implements UserInterface
+class Person implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use \BisonLab\CommonBundle\Entity\AttributesTrait;
 
@@ -258,21 +259,6 @@ class Person implements UserInterface
     public function setRoles(array $system_roles): self
     {
         $this->system_roles = $system_roles;
-
-        return $this;
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function getPassword(): string
-    {
-        return (string) $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
 
         return $this;
     }
@@ -1282,7 +1268,7 @@ class Person implements UserInterface
     }
 
     /**
-     * Is this deleeteable? If any event connected to it, no.
+     * Is this deleteable? If any event connected to it, no.
      *
      * @return boolean
      */
@@ -1292,11 +1278,26 @@ class Person implements UserInterface
     }
 
     /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
+    {
+        return (string) $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
      * @see UserInterface
      */
-    public function getSalt()
+    public function getSalt(): ?string
     {
-        // not needed when using the "bcrypt" algorithm in security.yaml
+        return null;
     }
 
     /**
