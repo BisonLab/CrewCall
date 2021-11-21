@@ -47,7 +47,9 @@ security:
     access_control:
         # allow unauthenticated users to access the login form
         - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/user, roles: ROLE_USER }
+        # It will redirect. Eiher to user view or login.
+        - { path: ^/dashboard, roles: ROLE_USER }
         - { path: ^/uf, roles: ROLE_USER }
+        - { path: ^/user, roles: ROLE_USER }
         # but require authentication for all other admin routes
         - { path: ^/admin, roles: ROLE_ADMIN }

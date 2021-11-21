@@ -265,9 +265,16 @@ class JobController extends CommonController
         $shiftrepo = $em->getRepository('App:Shift');
         foreach ($moves as $job_id => $shift_id) {
             if (!$job = $jobrepo->find($job_id))
-                return new JsonResponse(array("status" => "Job not found"), Response::HTTP_NOT_FOUND);
+                return new JsonResponse(array("status" => "Job not found"),
+                    Response::HTTP_NOT_FOUND);
             if (!$shift = $shiftrepo->find($shift_id))
-                return new JsonResponse(array("status" => "Shift not found"), Response::HTTP_NOT_FOUND);
+                return new JsonResponse(array("status" => "Shift not found"),
+                    Response::HTTP_NOT_FOUND);
+            // Error if a job (person/shift combo) already exist or remove the
+            // Job?
+            if ($shift->getPeople()->contains($job->getPerson()))
+                return new Response("Job already assiged", Response::HTTP_CONFLICT);
+
             $job->setShift($shift);
             // I will not check overlap, this is hopefully done by purpose.
         }
