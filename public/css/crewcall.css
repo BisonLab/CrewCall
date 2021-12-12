@@ -28,8 +28,16 @@ body {
 h1 {
     font-size: 24px;
 }
+
 h3 {
- font-size: 20px;
+    font-size: 20px;
+}
+
+/*
+ * Call it cheating.
+ */
+em {
+    font-weight: bolder;
 }
 
 /*
