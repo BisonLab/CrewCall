@@ -46,7 +46,7 @@ class NewPersonLocationType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'add_new_person_loc';
     }

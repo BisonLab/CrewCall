@@ -20,9 +20,9 @@ return [
     Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle::class => ['all' => true],
     Norzechowicz\AceEditorBundle\NorzechowiczAceEditorBundle::class => ['all' => true],
     BisonLab\CommonBundle\BisonLabCommonBundle::class => ['all' => true],
+    BisonLab\ContextBundle\BisonLabContextBundle::class => ['all' => true],
     BisonLab\SakonninBundle\BisonLabSakonninBundle::class => ['all' => true],
     JMS\SerializerBundle\JMSSerializerBundle::class => ['all' => true],
     Knp\Bundle\MarkdownBundle\KnpMarkdownBundle::class => ['all' => true],
     Knp\Bundle\MenuBundle\KnpMenuBundle::class => ['all' => true],
-    Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class => ['all' => true],
 ];

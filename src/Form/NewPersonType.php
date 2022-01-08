@@ -77,7 +77,7 @@ class NewPersonType extends PersonType
     /**
      * {@inheritdoc}
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'person';
     }

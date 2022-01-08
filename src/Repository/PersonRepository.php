@@ -17,7 +17,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class PersonRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
-    use \BisonLab\CommonBundle\Entity\ContextRepositoryTrait;
+    use \BisonLab\ContextBundle\Repository\ContextOwnerRepositoryTrait;
 
     public function __construct(ManagerRegistry $registry)
     {

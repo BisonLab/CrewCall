@@ -13,7 +13,7 @@ use App\Entity\Organization;
  */
 class OrganizationRepository extends ServiceEntityRepository
 {
-    use \BisonLab\CommonBundle\Entity\ContextRepositoryTrait;
+    use \BisonLab\ContextBundle\Repository\ContextOwnerRepositoryTrait;
 
     private $params;
 
