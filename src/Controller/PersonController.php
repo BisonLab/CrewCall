@@ -618,7 +618,6 @@ class PersonController extends CommonController
         $people = array(
             'entities' => $people,
         );
-        return $this->render('BisonLabCommonBundle:User:index.html.twig',
-            $params);
+        return $this->render('person/index.html.twig', $params);
     }
 }
