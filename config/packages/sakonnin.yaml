@@ -17,7 +17,19 @@ parameters:
     # Gotta be overridden in your custombundle sakonnin.yaml
     # (But better put password in .env.local :=)
     sakonnin.sms:
-        sender: dummy
+        sender: '%env(SMS_SENDER)%'
+        receiver: '%env(SMS_RECEIVER)%'
+        username: '%env(SMS_USERNAME)%'
+        password: '%env(SMS_PASSWORD)%'
+        sms_server_host: '%env(SMS_SERVER_HOST)%'
+        sms_server_port: '%env(SMS_SERVER_PORT)%'
+        smsfrom: '%env(SMS_FROM)%'
+        smscode: '%env(SMS_CODE)%'
+        mailfrom: '%env(SMS_MAIL_FROM)%'
+        mailto: '%env(SMS_MAIL_TO)%'
+        national_number_lenght: '%env(SMS_NATIONAL_NUMBER_LENGTH)%'
+        default_country_prefix: '%env(SMS_DEFAULT_COUNTRY_PREFIX)%'
+
 
     # The simplest file types. Need to set it here to override the ones in the
     # Sakonnin Bundle.

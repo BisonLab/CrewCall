@@ -60,7 +60,6 @@
         "symfony/apache-pack": "^1.0",
         "symfonycasts/reset-password-bundle": "^1.1",
         "symfonycasts/verify-email-bundle": "^1.1",
-        "twig/extra-bundle": "^3.0",
         "ajaxray/short-code": "^1.1",
         "bisonlab/common-bundle": "dev-no-contexts",
         "bisonlab/context-bundle": "dev-main",
