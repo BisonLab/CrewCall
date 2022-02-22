@@ -2,7 +2,13 @@
 
 <h3>Admin Wall</h3>
 <div id="admin_wall">
-{% for message in sakonnin_messages.messagetype('Admin Wall').messages %}
+{% set criterias = {
+    'message_types': ['Admin Wall'],
+    'states': ['UNREAD', 'UNCHECKED', 'CHECKED', 'SHOW'],
+    'order': 'DESC'
+    }
+%}
+{% for message in sakonnin_messages.messages(criterias) %}
   {% if (message.state == "SHOW" or message.state == "UNREAD") and is_granted('show', message) %}
    <div id="sakonninmessage_{{ message.messageid}}">
     <div class="d-none">

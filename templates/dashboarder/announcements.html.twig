@@ -4,7 +4,12 @@
     <h3>General Announcements</h3>
     </div>
   </div><!-- End row -->
-{% for message in sakonnin_messages.messagetype('Front page logged in').messages %}
+{% set criterias = {
+    'message_types': ['Front page logged in'],
+    'order': 'DESC'
+    }
+%}
+{% for message in sakonnin_messages.messages(criterias) %}
   {% if (message.state == "SHOW" or message.state == "UNREAD") and is_granted('show', message) %}
  <div id="sakonninmessage_{{ message.messageid}}">
   <div class="row noteText">

@@ -37,6 +37,7 @@
 {% set criterias = {
     'message_types': ['Admin Wall', 'TODO'],
     'states': ['UNREAD', 'UNCHECKED', 'CHECKED', 'SHOW'],
+    'order': 'DESC'
     }
 %}
 {% for message in sakonnin_messages.messages(criterias) %}
