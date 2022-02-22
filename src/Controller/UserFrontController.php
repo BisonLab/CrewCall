@@ -308,10 +308,11 @@ class UserFrontController extends CommonController
             $recount = false;
         // This is only useful for opportunities, which can be way too much
         // otherwise.
-        if (!$month && $view == 'opportunities') {
-            $month = date("m");
-            $recount = false;
-        }
+        // Tro without setting a month. Default "Every single opportunity"
+        // if (!$month && $view == 'opportunities') {
+        //    $month = date("m");
+        //    $recount = false;
+        // }
 
         if ($month) {
             $year = date("Y");
