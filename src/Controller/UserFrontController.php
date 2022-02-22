@@ -294,7 +294,7 @@ class UserFrontController extends CommonController
         $csrfman = $this->get('security.csrf.token_manager');
 
         $view  = $request->get('view') ?? null;
-        if ($view && !in_array($view, ['opportunities', 'interested', 'assigned']))
+        if ($view && !in_array($view, ['opportunities', 'interested', 'assigned', 'confirmed']))
             throw new \InvalidArgumentException("Funnily enough, I do not acceept your view.");
 
         $today = new \DateTime();
