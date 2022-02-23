@@ -1,4 +1,4 @@
-  <div class="d-none" id="shiftaddnoteform_{{ type }}">
+  <div class="d-none" id="shiftaddnoteform_{{ type }}_{{ shift.id }}">
     <form method="POST" action="{{ path('shift_add_note', { 'shift': shift.id, 'access': 'web' }) }}">
     <input type="hidden" name="_csrf_token" value="{{ csrf_token('shift-add-note') }}">
     <input type="hidden" name="type" value="{{ type }}">
