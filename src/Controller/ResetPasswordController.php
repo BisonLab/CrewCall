@@ -29,10 +29,12 @@ class ResetPasswordController extends CommonController
     use ResetPasswordControllerTrait;
 
     private $resetPasswordHelper;
+    private $entityManager;
 
-    public function __construct(ResetPasswordHelperInterface $resetPasswordHelper)
+    public function __construct(ResetPasswordHelperInterface $resetPasswordHelper, EntityManagerInterface $entityManager)
     {
         $this->resetPasswordHelper = $resetPasswordHelper;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -80,7 +82,7 @@ class ResetPasswordController extends CommonController
      *
      * @Route("/reset/{token}", name="app_reset_password")
      */
-    public function reset(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, string $token = null): Response
+    public function reset(Request $request, UserPasswordHasherInterface $userPasswordHasher, string $token = null): Response
     {
         if ($token) {
             // We store the token in session and remove it from the URL, to avoid the URL being
@@ -121,7 +123,7 @@ class ResetPasswordController extends CommonController
             );
 
             $user->setPassword($encodedPassword);
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             // The session is cleaned up after the password has been changed.
             $this->cleanSessionAfterReset();
@@ -134,9 +136,9 @@ class ResetPasswordController extends CommonController
         ]);
     }
 
-    private function processSendingPasswordResetEmail(string $emailFormData, MailerInterface $mailer, EntityManagerInterface $entityManager): RedirectResponse
+    private function processSendingPasswordResetEmail(string $emailFormData, MailerInterface $mailer): RedirectResponse
     {
-        $user = $entityManager->getRepository(User::class)->findOneBy([
+        $user = $this->entityManager->getRepository(Person::class)->findOneBy([
             'email' => $emailFormData,
         ]);
 
