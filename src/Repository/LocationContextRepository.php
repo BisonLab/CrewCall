@@ -2,11 +2,17 @@
 
 namespace App\Repository;
 
-use BisonLab\ContextBundle\Entity\ContextBaseRepository;
+use App\Entity\LocationContext;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  *
  */
-class LocationContextRepository extends ContextBaseRepository
+class LocationContextRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, LocationContext::class);
+    }
 }
