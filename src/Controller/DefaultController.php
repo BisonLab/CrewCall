@@ -65,7 +65,7 @@ class DefaultController extends CommonController
             }
         }
 
-        foreach (array('username', 'full_name', 'mobile_phone_number') as $field) {
+        foreach (array('email', 'username', 'full_name', 'mobile_phone_number') as $field) {
             $result = $em->getRepository('App:Person')
                         ->searchByField($field, trim($value));
             foreach ($result as $i) {
