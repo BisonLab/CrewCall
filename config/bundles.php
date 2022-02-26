@@ -23,6 +23,5 @@ return [
     BisonLab\ContextBundle\BisonLabContextBundle::class => ['all' => true],
     BisonLab\SakonninBundle\BisonLabSakonninBundle::class => ['all' => true],
     JMS\SerializerBundle\JMSSerializerBundle::class => ['all' => true],
-    Knp\Bundle\MarkdownBundle\KnpMarkdownBundle::class => ['all' => true],
     Knp\Bundle\MenuBundle\KnpMenuBundle::class => ['all' => true],
 ];
