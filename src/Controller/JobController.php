@@ -44,7 +44,7 @@ class JobController extends CommonController
         $shiftamounts            = $shift->getJobsAmountByState();
         $shiftamounts['amount']  = $shift->getAmount();
         $shiftamounts['booked']  = $shift->getBookedAmount();
-        $shiftamounts['needing'] = $shift->getBookedAmount() - $shift->getBookedAmount();
+        $shiftamounts['needing'] = $shift->getAmount() - $shift->getBookedAmount();
 
         $jobs = $shift->getJobs(['sort_by' => 'last_name']);
         $sos = $shift->getShiftOrganizations();

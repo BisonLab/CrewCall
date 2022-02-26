@@ -26,16 +26,9 @@ class ShiftController extends CommonController
      *
      * @Route("/", name="shift_index", methods={"GET"})
      */
-    public function indexAction(Request $request, $access)
+    public function indexAction(Request $request, $access, Event $event)
     {
         $em = $this->getDoctrine()->getManager();
-
-        // If this has a event set here, it's not an invalid create attempt.
-        if ($event_id = $request->get('event')) {
-            $event = $em->getRepository('App:Event')->find($event_id);
-        }
-        if (!$event)
-            return $this->returnNotFound($request, "No event");
 
         // Again, ajax/html-centric. But maybe return json later.
         if ($this->isRest($access)) {
@@ -183,6 +176,7 @@ class ShiftController extends CommonController
      */
     public function deleteAction(Request $request, $access, Shift $shift)
     {
+        $event = $shift->getEvent();
         // Bloody good question here, because CSRF.
         // This should add some sort of protection.
         if ($this->isRest($access)) {
@@ -201,7 +195,8 @@ class ShiftController extends CommonController
             $em->remove($shift);
             $em->flush($shift);
         }
-        return $this->redirectToRoute('shift_index');
+        return $this->redirectToRoute('event_show',
+            array('id' => $event->getId()));
     }
 
     /**
