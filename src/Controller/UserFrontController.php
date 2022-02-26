@@ -597,6 +597,7 @@ class UserFrontController extends CommonController
     public function absenceAction(Request $request)
     {
         $user = $this->getUser();
+        $retarr['absence'] = [];
         foreach ($user->getStates() as $ps) {
             if ($ps->isActive()) continue;
             $retarr['absence'][] = [
