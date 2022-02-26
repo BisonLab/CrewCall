@@ -218,24 +218,23 @@ class UserFrontController extends CommonController
         }
 
         $gnotes = [];
-        if ($mt = $sakonnin->getMessageType('Front page logged in')) {
-            foreach ($mt->getMessages() as $m) {
-                // SHOW should be the only one, but this is the path of least
-                // resistance.
-                if (in_array($m->getState(), $states)) {
-                    $gnotes[] = [
-                        'subject' => $m->getSubject(),
-                        'state' => $m->getState(),
-                        'body' => $m->getBody(),
-                        'id' => $m->getId(),
-                        'date' => $m->getCreatedAt(),
-                        'createdBy' => (string)$m->getCreatedBy(),
-                        'createdAt' => $m->getCreatedAt(),
-                        'messagetype' => (string)$m->getMessageType(),
-                        'message_type' => (string)$m->getMessageType(),
-                    ];
-                }
-            }
+        $criterias = [
+            'states' => $states,
+            'message_type' => 'Front page logged in',
+            'order' => 'DESC'
+        ];
+        foreach ($sakonnin->getMessages($criterias) as $m) {
+            $gnotes[] = [
+                'subject' => $m->getSubject(),
+                'state' => $m->getState(),
+                'body' => $m->getBody(),
+                'id' => $m->getId(),
+                'date' => $m->getCreatedAt(),
+                'createdBy' => (string)$m->getCreatedBy(),
+                'createdAt' => $m->getCreatedAt(),
+                'messagetype' => (string)$m->getMessageType(),
+                'message_type' => (string)$m->getMessageType(),
+            ];
         }
         $retarr = [
             'personal' => $pnotes,
