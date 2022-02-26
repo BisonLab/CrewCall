@@ -54,7 +54,6 @@
         "fortawesome/font-awesome": "^5.15",
         "fullcalendar/fullcalendar": "^3.10",
         "jms/serializer-bundle": "^3.5",
-        "knplabs/knp-markdown-bundle": "^1.8",
         "knplabs/knp-menu-bundle": "^3.0",
         "oomphinc/composer-installers-extender": "dev-master",
         "symfony/apache-pack": "^1.0",
