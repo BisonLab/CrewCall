@@ -1,4 +1,4 @@
-  <div class="d-none" id="eventaddnoteform_{{ type }}">
+  <div class="d-none" id="eventaddnoteform_{{ type }}_{{ event.id }}">
     <form method="POST" action="{{ path('event_add_note', { 'event': event.id, 'access': 'web' }) }}">
     <input type="hidden" name="_csrf_token" value="{{ csrf_token('event-add-note') }}">
     <input type="hidden" name="type" value="{{ type }}">
