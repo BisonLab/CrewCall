@@ -927,6 +927,7 @@ class UserFrontController extends CommonController
                 $addressing = $this->container->get('crewcall.addressing');
                 $eventarr['location']['address'] = $addressing->compose($address);
                 $eventarr['location']['address_flat'] = $addressing->compose($address, 'flat');
+                $eventarr['location']['address_string'] = $addressing->compose($address, 'string');
             }
             $this->eventcache[$event->getId()] = $eventarr;
         }

@@ -10,9 +10,13 @@
       </div>
     </div>
     <div class="col-2 p-0 mt-1">
-      <a target="_blank" href="http://maps.google.com/?q=Rådhusplassen,0160,Oslo">
+    {% if job.event.location.address_string is defined and job.event.location.address_string is not empty %}
+      <a target="_blank" href="http://maps.google.com/?q={{ job.event.location.address_string }}">
           <img class="rounded mx-auto" src="{{ asset('images/google_maps.png') }}" width="40px">
       </a>
+    {% else %}
+    &nbsp;
+    {% endif %}
    </div>
   </div><!-- end row -->
   <div class="card-custom-content p-2 row">
