@@ -146,11 +146,17 @@ class UserFrontController extends CommonController
         }
         foreach ($user->getStates() as $ps) {
             if ($ps->isActive()) continue;
+            $to_date = "";
+            if ($to_date = $ps->getToDate())
+                $to_date = $ps->getToDate()->format('Y-m-d');
+            $from_date = "";
+            if ($from_date = $ps->getFromDate())
+                $from_date = $ps->getFromDate()->format('Y-m-d');
             $retarr['absence'][] = [
                 'reason' => ucfirst(strtolower($ps->getState())),
                 'state' => $ps->getStateLabel(),
-                'from_date' => $ps->getFromDate()->format('Y-m-d'),
-                'to_date' => $ps->getToDate()->format('Y-m-d'),
+                'from_date' => $from_date,
+                'to_date' => $to_date,
             ];
         }
         foreach ($user->getPersonFunctions() as $pf) {
