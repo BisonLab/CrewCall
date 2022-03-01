@@ -45,7 +45,7 @@ class DefaultController extends CommonController
     {
         $value = $request->get('value');
         if (empty($value))
-            return $this->redirect($this->generateUrl('homepage'));
+            return $this->redirect($this->generateUrl('dashboard'));
 
         $em = $this->getDoctrine()->getManager();
 
