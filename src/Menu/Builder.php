@@ -51,7 +51,7 @@ class Builder
             $eventsmenu = $menu->addChild('Events', array('route' => 'event_index'));
             $crewmenu = $menu->addChild("Crew",
                 array('route' => 'crew_index',
-                    'routeParameters' => array('select_grouping' => 'all_active')));
+                    'routeParameters' => array('select_grouping' => 'all_crewmembers')));
             $menu->addChild('Organizations', array('route' => 'organization_index'));
             $menu->addChild('Locations', array('route' => 'location_index'));
 

@@ -36,6 +36,13 @@ trait CommonControllerFunctions
             }
             if ($on_date) {
                 if ($select_grouping == 'all_active') {
+                    if ($p->getStateOnDate($on_date) != "ACTIVE")
+                        continue;
+                    if (!$filtered->contains($p))
+                        $filtered->add($p);
+                }
+
+                if ($select_grouping == 'all_crewmembers') {
                     if (!$filtered->contains($p))
                         $filtered->add($p);
                 }
@@ -81,6 +88,10 @@ trait CommonControllerFunctions
             // And if no on_date set:
             } else {
                 if ($select_grouping == 'all_active') {
+                    if ($p->getState() != "ACTIVE")
+                        continue;
+                }
+                if ($select_grouping == 'all_crewmembers') {
                     if (!in_array($p->getState(),
                             ExternalEntityConfig::getActiveStatesFor('Person')))
                         continue;
