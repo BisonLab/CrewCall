@@ -843,20 +843,27 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
         $occupied = false;
         $reason = [];
         // Find a date.
-        $time = new \DateTime();
-        if (isset($options['datetime']) && $options['datetime'] instanceof \DateTime)
-            $time = $options['datetime'];
-        elseif (isset($options['datetime']))
-            $time = new \DateTime($options['datetime']);
-        elseif (isset($options['date'])) {
-            $time = new \DateTime($options['date']);
-            $time->setTime(6,0);
+        $from = new \DateTime();
+        $from->setTime(6,0);
+        $to = new \DateTime();
+        $to->setTime(22,0);
+        if (isset($options['datetime']) && $options['datetime'] instanceof \DateTime) {
+            $from = $options['datetime'];
+            $to = $options['datetime'];
+        } elseif (isset($options['datetime'])) {
+            $from = new \DateTime($options['datetime']);
+            $to = new \DateTime($options['datetime']);
+        } elseif (isset($options['date'])) {
+            $from = new \DateTime($options['date']);
+            $from->setTime(6,0);
+            $to = new \DateTime($options['date']);
+            $to->setTime(22,0);
         }
 
         /*
-         * Check state. I'll default to the uncertain
+         * Check state.
          */
-        $stateobj = $this->getStateOnDate($time);
+        $stateobj = $this->getStateOnDate($from);
 
         $state = $stateobj->getState();
         if (!in_array($state,
@@ -880,7 +887,13 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
          * Check jobs. Gotta do it.
          */
         foreach ($this->getJobs(['booked' => true]) as $job) {
-            if (($job->getStart() >= $time) && ($job->getEnd() <= $time)) {
+            // The point here is to check of either start or end is between
+            // from and to. It may not be what we want after all, but that is
+            // another discussion.
+            if (
+                  ($job->getStart() >= $from) && ($job->getStart() <= $to)
+                  || ($job->getEnd() <= $from) && ($job->getEnd() >= $to)
+                ) {
                 $reason['stateobj'] = $stateobj;
                 $reason['state'] = $state;
                 $reason['statelabel'] = $stateobj->getStateLabel();
@@ -901,7 +914,7 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function isAvailable($options = [])
     {
-        return $this->isOccupied($options);
+        return !$this->isOccupied($options);
     }
 
     /*
