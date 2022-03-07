@@ -39,7 +39,7 @@ function submitConfirmJob(job_id) {
         acount--;
         ccount++;
         $( "#assignedCount" ).text(acount);
-        $( "#confirmedCountassignedCount" ).text(ccount);
+        $( "#confirmedCount" ).text(ccount);
       }).fail(function(xhr, status, error) {
             errmsg = "Failed signing you up.\n";
             alert(errmsg);

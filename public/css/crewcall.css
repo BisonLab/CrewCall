@@ -28,8 +28,16 @@ body {
 h1 {
     font-size: 24px;
 }
+
 h3 {
- font-size: 20px;
+    font-size: 20px;
+}
+
+/*
+ * Call it cheating.
+ */
+em {
+    font-weight: bolder;
 }
 
 /*
@@ -158,6 +166,12 @@ h3 {
     color: #555555;
 }
 
+.dropdown-toggle {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
 .navbar-header .dropdown-item {
     font-size: 16px;
     display: block;
@@ -207,7 +221,10 @@ h3 {
 }
 
 .navbar-footer a {
-    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
     font-size: 16px;
     color: #f8f9fa;
 }

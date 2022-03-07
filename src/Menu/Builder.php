@@ -51,7 +51,7 @@ class Builder
             $eventsmenu = $menu->addChild('Events', array('route' => 'event_index'));
             $crewmenu = $menu->addChild("Crew",
                 array('route' => 'crew_index',
-                    'routeParameters' => array('select_grouping' => 'all_active')));
+                    'routeParameters' => array('select_grouping' => 'all_crewmembers')));
             $menu->addChild('Organizations', array('route' => 'organization_index'));
             $menu->addChild('Locations', array('route' => 'location_index'));
 
@@ -69,7 +69,7 @@ class Builder
             if (count($fpnl_type->getMessages()) > 0) {
                 $fpm = $fpnl_type->getMessages()[0];
                 $elpm = $adminmenu->addChild('Edit login page message', array('uri' => "#"));
-                $uri = $this->router->generate('message_edit', array('access' => 'ajax', 'message_id' => $fpm->getId(), 'reload_after_post' => true));
+                $uri = $this->router->generate('message_edit', array('access' => 'ajax', 'message_id' => $fpm->getMessageId(), 'reload_after_post' => true));
                 $elpm->setLinkAttribute('onClick', "return openCcModal('" . $uri . "', 'Edit login page message');");
             } else {
                 $alpm = $adminmenu->addChild('Add login page message',
@@ -91,9 +91,6 @@ class Builder
                 array('route' => 'sakonnintemplate_index'));
             $adminmenu->addChild('Message Types',
                 array('route' => 'messagetype'));
-
-            $adminmenu->addChild('Mobilefront', array('uri' => '/public/userfront/'));
-            $menu->addChild('Jobs view', array('route' => 'jobsview_index'));
         }
         $options['menu']      = $menu;
         $options['container'] = $this->container;

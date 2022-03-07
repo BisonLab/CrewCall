@@ -11,7 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Lib\ExternalEntityConfig;
-use App\Entity\PersonOrganization;
+use App\Entity\PersonRoleEvent;
 
 class PersonEventType extends AbstractType
 {
@@ -46,7 +46,7 @@ class PersonEventType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'pre';
     }

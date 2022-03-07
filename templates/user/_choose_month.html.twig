@@ -1,4 +1,4 @@
-  <div class="col-4 d-flex justify-content-center">
+  <div class="col-sm-4 d-flex justify-content-center">
       <button id="monthButton" type="button" class="btn dropdown-toggle btn-light" data-toggle="dropdown" role="button" aria-expanded="false" data-month="{{ month }}">Choose month</button>
        <ul class="dropdown-menu">
 {% if month is not null %}
@@ -35,9 +35,11 @@ function chosenMonth(button) {
     return false;
 }
 
+{% if recount %}
 $(document).ready(function() {
     $( "#assignedCount" ).text("{{ assigned_count }}");
     $( "#confirmedCount" ).text("{{ confirmed_count }}");
     $( "#signupCount" ).text("{{ opportunities_count }}");
 });
+{% endif %}
 </script>

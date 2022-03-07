@@ -23,6 +23,8 @@ use App\Lib\ExternalEntityConfig;
  */
 class Event
 {
+    use NotesTrait;
+
     /**
      * @var integer
      *
@@ -257,7 +259,7 @@ class Event
      * Add shift
      *
      * @param \App\Entity\Shift $shift
-     * @return Shift
+     * @return Event
      */
     public function addShift(\App\Entity\Shift $shift)
     {

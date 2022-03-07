@@ -18,7 +18,7 @@ use App\Entity\Event;
 use App\Entity\Shift;
 use App\Entity\Job;
 use App\Form\ChangePasswordFosType;
-use App\Form\ChangePasswordType;
+use App\Form\ChangePasswordFormType;
 
 use App\Model\FullCalendarEvent;
 
@@ -146,11 +146,17 @@ class UserFrontController extends CommonController
         }
         foreach ($user->getStates() as $ps) {
             if ($ps->isActive()) continue;
+            $to_date = "";
+            if ($to_date = $ps->getToDate())
+                $to_date = $ps->getToDate()->format('Y-m-d');
+            $from_date = "";
+            if ($from_date = $ps->getFromDate())
+                $from_date = $ps->getFromDate()->format('Y-m-d');
             $retarr['absence'][] = [
                 'reason' => ucfirst(strtolower($ps->getState())),
                 'state' => $ps->getStateLabel(),
-                'from_date' => $ps->getFromDate()->format('Y-m-d'),
-                'to_date' => $ps->getToDate()->format('Y-m-d'),
+                'from_date' => $from_date,
+                'to_date' => $to_date,
             ];
         }
         foreach ($user->getPersonFunctions() as $pf) {
@@ -218,24 +224,23 @@ class UserFrontController extends CommonController
         }
 
         $gnotes = [];
-        if ($mt = $sakonnin->getMessageType('Front page logged in')) {
-            foreach ($mt->getMessages() as $m) {
-                // SHOW should be the only one, but this is the path of least
-                // resistance.
-                if (in_array($m->getState(), $states)) {
-                    $gnotes[] = [
-                        'subject' => $m->getSubject(),
-                        'state' => $m->getState(),
-                        'body' => $m->getBody(),
-                        'id' => $m->getId(),
-                        'date' => $m->getCreatedAt(),
-                        'createdBy' => (string)$m->getCreatedBy(),
-                        'createdAt' => $m->getCreatedAt(),
-                        'messagetype' => (string)$m->getMessageType(),
-                        'message_type' => (string)$m->getMessageType(),
-                    ];
-                }
-            }
+        $criterias = [
+            'states' => $states,
+            'message_type' => 'Front page logged in',
+            'order' => 'DESC'
+        ];
+        foreach ($sakonnin->getMessages($criterias) as $m) {
+            $gnotes[] = [
+                'subject' => $m->getSubject(),
+                'state' => $m->getState(),
+                'body' => $m->getBody(),
+                'id' => $m->getId(),
+                'date' => $m->getCreatedAt(),
+                'createdBy' => (string)$m->getCreatedBy(),
+                'createdAt' => $m->getCreatedAt(),
+                'messagetype' => (string)$m->getMessageType(),
+                'message_type' => (string)$m->getMessageType(),
+            ];
         }
         $retarr = [
             'personal' => $pnotes,
@@ -294,12 +299,27 @@ class UserFrontController extends CommonController
         $csrfman = $this->get('security.csrf.token_manager');
 
         $view  = $request->get('view') ?? null;
+        if ($view && !in_array($view, ['opportunities', 'interested', 'assigned', 'confirmed']))
+            throw new \InvalidArgumentException("Funnily enough, I do not acceept your view.");
+
         $today = new \DateTime();
         $from = new \DateTime($request->get('from') ?? null);
         $to = new \DateTime($request->get('to') ?? '+1 year');
         $state = $request->get('state') ?? null;
-        // Hack, by request.
-        if ($month = $request->get('month')) {
+
+        // Do not make the counter at the bottom base itself on just that month.
+        $recount = true;
+        if ($month = $request->get('month'))
+            $recount = false;
+        // This is only useful for opportunities, which can be way too much
+        // otherwise.
+        // Tro without setting a month. Default "Every single opportunity"
+        // if (!$month && $view == 'opportunities') {
+        //    $month = date("m");
+        //    $recount = false;
+        // }
+
+        if ($month) {
             $year = date("Y");
             $now_month = date("m");
             if ($month < $now_month)
@@ -308,7 +328,6 @@ class UserFrontController extends CommonController
             $to = clone($from);
             $to->modify('last day of this month');
         }
-        
 
         // Either way, never go below today. Historical jobs will be handled
         // somewhere else or with a query option to override.
@@ -321,6 +340,7 @@ class UserFrontController extends CommonController
         $retarr = [
             'view' => $view,
             'month' => $month,
+            'recount' => $recount,
             'period' => [ 'from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d') ],
             'state' => $state,
             'opportunities' => null,
@@ -340,7 +360,7 @@ class UserFrontController extends CommonController
         ];
         $retarr['opportunities'] = $this->opportunitiesForPersonAsArray(
             $user,
-            [ 'from' => $from, 'to' => $to ]
+            [ 'from' => $from, 'to' => $to, 'no_shift_data' => $as_array ]
             );
         $retarr['opportunities_count'] = count($retarr['opportunities']);
             
@@ -349,16 +369,17 @@ class UserFrontController extends CommonController
             '_csrf_token' => $ditoken,
             'url' => $this->generateUrl('uf_delete_interest', ['id' => 'ID'], UrlGeneratorInterface::ABSOLUTE_URL)
         ];
-        $retarr['interested'] = $this->jobsForPersonAsArray($user, [
-            'from' => $from, 'to' => $to,
-            'state' => 'INTERESTED']);
-        $retarr['interested_count'] = count($retarr['interested']);
-
         $confirmtoken = $csrfman->getToken('confirm-job')->getValue();
         $retarr['confirm_job'] = [
             '_csrf_token' => $confirmtoken,
             'url' => $this->generateUrl('uf_confirm_job', ['id' => 'ID'], UrlGeneratorInterface::ABSOLUTE_URL)
         ];
+
+        $retarr['interested'] = $this->jobsForPersonAsArray($user, [
+            'from' => $from, 'to' => $to,
+            'state' => 'INTERESTED']);
+        $retarr['interested_count'] = count($retarr['interested']);
+
         $retarr['assigned'] = $this->jobsForPersonAsArray($user, [
             'from' => $from, 'to' => $to,
             'state' => 'ASSIGNED']);
@@ -427,53 +448,34 @@ class UserFrontController extends CommonController
         $job->setShift($shift);
         $job->setPerson($user);
         $job->setState('INTERESTED');
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($job);
-        $em->flush($job);
 
         if (!$comment = $request->request->get('comment')) {
             $comment = $json_data['comment'] ?? null;
         }
         if ($comment) {
-            $sm = $this->get('sakonnin.messages');
-
-            $message_context = [
-                'system' => 'crewcall',
-                'object_name' => 'job',
-                'external_id' => $job->getId(),
-            ];
-
-            $sm->postMessage(array(
+            $job->addNote([
                 'body' => $comment,
-                'message_type' => 'JobComment',
-                'to_type' => "NONE",
-                'from_type' => "NONE",
-            ), $message_context);
+                'type' => 'JobComment',
+            ]);
         }
-        if (!$checks = $request->request->get('checks')) {
-            $checks = $json_data['checks'] ?? array();
+        if (!$checked_checks = $request->request->get('checks')) {
+            $checked_checks = $json_data['checks'] ?? array();
         }
-        foreach ($checks as $check_data) {
-            $sm = $this->get('sakonnin.messages');
-            $shift_check = $sm->getMessages([
-                'id' => $check_data['id']
-                ]);
-
-            $message_context = [
-                'system' => 'crewcall',
-                'object_name' => 'job',
-                'external_id' => $job->getId(),
-            ];
-
-            $posted = $sm->postMessage(array(
-                'message_type' => $shift_check->getMessageType()->getName(),
-                'body' => $shift_check->getBody(),
-                'in_reply_to' => $shift_check->getMessageId(),
-                'state' => "CHECKED",
-                'to_type' => "NONE",
-                'from_type' => "NONE",
-            ), $message_context);
+        $jobservice = $this->container->get('crewcall.jobs');
+        $shift_checks = $jobservice->checksForShift($job->getShift());
+        foreach ($shift_checks as $check) {
+            if (!isset($checked_checks[$check['id']]))
+                continue;
+            $job->addNote([
+                'body' => $check['body'],
+                'type' => $check['type'],
+                'in_reply_to' => $check['id'],
+                'state' => 'CHECKED'
+            ]);
         }
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($job);
+        $em->flush($job);
         return new JsonResponse(["OK" => "Well done"], Response::HTTP_OK);
     }
 
@@ -600,6 +602,7 @@ class UserFrontController extends CommonController
     public function absenceAction(Request $request)
     {
         $user = $this->getUser();
+        $retarr['absence'] = [];
         foreach ($user->getStates() as $ps) {
             if ($ps->isActive()) continue;
             $retarr['absence'][] = [
@@ -680,75 +683,11 @@ class UserFrontController extends CommonController
     }
 
     /**
-     * Get change password form - The Backward compatible version.
-     * @Route("/me_password", name="uf_me_password", methods={"GET", "POST"})
-     */
-    public function mePassword(Request $request)
-    {
-        $user = $this->getUser();
-        
-        $form = $this->createForm(ChangePasswordFosType::class);
-        $form->add('change_password', SubmitType::class, ['label' => 'Save']);
-        $form->setData($user);
-        $errors = [];
-        if ($data = json_decode($request->getContent(), true)) {
-            // Hack, Angfular does not comply.
-            if (isset($data['first'])) {
-                $data['plainPassword'] = [];
-                $data['plainPassword']['first'] = $data['first'];
-                unset($data['first']);
-                $data['plainPassword']['second'] = $data['second'] ?: null;
-                unset($data['second']);
-            }
-            $form->submit($data);
-            if ($form->isSubmitted() && $form->isValid()) {
-                $password = $form->get('plainPassword')->getData();
-                // Encode the plain password, and set it.
-                $passwordEncoder = $this->get('security.password_encoder');
-                $encodedPassword = $passwordEncoder->encodePassword(
-                    $user, $password
-                );
-                $user->setPassword($encodedPassword);
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->flush();
-                return new JsonResponse(["OK" => "Well done"], Response::HTTP_OK);
-            }
-            $errors = $this->handleFormErrors($form);
-        }
-
-        $form = $form->createView();
-        $csrfman = $this->get('security.csrf.token_manager');
-        $csrfToken = $csrfman->getToken('change_password')->getValue();
-        if (count($errors) > 0) {
-            return new JsonResponse([
-                "ERROR" => [
-                    "errors" => $errors,
-                    "fos_user_change_password" => [
-                        "_token" => $csrfToken,
-                        "current_password" => "",
-                        "plainPassword" => ["first" => "", "second" => "" ]
-                        ]
-                    ]
-                ],
-                Response::HTTP_BAD_REQUEST);
-        }
-
-        return new JsonResponse([
-            "fos_user_change_password" => [
-                "_token" => $csrfToken,
-                "current_password" => "",
-                "plainPassword" => ["first" => "", "second" => "" ]
-                ],
-            ],
-            Response::HTTP_OK);
-    }
-
-    /**
      * Change password on self.
      *
      * @Route("/change_password", name="uf_me_change_password", methods={"GET", "POST"})
      */
-    public function meChangePasswordAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    public function meChangePasswordAction(Request $request, UserPasswordHasherInterface $userPasswordHasher)
     {
         $user = $this->getUser();
 
@@ -758,11 +697,9 @@ class UserFrontController extends CommonController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $password = $form->get('plainPassword')->getData();
-
-            // Encode the plain password, and set it.
-            $encodedPassword = $passwordEncoder->encodePassword(
-                $user, $password
+            $encodedPassword = $userPasswordHasher->hashPassword(
+                $user,
+                $form->get('plainPassword')->getData()
             );
 
             $user->setPassword($encodedPassword);
@@ -822,12 +759,17 @@ class UserFrontController extends CommonController
         $ccjobs = $this->container->get('crewcall.jobs');
 
         $opps = [];
+        $opportunities = $ccjobs->opportunitiesForPerson($person, $options);
+
         foreach ($ccjobs->opportunitiesForPerson($person, $options) as $o) {
             $arr = [
                 'name' => (string)$o,
                 'id' => $o->getId(),
             ];
-            $opps[] = array_merge($arr, $this->getShiftArr($o));
+            if ($options['no_shift_data'] ?? false)
+                $opps[] = $arr;
+            else
+                $opps[] = array_merge($arr, $this->getShiftArr($o));
         }
         return $opps;
     }
@@ -843,45 +785,45 @@ class UserFrontController extends CommonController
             $eventparent = $event->getParent();
             $location = $event->getLocation();
             $organization = $event->getOrganization();
-            $confirm_notes = [];
+            $inform_notes = [];
             $checks = [];
-            $scnc = [
+
+            $scontext = [
                 'system' => 'crewcall',
                 'object_name' => 'shift',
-                'message_types' => ['Note'],
                 'external_id' => $shift->getId(),
             ];
-            foreach ($sakonnin->getMessagesForContext($scnc) as $c) {
-                $confirm_notes[] = [
-                    'id' => $c->getId(),
-                    'subject' => $c->getSubject(),
-                    'confirm_required' => false,
-                    'body' => $c->getBody()
+            foreach ($shift->getNotes() as $note) {
+                $note_id = $note['id'];
+                $type = $note['type'];
+                $subject = $note['subject'];
+                $body = $note['body'];
+                if (in_array($type, ['InformNote'])) {
+                    $inform_notes[] = [
+                        'id' => $note_id,
+                        'subject' => $subject,
+                        'confirm_required' => false,
+                        'body' => $body
                     ];
+                } elseif (in_array($type, ['ConfirmCheck', 'InformCheck'])) {
+                    $checks[] = [
+                        'id' => $note_id,
+                        'type' => $type,
+                        'confirm_required' => $type == "ConfirmCheck" ? true : false,
+                        'body' => $body,
+                        ];
+                }
             }
-            $sccc = [
-                'system' => 'crewcall',
-                'object_name' => 'shift',
-                'message_types' => ['ConfirmCheck', 'InformCheck'],
-                'external_id' => $shift->getId(),
-            ];
-            foreach ($sakonnin->getMessagesForContext($sccc) as $c) {
-                $checks[] = [
-                    'id' => $c->getId(),
-                    'type' => (string)$c->getMessageType(),
-                    'confirm_required' => (string)$c->getMessageType() == "ConfirmCheck" ? true : false,
-                    'body' => $c->getBody()
-                    ];
-            }
+
             $eventarr = $this->getEventArr($event);
             if (count($eventarr['checks']) > 0) {
                 $checks = array_merge($checks, $eventarr['checks']);
             }
-            if (count($eventarr['confirm_notes']) > 0) {
-                $confirm_notes = array_merge($confirm_notes, $eventarr['confirm_notes']);
+            if (count($eventarr['inform_notes']) > 0) {
+                $inform_notes = array_merge($inform_notes, $eventarr['inform_notes']);
             }
             unset($eventarr['checks']);
-            unset($eventarr['confirm_notes']);
+            unset($eventarr['inform_notes']);
 
             // Let's create some dates.
             // TODO: Ponder if this is useable. (it is, but this is eenglish
@@ -913,7 +855,7 @@ class UserFrontController extends CommonController
                     'end_string' => $endstring,
                 ],
                 'checks' => $checks,
-                'confirm_notes' => $confirm_notes
+                'inform_notes' => $inform_notes
             ];
             $this->shiftcache[$shift->getId()] = $shiftarr;
         }
@@ -931,59 +873,47 @@ class UserFrontController extends CommonController
             $organization = $event->getOrganization();
             $contacts = [];
             $contact_info = [];
-            $confirm_notes = [];
+            $inform_notes = [];
             $checks = [];
             $all_events = [$event];
             if ($eventparent) {
                 $all_events[] = $eventparent;
             }
             foreach ($all_events as $e) {
-                $ecnc = [
-                    'system' => 'crewcall',
-                    'object_name' => 'event',
-                    'message_types' => ['Note'],
-                    'external_id' => $e->getId(),
-                ];
-                foreach ($sakonnin->getMessagesForContext($ecnc) as $c) {
-                    $confirm_notes[] = [
-                        'id' => $c->getId(),
-                        'subject' => $c->getSubject(),
-                        'confirm_required' => false,
-                        'body' => $c->getBody()];
-                }
-                $eccc = [
-                    'system' => 'crewcall',
-                    'object_name' => 'event',
-                    'message_types' => ['ConfirmCheck', 'InformCheck'],
-                    'external_id' => $e->getId(),
-                ];
-                foreach ($sakonnin->getMessagesForContext($eccc) as $c) {
-                    $checks[] = [
-                        'id' => $c->getId(),
-                        'type' => (string)$c->getMessageType(),
-                        'confirm_required' => (string)$c->getMessageType() == "ConfirmCheck" ? true : false,
-                        'body' => $c->getBody()
+                foreach ($e->getNotes() as $note) {
+                    $note_id = $note['id'];
+                    $type = $note['type'];
+                    $subject = $note['subject'];
+                    $body = $note['body'];
+                    if (in_array($type, ['InformNote'])) {
+                        $inform_notes[] = [
+                            'id' => $note_id,
+                            'subject' => $subject,
+                            'confirm_required' => false,
+                            'body' => $body
                         ];
-                }
-                $cic = [
-                    'system' => 'crewcall',
-                    'object_name' => 'event',
-                    'message_types' => ['Contact Info'],
-                    'external_id' => $e->getId(),
-                ];
-                foreach ($sakonnin->getMessagesForContext($cic) as $ci) {
-                    $contact_info[] = [
-                        'id' => $ci->getId(),
-                        'subject' => $ci->getSubject(),
-                        'confirm_required' => false,
-                        'body' => $ci->getBody()
-                    ];
-                    $contacts[] = [
-                        'name' => $ci->getBody(),
-                        'mobile_phone_number' => ''
-                    ];
+                    } elseif (in_array($type, ['Contact Info'])) {
+                        $contact_info[] = [
+                            'id' => $note_id,
+                            'subject' => $subject,
+                            'confirm_required' => false,
+                            'body' => $note['body'],
+                        ];
+                        $contacts[] = [
+                            'name' => $note['body'],
+                            'mobile_phone_number' => ''
+                        ];
+                    } elseif (in_array($type, ['ConfirmCheck', 'InformCheck'])) {
+                        $checks[] = [
+                            'id' => $note_id,
+                            'type' => $type,
+                            'confirm_required' => $type == "ConfirmCheck" ? true : false,
+                            'body' => $body,
+                            ];
+                    }
                 }
             }
+
             $eventarr = [
                 'name' => (string)$event,
                 'id' => $event->getId(),
@@ -997,12 +927,13 @@ class UserFrontController extends CommonController
                 'contacts' => [],
                 'checks' => $checks,
                 'contact_info' => $contact_info,
-                'confirm_notes' => $confirm_notes
+                'inform_notes' => $inform_notes
             ];
             if ($address = $location->getAddress()) {
                 $addressing = $this->container->get('crewcall.addressing');
                 $eventarr['location']['address'] = $addressing->compose($address);
                 $eventarr['location']['address_flat'] = $addressing->compose($address, 'flat');
+                $eventarr['location']['address_string'] = $addressing->compose($address, 'string');
             }
             $this->eventcache[$event->getId()] = $eventarr;
         }

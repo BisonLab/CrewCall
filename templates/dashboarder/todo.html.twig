@@ -12,7 +12,7 @@
 %}
 {% for message in sakonnin_messages.messages(criterias) %}
   {% if is_granted('show', message) %}
-<div id="sakonninmessage_{{ message.id}}">
+<div id="sakonninmessage_{{ message.messageid}}">
 
   <div class="row noteText">
    <div class="col-sm-9">
@@ -22,9 +22,9 @@
     {% set action = path('message_edit', { 'message_id': message.messageid, 'access': 'ajax' }) %}
   <div class="d-none">
     {% set mdelform = sakonnin_messages.getCreateDeleteForm(message, true) %}
-    <form id="deletemessageform_{{ message.id }}" onSubmit="return deleteSakonninMessage('{{ message.messageid }}');">
+    <form id="deletemessageform_{{ message.messageid }}" onSubmit="return deleteSakonninMessage('{{ message.messageid }}');">
     {{ form_rest(mdelform) }}
-    <input id="deltodo{{ message.id }}" type="submit">
+    <input id="deltodo{{ message.messageid }}" type="submit">
     </form>
   </div>
    <div class="col-sm-3" align="right">
@@ -35,7 +35,7 @@
           <div class="dropdown-menu dropdown-menu-right">
              <a class="dropdown-item" href="#" onClick="return setStateOnSakonninMessage('{{ message.messageid }}', 'ARCHIVED');">Archive</a>
              <a class="dropdown-item" href="#" onClick="return grabEditSakonninMessageForm('{{ message.messageid }}',{'title':'Edit Todo'});">Edit</a>
-             <a class="dropdown-item" href="#" onClick='return $("#deltodo{{ message.id }}").click();'>Delete</a>
+             <a class="dropdown-item" href="#" onClick='return $("#deltodo{{ message.messageid }}").click();'>Delete</a>
           </div><!-- dropdown-menu -->
         </div><!-- dropdown -->
    </div>
@@ -44,7 +44,7 @@
 
  <div class="row noteText">
    <div class="col-sm-9">
-<pre wrap id="sakonninmessagebody_{{ message.id }}">
+<pre wrap id="sakonninmessagebody_{{ message.messageid }}">
 {{ message.body }}
 </pre>
    </div>
@@ -61,7 +61,7 @@
     {% endif %}
 
         <label class="checkSwitch">
-          <input type="checkbox" id="todocheck_{{ message.id }}" onChange="setCheckboxState('{{ message.messageid }}', 'TODO', this)" {% if checked %}checked{% endif %}/>
+          <input type="checkbox" id="todocheck_{{ message.messageid }}" onChange="setCheckboxState('{{ message.messageid }}', 'TODO', this)" {% if checked %}checked{% endif %}/>
           <span class="checkSlider round" title="Todo"></span>
         </label>
     {% if checked %}

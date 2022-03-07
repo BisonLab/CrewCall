@@ -51,6 +51,7 @@ class Addressing
         // What do we need?
         $address_lines = [];
         $address_flat = [];
+        $address_string = '';
         foreach ($this->format as $line) { 
             $a = [];
             foreach ($line as $elem) { 
@@ -60,9 +61,12 @@ class Addressing
                     $elem = "countryCode";
                 $a[$elem] = $address->get($elem);
                 $address_flat[$elem] = $address->get($elem);
+                if (!empty($address->get($elem)))
+                    $address_string .= ',' . $address->get($elem);
             }
             $address_lines[] = $a;
         }
+        $address_string = ltrim($address_string, ',');
 
         if ($format == "postal") {
             $output = $name . "\n";
@@ -97,6 +101,8 @@ class Addressing
             return $html;
         } elseif ($format == "flat") {
             return $address_flat;
+        } elseif ($format == "string") {
+            return $address_string;
         } elseif ($format == "line") {
             return implode(" ", $address_flat);
         } else {

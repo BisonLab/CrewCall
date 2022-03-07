@@ -24,11 +24,15 @@ class DefaultController extends CommonController
         }
         return $this->redirectToRoute('app_login');
     }
+
     /**
-     * @Route("/admin/dashboard", name="dashboard")
+     * @Route("/dashboard", name="dashboard")
      */
     public function dashboardAction(Request $request)
     {
+        if (!$this->getUser()->isAdmin())
+            return $this->redirectToRoute('user_view');
+
         $dashboarder = $this->get('crewcall.dashboarder');
         return $this->render('default/index.html.twig',
             ['dashboarder' => $dashboarder]);
@@ -41,7 +45,7 @@ class DefaultController extends CommonController
     {
         $value = $request->get('value');
         if (empty($value))
-            return $this->redirect($this->generateUrl('homepage'));
+            return $this->redirect($this->generateUrl('dashboard'));
 
         $em = $this->getDoctrine()->getManager();
 
@@ -61,7 +65,7 @@ class DefaultController extends CommonController
             }
         }
 
-        foreach (array('username', 'full_name', 'mobile_phone_number') as $field) {
+        foreach (array('email', 'username', 'full_name', 'mobile_phone_number') as $field) {
             $result = $em->getRepository('App:Person')
                         ->searchByField($field, trim($value));
             foreach ($result as $i) {

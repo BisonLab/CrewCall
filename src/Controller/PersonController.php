@@ -11,7 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 
@@ -21,7 +21,7 @@ use App\Entity\PersonFunction;
 use App\Entity\PersonRoleOrganization;
 use App\Entity\FunctionEntity;
 use App\Lib\ExternalEntityConfig;
-use App\Form\ChangePasswordType;
+use App\Form\ChangePasswordFosType;
 use App\Form\ResetPasswordRequestFormType;
 
 /**
@@ -347,7 +347,7 @@ class PersonController extends CommonController
             $em->flush($person);
         }
 
-        return $this->redirectToRoute('homepage');
+        return $this->redirectToRoute('dashboard');
     }
 
     /**
@@ -424,19 +424,17 @@ class PersonController extends CommonController
      *
      * @Route("/change_password", name="self_change_password", methods={"GET", "POST"})
      */
-    public function changeSelfPasswordAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    public function changeSelfPasswordAction(Request $request, UserPasswordHasherInterface $userPasswordHasher)
     {
         $user = $this->getUser();
 
-        $form = $this->createForm(ChangePasswordType::class);
+        $form = $this->createForm(ChangePasswordFosType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $password = $form->get('plainPassword')->getData();
-
-            // Encode the plain password, and set it.
-            $encodedPassword = $passwordEncoder->encodePassword(
-                $user, $password
+            $encodedPassword = $userPasswordHasher->hashPassword(
+                $user,
+                $form->get('plainPassword')->getData()
             );
 
             $user->setPassword($encodedPassword);
@@ -620,7 +618,6 @@ class PersonController extends CommonController
         $people = array(
             'entities' => $people,
         );
-        return $this->render('BisonLabCommonBundle:User:index.html.twig',
-            $params);
+        return $this->render('person/index.html.twig', $params);
     }
 }

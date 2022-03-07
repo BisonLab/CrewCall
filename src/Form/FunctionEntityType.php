@@ -40,10 +40,8 @@ class FunctionEntityType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'functionentity';
     }
-
-
 }

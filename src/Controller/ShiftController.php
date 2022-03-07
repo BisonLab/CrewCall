@@ -26,16 +26,9 @@ class ShiftController extends CommonController
      *
      * @Route("/", name="shift_index", methods={"GET"})
      */
-    public function indexAction(Request $request, $access)
+    public function indexAction(Request $request, $access, Event $event)
     {
         $em = $this->getDoctrine()->getManager();
-
-        // If this has a event set here, it's not an invalid create attempt.
-        if ($event_id = $request->get('event')) {
-            $event = $em->getRepository('App:Event')->find($event_id);
-        }
-        if (!$event)
-            return $this->returnNotFound($request, "No event");
 
         // Again, ajax/html-centric. But maybe return json later.
         if ($this->isRest($access)) {
@@ -183,6 +176,7 @@ class ShiftController extends CommonController
      */
     public function deleteAction(Request $request, $access, Shift $shift)
     {
+        $event = $shift->getEvent();
         // Bloody good question here, because CSRF.
         // This should add some sort of protection.
         if ($this->isRest($access)) {
@@ -201,7 +195,8 @@ class ShiftController extends CommonController
             $em->remove($shift);
             $em->flush($shift);
         }
-        return $this->redirectToRoute('shift_index');
+        return $this->redirectToRoute('event_show',
+            array('id' => $event->getId()));
     }
 
     /**
@@ -220,8 +215,9 @@ class ShiftController extends CommonController
             return new JsonResponse(array("status" => "OK"),
                 Response::HTTP_OK);
         }
-        if (!$event_id = $request->request->get('event'))
-            $event_id = $shift->getEvent()->getId();
+
+        $event = $shift->getEvent()->getParent() ?? $shift->getEvent();
+        $event_id = $request->request->get('event') ?? $event->getId();
         return $this->redirectToRoute('event_show', array(
             'id' => $event_id));
     }
@@ -313,5 +309,80 @@ class ShiftController extends CommonController
             ->setMethod('DELETE')
             ->getForm()
         ;
+    }
+
+    /*
+     * Notes stuff.
+     * I'd put it in a trait if it werent for it all being easier this way.
+     * (But I will more or less cut&paste from here to the other places needing
+     * this. Just replace shift with i.e. shift.)
+     */
+
+    /**
+     *
+     * @Route("/{shift}/add_note", name="shift_add_note", methods={"POST"})
+     */
+    public function addNoteAction(Request $request, Shift $shift, $access)
+    {
+        $token = $request->request->get('_csrf_token');
+
+        if ($token && $this->isCsrfTokenValid('shift-add-note', $token)) {
+            // Let's hope csrf token checks is enough.
+            $shift->addNote([
+                'id' => $request->request->get('note_id'),
+                'type' => $request->request->get('type'),
+                'subject' => $request->request->get('subject'),
+                'body' => $request->request->get('body')
+            ]);
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+        }
+        $event = $shift->getEvent()->getParent() ?? $shift->getEvent();
+        $event_id = $request->request->get('event') ?? $event->getId();
+        return $this->redirectToRoute('event_show', array(
+            'id' => $event_id));
+    }
+
+    /**
+     *
+     * @Route("/{shift}/{note_id}/edit_note", name="shift_edit_note", methods={"POST"})
+     */
+    public function editNoteAction(Request $request, Shift $shift, $note_id, $access)
+    {
+        $token = $request->request->get('_csrf_token');
+
+        if ($token && $this->isCsrfTokenValid('shift-edit-note'.$note_id, $token)) {
+            $shift->updateNote([
+                'id' => $note_id,
+                'type' => $request->request->get('type'),
+                'subject' => $request->request->get('subject'),
+                'body' => $request->request->get('body')
+            ]);
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+        }
+        $event = $shift->getEvent()->getParent() ?? $shift->getEvent();
+        $event_id = $request->request->get('event') ?? $event->getId();
+        return $this->redirectToRoute('event_show', array(
+            'id' => $event_id));
+    }
+
+    /**
+     *
+     * @Route("/{shift}/{note_id}/remove_note", name="shift_remove_note", methods={"POST"})
+     */
+    public function removeNoteAction(Request $request, Shift $shift, $note_id, $access)
+    {
+        $token = $request->request->get('_csrf_token');
+
+        if ($token && $this->isCsrfTokenValid('shift-remove-note'.$note_id, $token)) {
+            $shift->removeNote($note_id);
+            $em = $this->getDoctrine()->getManager();
+            $em->flush();
+        }
+        $event = $shift->getEvent()->getParent() ?? $shift->getEvent();
+        $event_id = $request->request->get('event') ?? $event->getId();
+        return $this->redirectToRoute('event_show', array(
+            'id' => $event_id));
     }
 }

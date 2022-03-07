@@ -33,8 +33,9 @@ class UserController extends CommonController
     public function index(Request $request): Response
     {
         // TODO: Check if crew should be true or not.
+        $crew = $this->container->getParameter('enable_crew_manager');
         return $this->render('user/index.html.twig', [
-            'crew' => true,
+            'crew' => $crew,
         ]);
     }
 

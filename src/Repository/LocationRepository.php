@@ -12,7 +12,7 @@ use App\Entity\Location;
  */
 class LocationRepository extends ServiceEntityRepository
 {
-    use \BisonLab\CommonBundle\Entity\ContextRepositoryTrait;
+    use \BisonLab\ContextBundle\Repository\ContextOwnerRepositoryTrait;
 
     public function __construct(ManagerRegistry $registry)
     {

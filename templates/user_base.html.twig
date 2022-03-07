@@ -125,6 +125,24 @@ function getCContent(url = false, linkid = false) {
     return false;
 }
 
+function toggleConfirmCheck(check, job_id) {
+
+    var disabled = false;
+
+    $('.signup_check_' + job_id).each(function() {
+        /* If any box is not checked, the button will be disabled. */
+        if (!this.checked) {
+            disabled = true;
+        }
+    });
+    if (disabled) {
+        $('#signup_button_' + job_id).addClass('disabled');
+    } else {
+        $('#signup_button_' + job_id).removeClass('disabled');
+    }
+    return false;
+}
+
 {% if assigned_count is defined %}
 $(document).ready(function() {
     $( "#assignedCount" ).text("{{ assigned_count }}");

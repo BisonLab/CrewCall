@@ -34,6 +34,7 @@ doctrine:
                         prefix: 'App\Entity'
                         alias: App
                     BisonLabCommonBundle: ~
+                    BisonLabContextBundle: ~
                     BisonLabSakonninBundle:
                         mapping: false
                     gedmo_loggable:
@@ -53,6 +54,8 @@ doctrine:
                     App:
                         mapping: false
                     BisonLabCommonBundle:
+                        mapping: false
+                    BisonLabContextBundle:
                         mapping: false
                     CustomBundle:
                         mapping: false

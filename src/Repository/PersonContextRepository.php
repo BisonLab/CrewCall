@@ -2,11 +2,17 @@
 
 namespace App\Repository;
 
-use BisonLab\CommonBundle\Entity\ContextBaseRepository;
+use App\Entity\PersonContext;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  *
  */
-class PersonContextRepository extends ContextBaseRepository
+class PersonContextRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, PersonContext::class);
+    }
 }

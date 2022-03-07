@@ -42,7 +42,7 @@ class CreateUserCommand extends Command
         $user = new Person();
         if ($password = $input->getOption('password')) {
             // Encode the plain password, and set it.
-            $encodedPassword = $this->passwordEncoder->encodePassword(
+            $encodedPassword = $this->userPasswordHasher->hashPassword(
                 $user, $password
             );
             $user->setPassword($encodedPassword);

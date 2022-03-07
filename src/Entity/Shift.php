@@ -20,6 +20,8 @@ use App\Lib\ExternalEntityConfig;
  */
 class Shift
 {
+    use NotesTrait;
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -337,6 +339,21 @@ class Shift
         }
 
         return $jobs;
+    }
+
+    /**
+     * Get all people in a shift.
+     * This is used to make sure same person is added twice.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPeople($filter = [])
+    {
+        $people = new ArrayCollection();
+        foreach($this->getJobs($filter) as $job) {
+            $people->add($job->getPerson());
+        }
+        return $people;
     }
 
     /**

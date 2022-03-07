@@ -7,7 +7,7 @@
         {{ form_widget(edit_form) }}
         <strong>External info</strong>
         <ul>
-        {% include '@BisonLabCommon/context_forms.html.twig' with { 'context_forms': context_forms } %}
+        {% include '@BisonLabContext/context_forms.html.twig' with { 'context_forms': context_forms } %}
         </ul>
         <input class="btn-sm btn-dark" type="submit" value="Save" />
     {{ form_end(edit_form) }}

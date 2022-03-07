@@ -77,7 +77,7 @@ class JobRepository extends ServiceEntityRepository
 
         if ($options['wishlist'] ?? false) {
             $states = ExternalEntityConfig::getWishlistStatesFor('Job');
-            $qb->andWhere('j.state in (:state)')
+            $qb->andWhere('j.state in (:states)')
             ->setParameter('states', $states);
         }
 
@@ -144,17 +144,17 @@ class JobRepository extends ServiceEntityRepository
         }
 
         if (isset($options['states'])) {
-            $qb->andWhere('j.state in (:state)')
+            $qb->andWhere('j.state in (:states)')
             ->setParameter('states', $options['states']);
         }
 
-        if ($options['without_rollover'] ?? false) {
+        if ($options['wishlist'] ?? false) {
             $states = ExternalEntityConfig::getWishlistStatesFor('Job');
-            $qb->andWhere('j.state in (:state)')
+            $qb->andWhere('j.state in (:states)')
             ->setParameter('states', $states);
         }
 
-        if ($options['without_rollover'] ?? false) {
+        if ($options['booked'] ?? false) {
             $states = ExternalEntityConfig::getBookedStatesFor('Job');
             $qb->andWhere('j.state in (:states)')
                 ->setParameter('states', $states);
@@ -168,7 +168,7 @@ class JobRepository extends ServiceEntityRepository
         // Unless there are a set timeframe, use "from now".
         $from = new \DateTime();
 
-        if ($options['without_rollover'] ?? false) {
+        if ($options['on_date'] ?? false) {
             $on_date = $options['on_date'];
             if (!$on_date instanceOf \DateTime)
                 $on_date = new \DateTime($on_date);
@@ -179,7 +179,7 @@ class JobRepository extends ServiceEntityRepository
 
         // And from(!) here it can be overridden
 
-        if ($options['without_rollover'] ?? false) {
+        if ($options['past'] ?? false) {
             // If the "to" option is set, use it and not "past".
             if (!isset($options['to'])) {
                 $to = new \DateTime();
@@ -191,7 +191,7 @@ class JobRepository extends ServiceEntityRepository
             $from = new \DateTime("2018-01-01");
         }
 
-        if (isset($options['from']) || isset($options['to'])) {
+        if ($options['from'] ?? false || $options['to'] ?? false) {
             if (isset($options['from'])) {
                 if ($options['from'] instanceof \DateTime )
                     $from = $options['from'];

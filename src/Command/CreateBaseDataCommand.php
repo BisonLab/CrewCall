@@ -149,7 +149,7 @@ EOT
         $this->addCommonOptions();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('First, message types.');
         $this->_messageTypes($input, $output);

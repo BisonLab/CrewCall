@@ -19,6 +19,7 @@ use App\Lib\ExternalEntityConfig;
  */
 class Job
 {
+    use NotesTrait;
     use \BisonLab\CommonBundle\Entity\AttributesTrait;
 
     /**

@@ -1,0 +1,39 @@
+  <div id="eventnote_{{ note.id }}" class="row">
+   <div class="col-8">
+    {% if note.subject is not empty %}
+    <strong>{{ note.subject }}</strong><br>
+    {% endif %}
+    <pre class="noteText" id="eventnotebody_{{ note.id }}">{{ note.body }}</pre>
+   </div>
+   <div class="col-4">
+    <form method="POST" action="{{ path('event_remove_note', { 'event': event.id, 'note_id': note.id, 'access': 'web' }) }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('event-remove-note' ~ note.id) }}">
+    <a href="#" onClick="return openCcModalFromDiv('eventnote_edit_{{ note.id }}', 'Edit Note');"><span class="btn edit_glyph"></span></a>
+    <button class="btn remove_glyph" type="submit"></button>
+    </form>
+   </div>
+  </div>
+  <div class="d-none" id="eventnote_edit_{{ note.id }}">
+    <form method="POST" action="{{ path('event_edit_note', { 'event': event.id, 'note_id': note.id, 'access': 'web' }) }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('event-edit-note' ~ note.id) }}">
+{% if subject is not defined or subject %}
+    <div class="form-group row">
+      <label class="col-form-label col-sm-2">Subject:</label>
+      <div class="col-sm-10">
+        <input class="form-control" type="text" name="subject" size="40" value="{{ note.subject }}">
+      </div>
+    </div>
+{% endif %}
+    <div class="form-group row">
+        <label class="col-form-label col-sm-2 required">Text:</label>
+      <div class="col-sm-10">
+        <textarea class="form-control" type="textarea" name="body" required="required" cols="40" rows="5">{{ note.body }}</textarea>
+      </div>
+    </div>
+    <div class="form-group row">
+      <div class="col-sm-10">
+        <input class="btn-sm btn-dark" type="submit" value="Save" />
+      </div>
+    </div>
+    </form>
+  </div>

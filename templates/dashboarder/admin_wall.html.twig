@@ -2,19 +2,25 @@
 
 <h3>Admin Wall</h3>
 <div id="admin_wall">
-{% for message in sakonnin_messages.messagetype('Admin Wall').messages %}
+{% set criterias = {
+    'message_types': ['Admin Wall'],
+    'states': ['UNREAD', 'UNCHECKED', 'CHECKED', 'SHOW'],
+    'order': 'DESC'
+    }
+%}
+{% for message in sakonnin_messages.messages(criterias) %}
   {% if (message.state == "SHOW" or message.state == "UNREAD") and is_granted('show', message) %}
-   <div id="sakonninmessage_{{ message.id}}">
+   <div id="sakonninmessage_{{ message.messageid}}">
     <div class="d-none">
         {% set mdelform = sakonnin_messages.getCreateDeleteForm(message, true) %}
-        <form id="deletemessageform_{{ message.id }}" onSubmit="return deleteSakonninMessage({{ message.id }});">
+        <form id="deletemessageform_{{ message.messageid }}" onSubmit="return deleteSakonninMessage('{{ message.messageid }}');">
         {{ form_rest(mdelform) }}
-        <input id="deladminw_{{ message.id }}" type="submit">
+        <input id="deladminw_{{ message.messageid }}" type="submit">
         </form>
     </div>
     <div class="row noteText">
      <div class="col-sm-10">
-        <h3 id="sakonninmessagesubject_{{ message.id }}">{{ message.subject }}</h3>
+        <h3 id="sakonninmessagesubject_{{ message.messageid }}">{{ message.subject }}</h3>
         <em>{{ message.createdAt | date('Y-m-d') }} - {{ message.createdBy }}</em>
       </div>
       <div class="col-sm-2" align="right">
@@ -25,17 +31,17 @@
           <div class="dropdown-menu dropdown-menu-right">
            <a class="dropdown-item" href="#" onClick="return setStateOnSakonninMessage('{{ message.messageid }}', 'ARCHIVED');">Archive</a>
            <a class="dropdown-item" href="#" onClick='return grabEditSakonninMessageForm('{{ message.messageid }}');'>Edit</a>
-            <a class="dropdown-item" href="#" onClick='return $("#deladminw_{{ message.id }}").click();'>Delete</a>
+            <a class="dropdown-item" href="#" onClick='return $("#deladminw_{{ message.messageid }}").click();'>Delete</a>
           </div><!-- dropdown-menu -->
         </div><!-- dropdown -->
      </div><!-- col-sm-2 -->
     </div><!-- row -->
     <div class="row noteText">
-<pre wrap class="col-sm-10" id="sakonninmessagebody_{{ message.id }}">
+<pre wrap class="col-sm-10" id="sakonninmessagebody_{{ message.messageid }}">
 {{ message.body }}
 </pre>
     </div><!-- row -->
- </div><!-- sakonninmessage_{{ message.id}} -->
+ </div><!-- sakonninmessage_{{ message.messageid}} -->
  {% endif %}
 {% endfor %}
 <div class="row">

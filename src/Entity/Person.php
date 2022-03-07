@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -27,7 +28,7 @@ use App\Lib\ExternalEntityConfig;
  * @UniqueEntity(fields={"username", "email"}, message="There is already an account with this username or email address")
  * @Gedmo\Loggable
  */
-class Person implements UserInterface
+class Person implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use \BisonLab\CommonBundle\Entity\AttributesTrait;
 
@@ -258,21 +259,6 @@ class Person implements UserInterface
     public function setRoles(array $system_roles): self
     {
         $this->system_roles = $system_roles;
-
-        return $this;
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function getPassword(): string
-    {
-        return (string) $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
 
         return $this;
     }
@@ -857,20 +843,27 @@ class Person implements UserInterface
         $occupied = false;
         $reason = [];
         // Find a date.
-        $time = new \DateTime();
-        if (isset($options['datetime']) && $options['datetime'] instanceof \DateTime)
-            $time = $options['datetime'];
-        elseif (isset($options['datetime']))
-            $time = new \DateTime($options['datetime']);
-        elseif (isset($options['date'])) {
-            $time = new \DateTime($options['date']);
-            $time->setTime(6,0);
+        $from = new \DateTime();
+        $from->setTime(6,0);
+        $to = new \DateTime();
+        $to->setTime(22,0);
+        if (isset($options['datetime']) && $options['datetime'] instanceof \DateTime) {
+            $from = $options['datetime'];
+            $to = $options['datetime'];
+        } elseif (isset($options['datetime'])) {
+            $from = new \DateTime($options['datetime']);
+            $to = new \DateTime($options['datetime']);
+        } elseif (isset($options['date'])) {
+            $from = new \DateTime($options['date']);
+            $from->setTime(6,0);
+            $to = new \DateTime($options['date']);
+            $to->setTime(22,0);
         }
 
         /*
-         * Check state. I'll default to the uncertain
+         * Check state.
          */
-        $stateobj = $this->getStateOnDate($time);
+        $stateobj = $this->getStateOnDate($from);
 
         $state = $stateobj->getState();
         if (!in_array($state,
@@ -894,7 +887,13 @@ class Person implements UserInterface
          * Check jobs. Gotta do it.
          */
         foreach ($this->getJobs(['booked' => true]) as $job) {
-            if (($job->getStart() >= $time) && ($job->getEnd() <= $time)) {
+            // The point here is to check of either start or end is between
+            // from and to. It may not be what we want after all, but that is
+            // another discussion.
+            if (
+                  ($job->getStart() >= $from) && ($job->getStart() <= $to)
+                  || ($job->getEnd() <= $from) && ($job->getEnd() >= $to)
+                ) {
                 $reason['stateobj'] = $stateobj;
                 $reason['state'] = $state;
                 $reason['statelabel'] = $stateobj->getStateLabel();
@@ -915,7 +914,7 @@ class Person implements UserInterface
 
     public function isAvailable($options = [])
     {
-        return $this->isOccupied($options);
+        return !$this->isOccupied($options);
     }
 
     /*
@@ -1282,7 +1281,7 @@ class Person implements UserInterface
     }
 
     /**
-     * Is this deleeteable? If any event connected to it, no.
+     * Is this deleteable? If any event connected to it, no.
      *
      * @return boolean
      */
@@ -1292,11 +1291,26 @@ class Person implements UserInterface
     }
 
     /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
+    {
+        return (string) $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
      * @see UserInterface
      */
-    public function getSalt()
+    public function getSalt(): ?string
     {
-        // not needed when using the "bcrypt" algorithm in security.yaml
+        return null;
     }
 
     /**

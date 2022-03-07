@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class OrganizationContext
 {
-    use \BisonLab\CommonBundle\Entity\ContextBaseTrait;
+    use \BisonLab\ContextBundle\Entity\ContextBaseTrait;
     /**
      * @var mixed
      *

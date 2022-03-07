@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Person;
 use App\Form\ChangePasswordFormType;
 use App\Form\ResetPasswordRequestFormType;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -12,8 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
@@ -28,10 +29,12 @@ class ResetPasswordController extends CommonController
     use ResetPasswordControllerTrait;
 
     private $resetPasswordHelper;
+    private $entityManager;
 
-    public function __construct(ResetPasswordHelperInterface $resetPasswordHelper)
+    public function __construct(ResetPasswordHelperInterface $resetPasswordHelper, EntityManagerInterface $entityManager)
     {
         $this->resetPasswordHelper = $resetPasswordHelper;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -63,13 +66,14 @@ class ResetPasswordController extends CommonController
      */
     public function checkEmail(): Response
     {
-        // We prevent users from directly accessing this page
-        if (!$this->canCheckEmail()) {
-            return $this->redirectToRoute('app_forgot_password_request');
+        // Generate a fake token if the user does not exist or someone hit this page directly.
+        // This prevents exposing whether or not a user was found with the given email address or not
+        if (null === ($resetToken = $this->getTokenObjectFromSession())) {
+            $resetToken = $this->resetPasswordHelper->generateFakeResetToken();
         }
 
         return $this->render('reset_password/check_email.html.twig', [
-            'tokenLifetime' => $this->resetPasswordHelper->getTokenLifetime(),
+            'resetToken' => $resetToken,
         ]);
     }
 
@@ -78,7 +82,7 @@ class ResetPasswordController extends CommonController
      *
      * @Route("/reset/{token}", name="app_reset_password")
      */
-    public function reset(Request $request, UserPasswordEncoderInterface $passwordEncoder, string $token = null): Response
+    public function reset(Request $request, UserPasswordHasherInterface $userPasswordHasher, string $token = null): Response
     {
         if ($token) {
             // We store the token in session and remove it from the URL, to avoid the URL being
@@ -112,19 +116,19 @@ class ResetPasswordController extends CommonController
             // A password reset token should be used only once, remove it.
             $this->resetPasswordHelper->removeResetRequest($token);
 
-            // Encode the plain password, and set it.
-            $encodedPassword = $passwordEncoder->encodePassword(
+            // Encode(hash) the plain password, and set it.
+            $encodedPassword = $userPasswordHasher->hashPassword(
                 $user,
                 $form->get('plainPassword')->getData()
             );
 
             $user->setPassword($encodedPassword);
-            $this->getDoctrine()->getManager()->flush();
+            $this->entityManager->flush();
 
             // The session is cleaned up after the password has been changed.
             $this->cleanSessionAfterReset();
 
-            return $this->redirectToRoute('dashboard');
+            return $this->redirectToRoute('index');
         }
 
         return $this->render('reset_password/reset.html.twig', [
@@ -134,12 +138,9 @@ class ResetPasswordController extends CommonController
 
     private function processSendingPasswordResetEmail(string $emailFormData, MailerInterface $mailer): RedirectResponse
     {
-        $user = $this->getDoctrine()->getRepository(Person::class)->findOneBy([
+        $user = $this->entityManager->getRepository(Person::class)->findOneBy([
             'email' => $emailFormData,
         ]);
-
-        // Marks that you are allowed to see the app_check_email page.
-        $this->setCanCheckEmailInSession();
 
         // Do not reveal whether a user account was found or not.
         if (!$user) {
@@ -173,6 +174,9 @@ class ResetPasswordController extends CommonController
         ;
 
         $mailer->send($email);
+
+        // Store the token object in session for retrieval in check-email route.
+        $this->setTokenObjectInSession($resetToken);
 
         return $this->redirectToRoute('app_check_email');
     }
