@@ -1277,7 +1277,7 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setSystemRoles($systemRoles)
     {
-        return $this->getRoles($systemRoles);
+        return $this->setRoles($systemRoles);
     }
 
     /**
