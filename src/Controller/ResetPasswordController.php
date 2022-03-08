@@ -18,6 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 
@@ -30,11 +31,13 @@ class ResetPasswordController extends CommonController
 
     private $resetPasswordHelper;
     private $entityManager;
+    private $params;
 
-    public function __construct(ResetPasswordHelperInterface $resetPasswordHelper, EntityManagerInterface $entityManager)
+    public function __construct(ResetPasswordHelperInterface $resetPasswordHelper, EntityManagerInterface $entityManager, ParameterBagInterface $params)
     {
         $this->resetPasswordHelper = $resetPasswordHelper;
         $this->entityManager = $entityManager;
+        $this->params = $params;
     }
 
     /**
@@ -162,8 +165,9 @@ class ResetPasswordController extends CommonController
             return $this->redirectToRoute('app_check_email');
         }
 
+        $mailfrom = $this->params->get('mailfrom');
         $email = (new TemplatedEmail())
-            ->from(new Address('meg@localhost.local', 'Tester'))
+            ->from(new Address($mailfrom, 'CrewCall'))
             ->to($user->getEmail())
             ->subject('Your password reset request')
             ->htmlTemplate('reset_password/email.html.twig')

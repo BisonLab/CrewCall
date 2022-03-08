@@ -10,8 +10,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use BisonLab\CommonBundle\Controller\CommonController as CommonController;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 use App\Entity\Person;
 use App\Entity\Event;
@@ -19,7 +19,6 @@ use App\Entity\Shift;
 use App\Entity\Job;
 use App\Form\ChangePasswordFosType;
 use App\Form\ChangePasswordFormType;
-
 use App\Model\FullCalendarEvent;
 
 /**
