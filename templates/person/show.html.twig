@@ -430,8 +430,6 @@ function grabJobLogSummary() {
     url = "{{ path('joblog_person', {'access': 'ajax', 'id': person.id }) }}";
     $.get(url, function( data ) {
         $( "#hourstab" ).html(data);
-console.log(data);
-console.log($( "#hourstab" ).html());
     }).done(function() {
         $( ".sfList" ).hide();
     });
