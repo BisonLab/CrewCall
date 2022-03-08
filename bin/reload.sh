@@ -9,13 +9,11 @@ rm -rf var/cache/*
 ./bin/console once:create-base-data
 if [ "$1" = "with-user" ]
  then
-    user=$USER
-    email=$USER
     [ -n "$2" ] && user=$2
     [ -n "$3" ] && email=$3
     ./bin/console crewcall:user:create --role=ADMIN $user $email
     echo Created user $user. Sending passwoerd email to $email 
-    ./bin/console crewcall:user:send-passwordmail thomasez
+    ./bin/console crewcall:user:send-passwordmail $user
 fi
 
 #rm -rf var/cache/*
