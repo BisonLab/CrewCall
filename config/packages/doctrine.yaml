@@ -57,5 +57,3 @@ doctrine:
                         mapping: false
                     BisonLabContextBundle:
                         mapping: false
-                    CustomBundle:
-                        mapping: false
