@@ -802,5 +802,8 @@
     },
     "webmozart/assert": {
         "version": "1.9.1"
+    },
+    "wikimedia/composer-merge-plugin": {
+        "version": "2.x-dev"
     }
 }

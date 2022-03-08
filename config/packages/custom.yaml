@@ -34,12 +34,12 @@ parameters:
     #
     # This is also what defines a crew member.
     internal_organization:
-        name: "Internal"
-        default_role: "Crewmember"
+        name: "%env(INTERNAL_ORGANIZATION)%"
+        default_role: "%env(DEFAULT_ROLE)%"
         # If you set this to false the organization and role above will be
         # added to all new crew members and no option to set others will be
         # shown. I'd guess this will not be used much.
-        allow_external_crew: false
+        allow_external_crew: "%env(ALLOW_EXTERNAL_CREW)%"
 
     # This is for setting up the address fields. Different countries has
     # different needs, so we need somewhere for defining those needs.
