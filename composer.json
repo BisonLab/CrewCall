@@ -60,6 +60,7 @@
         "symfonycasts/reset-password-bundle": "^1.1",
         "symfonycasts/verify-email-bundle": "^1.1",
         "ajaxray/short-code": "^1.1",
+        "wikimedia/composer-merge-plugin": "dev-master",
         "bisonlab/common-bundle": "dev-no-contexts",
         "bisonlab/context-bundle": "dev-main",
         "bisonlab/noorm-bundle": "dev-master",
@@ -88,6 +89,7 @@
             "symfony/runtime": true,
             "composer/installers": true,
             "oomphinc/composer-installers-extender": true,
+            "wikimedia/composer-merge-plugin": true,
             "robloach/component-installer": true
         },
         "optimize-autoloader": true,
@@ -102,7 +104,6 @@
     },
     "autoload": {
         "psr-4": {
-            "CustomBundle\\": "src/CustomBundle/",
             "App\\": "src/"
         }
     },
@@ -146,6 +147,18 @@
         "installer-types": ["component"],
         "installer-paths": {
             "public/components/{$name}/": ["type:component"]
+        },
+        "merge-plugin": {
+            "include": [
+                "src/CustomBundle/composer.json"
+            ],
+            "recurse": true,
+            "replace": false,
+            "ignore-duplicates": false,
+            "merge-dev": true,
+            "merge-extra": false,
+            "merge-extra-deep": false,
+            "merge-scripts": false
         }
     }
 }
