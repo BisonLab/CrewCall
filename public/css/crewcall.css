@@ -428,6 +428,42 @@ button {
   background-color: white;
 }
 
+.table-striped-greyhead {
+  border: none;
+}
+
+.table-striped-greyhead thead,
+.table-striped-greyhead thead th {
+  background-color: #e8e8e8;
+  padding-top: 13px;
+  padding-bottom: 13px;
+  border: none;
+}
+
+.table-striped-greyhead > tbody > tr:nth-of-type(odd) {
+  background-color: #e8e8e8;
+}
+
+.table-striped-greyhead > tbody > tr:nth-of-type(even) {
+  background-color: #fff;
+}
+
+.table-striped-greyhead > tbody > tr:nth-of-type(odd) > td {
+  background-color: #fff;
+}
+
+.table-striped-greyhead > tbody > tr:nth-of-type(even) > td {
+  background-color: #e8e8e8;
+}
+
+.table-striped-greyhead tbody td .ccWarn, .table-hover tbody .ccWarn {
+  background-color: orange;
+}
+
+.table-striped-greyhead tbody td .ccError, .table-hover tbody .ccError {
+  background-color: red;
+}
+
 .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
   background-color: #e8e8e8;
 }

@@ -6,8 +6,9 @@
     {% endif %}
         <td>
             {% if expandable and event.children | length > 0 %}
-            <a href="#" class="expand_subs" id="expand_subs_{{ event.id }}" onClick="return expandSubs({{ event.id }});"><span id=expand_subs_{{ event.id }}_span" class="fas fa-plus"></span></a>
-            <a href="#" class="collapse_subs" id="collapse_subs_{{ event.id }}" onClick="return collapseSubs({{ event.id }});"><span id=collapse_subs_{{ event.id }}_span" class="fas fa-minus"></span></a>
+            <a href="#" class="expand_subs" id="expand_subs_{{ event.id }}" onClick="return expandSubs({{ event.id }});"><span id="expand_subs_{{ event.id }}_span" class="fas fa-plus"></span></a>
+
+            <a href="#" class="collapse_subs" id="collapse_subs_{{ event.id }}" onClick="return collapseSubs({{ event.id }});"><span id="collapse_subs_{{ event.id }}_span" class="fas fa-minus"></span></a>
             {% else %}
             &nbsp;
             {% endif %}
@@ -28,8 +29,13 @@
                 {% endif %}
             {% endif %}
         </td>
+        {% if event.parent %}
+        <td style="padding-left: 30px;">
+            <a href="{{ path('event_show', { 'id': event.id }) }}">{{ event }}</a>
+        {% else %}
         <td>
-        <a href="{{ path('event_show', { 'id': event.id }) }}">{{ event }}</a>
+            <a href="{{ path('event_show', { 'id': event.id }) }}">{{ event }}</a>
+       {% endif %}
         </td>
         <td>{{ event.location }}</td>
         <td>{{ event.statelabel }}</td>
@@ -56,11 +62,11 @@
 
 {# hacks, blame laziness #}
 {% if upcoming %}
-    <table class="sortable_table table table-hover table-sm" data-order='[[ 1, "asc" ]]'>
+    <table class="sortable_table table table-striped-greyhead table-sm" data-order='[[ 1, "asc" ]]'>
 {% elseif past %}
-    <table class="sortable_table table table-hover table-sm" data-order='[[ 1, "desc" ]]'>
+    <table class="sortable_table table table-striped-greyhead table-sm" data-order='[[ 1, "desc" ]]'>
 {% else %}
-    <table class="sortable_table table table-hover table-sm" data-order='[[ 1, "asc" ]]'>
+    <table class="sortable_table table table-striped-greyhead table-sm" data-order='[[ 1, "asc" ]]'>
 {% endif %}
 
         <thead>
