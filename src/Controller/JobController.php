@@ -107,7 +107,7 @@ class JobController extends CommonController
                 "shiftamounts" => $shiftamounts
                 ], Response::HTTP_CREATED);
         } else { 
-            return $this->redirectToRoute('shift_show', array('id' => $job->getShift()->getId()));
+            return $this->redirectToRoute('event_show', array('id' => $job->getEvent()->getId()));
         }
     }
 

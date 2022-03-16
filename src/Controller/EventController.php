@@ -309,16 +309,6 @@ class EventController extends CommonController
     }
 
     /**
-     * Finds and displays the gedmo loggable history
-     *
-     * @Route("/{id}/log", name="event_log")
-     */
-    public function showLogAction(Request $request, $access, $id)
-    {
-        return  $this->showLogPage($request,$access, "App:Event", $id);
-    }
-
-    /**
      * Calendar for event
      *
      * @Route("/calendar", name="event_calendar", methods={"GET", "POST"})

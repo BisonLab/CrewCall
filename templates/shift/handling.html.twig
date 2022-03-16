@@ -10,8 +10,8 @@ $(document).ready(function() {
 });
 
 function grabShiftList(event_id) {
-    url = "{{ path('shift_index', {'access': 'ajax' }) }}" 
-        + "?event=" + event_id;
+    url = "{{ path('shift_index', {'access': 'ajax', 'id': 'XXX' }) }}";
+    url = url.replace('XXX', event_id);
     $.get(url, function( data ) {
         $( "#shiftList_" + event_id).html(data);
     }).done(function() {

@@ -3,7 +3,7 @@
 {% block body %}
     <h1>Shift edit</h1>
 {% include '/shift/_edit.html.twig' with { 'edit_form': edit_form}  %}
-    <a href="{{ path('shift_index') }}" class="btn-sm btn-dark">Cancel</a><br>
+    <a href="{{ path('event_show', { 'id': shift.event.id }) }}" class="btn-sm btn-dark">Cancel</a><br>
     {{ form_start(delete_form) }}
         <input class="btn-sm btn-danger" type="submit" value="Delete">
     {{ form_end(delete_form) }}

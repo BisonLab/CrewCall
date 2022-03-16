@@ -68,8 +68,8 @@ class ShiftController extends CommonController
                     return new JsonResponse(array("status" => "OK"),
                         Response::HTTP_CREATED);
                 } else { 
-                    return $this->redirectToRoute('shift_show',
-                        array('id' => $shift->getId()));
+                    return $this->redirectToRoute('event_show',
+                        array('id' => $shift->getEvent()->getId()));
                 }
             } else {
                 // The issue here is that I want to return this if it's a
@@ -124,21 +124,6 @@ class ShiftController extends CommonController
     }
 
     /**
-     * Finds and displays a shift entity.
-     *
-     * @Route("/{id}", name="shift_show", methods={"GET"})
-     */
-    public function showAction(Shift $shift)
-    {
-        $deleteForm = $this->createDeleteForm($shift);
-
-        return $this->render('shift/show.html.twig', array(
-            'shift' => $shift,
-            'delete_form' => $deleteForm->createView(),
-        ));
-    }
-
-    /**
      * Displays a form to edit an existing shift entity.
      *
      * @Route("/{id}/edit", name="shift_edit", defaults={"id" = 0}, methods={"GET", "POST"})
@@ -152,7 +137,7 @@ class ShiftController extends CommonController
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('shift_show', array('id' => $shift->getId()));
+            return $this->redirectToRoute('event_show', array('id' => $shift->getEvent()->getId()));
         }
 
         if ($this->isRest($access)) {
