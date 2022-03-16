@@ -25,7 +25,8 @@ use App\Lib\ExternalEntityConfig;
  * @ORM\Entity
  * @ORM\Table(name="crewcall_person")
  * @ORM\Entity(repositoryClass=PersonRepository::class)
- * @UniqueEntity(fields={"username", "email"}, message="There is already an account with this username or email address")
+ * @UniqueEntity(fields={"email"}, message="There is already an account with this email address")
+ * @UniqueEntity(fields={"username"}, message="There is already an account with this username")
  * @Gedmo\Loggable
  */
 class Person implements UserInterface, PasswordAuthenticatedUserInterface
