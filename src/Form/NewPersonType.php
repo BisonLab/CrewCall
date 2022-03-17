@@ -43,10 +43,6 @@ class NewPersonType extends PersonType
                      'mapped' => false,
                      'preferred_choices' => [$options['role']],
                      'label' => "Role.",
-                     'query_builder' => function(EntityRepository $er) use ($options) {
-                        $er->setReturnQb(true);
-                        return $er->findAllActive();
-                   },
                 ))
                 ->add('organization', EntityType::class,
                     array('class' => 'App:Organization',
