@@ -68,3 +68,41 @@ parameters:
                     default: false
                     unique: false
                     one_per_owner: false
+            SakonninFile:
+                crewcall:
+                  -
+                    label: "Person"
+                    object_name: person
+                    type: master
+                    url_template: "/web/person/{{external_id}}"
+                    url_from_method: template
+                    default: false
+                    unique: false
+                    one_per_owner: false
+                  -
+                    label: "Event"
+                    object_name: event
+                    type: master
+                    url_template: "/web/event/{{external_id}}"
+                    url_from_method: template
+                    default: false
+                    unique: false
+                    one_per_owner: false
+                  -
+                    label: "Location"
+                    object_name: location
+                    type: master
+                    url_template: "/web/location/{{external_id}}"
+                    url_from_method: template
+                    default: false
+                    unique: false
+                    one_per_owner: false
+                  -
+                    label: "Organization"
+                    object_name: organization
+                    type: master
+                    url_template: "/web/organization/{{external_id}}"
+                    url_from_method: template
+                    default: false
+                    unique: false
+                    one_per_owner: false
