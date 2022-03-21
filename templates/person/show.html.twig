@@ -15,10 +15,12 @@
         }
     %}
 {% set sfconf = {'sfconfig': {
-        'file_type': "ProfilePicture",
-        'description': "ProfilePicture",
+        'file_type': 'ProfilePicture',
+        'description': 'ProfilePicture',
+        'title': 'Add Profile Picture',
         'formname': 'profile_upload',
         'reload_after_post': true,
+        'tags': false,
         'context': {
             'system': 'crewcall',
             'object_name': 'person',
