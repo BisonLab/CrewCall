@@ -24,22 +24,6 @@ class Jobs
      */
 
     /*
-     * This is the reason the functions below exists.
-     */
-    public function checksForJob(Job $job)
-    {
-throw new Byttmegut();
-        $jcontext = [
-            'base_type' => "CHECK",
-            'order' => 'DESC',
-            'system' => 'crewcall',
-            'object_name' => 'job',
-            'external_id' => $job->getId()
-        ];
-        return $this->sakonnin->getMessagesForContext($jcontext);
-    }
-
-    /*
      * Gotta have control on checks to check against.
      */
     public function checksForShift(Shift $shift)
