@@ -313,6 +313,7 @@ em {
 .summaryLogTable {
     margin:10px 10px 15px;
     border-spacing: 100px;
+    font-size: 12px;
 }
 .summaryLogTable th {
     margin:10px 0pt 15px;

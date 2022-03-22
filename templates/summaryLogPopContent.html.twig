@@ -1,4 +1,4 @@
-<table class="summaryLogTable">
+<table class="summaryLogTable table-striped">
     <thead>
         <tr>
             <th>Who</th>
@@ -8,7 +8,6 @@
     </thead>
     <tbody>
 {% for s in data %}
-<tr>
     <td>{% if s.username is defined %}{{ s.username }}{% else %}&nbsp;{% endif %}</td>
     <td>{% if s.loggedat is defined %}{{ s.loggedat|date('Y-m-d H:i') }}{% else %}&nbsp;{% endif %}</td>
     <td>{% if s.data is defined %}{{ s.data | prettyprint }}{% else %}&nbsp;{% endif %}</td>
