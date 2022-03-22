@@ -71,10 +71,6 @@
                 <td>{% if person.dateofbirth %}{{ person.dateofbirth|date('Y-m-d') }}{% endif %}</td>
             </tr>
             <tr>
-                <th>Diets</th>
-                <td>{{ person.dietslabels | join(", ")}}</td>
-            </tr>
-            <tr>
                 <th>E-Mail</th>
                 <td>{{ person.email }}</td>
             </tr>
@@ -97,6 +93,14 @@
             </tr>
 {% endif %}
 {% if person.contexts | length > 0 %}
+            <tr>
+                <th>Diets</th>
+                <td>{{ person.dietslabels | join(", ")}}</td>
+            </tr>
+            <tr>
+                <th>Workload</th>
+                <td>{{ person.workloadpercentage }}%</td>
+            </tr>
             <tr>
                 <th>External pointers</th>
                 <td>

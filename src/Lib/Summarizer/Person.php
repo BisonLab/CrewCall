@@ -50,27 +50,6 @@ class Person
                 'label' => 'States'
                 );
         }
-        /*
-        if ($stateobj = $person->getStateOnDate()) {
-            $text = $stateobj->getState();
-            if ($fd = $stateobj->getFromDate())
-                $text .= "  From:" . $fd->format('Y-m-d');
-            if ($td = $stateobj->getToDate())
-                $text .= "  To:" . $td->format('Y-m-d');
-            $summary[] = array(
-                'name' => 'state',
-                'value' => $text,
-                'label' => 'State'
-                );
-        }
-        */
-
-        $summary[] = array(
-            'name' => 'diets',
-            'value' => implode(", ", $person->getDietsLabels()),
-            'label' => 'Diets'
-            );
-
         return $summary;
     }
 }

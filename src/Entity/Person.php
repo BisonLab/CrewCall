@@ -122,6 +122,21 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
     private $diets;
 
     /**
+     * Not that hot topic, and in my view should be handled by PersonRole, but
+     * hard to document properly and get the right usage from.
+     * 
+     * It could be argued that this and also diets should be handled as
+     * attributes with a way to customize based on the specific need.
+     *
+     * I am just not ready to add that code/complexity yet.
+     *
+     * @var integer
+     * @ORM\Column(name="workload_percentage", type="integer", nullable=true)
+     * @Gedmo\Versioned
+     */
+    private $workload_percentage;
+
+    /**
      * @var string
      * @ORM\Column(name="mobile_phone_number", type="string", length=255, nullable=true)
      * @Gedmo\Versioned
@@ -406,6 +421,30 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
     public static function getDietTypesAsChoiceArray()
     {
         return ExternalEntityConfig::getTypesAsChoicesFor('Person', 'Diet');
+    }
+
+    /**
+     * Set workload percentage
+     *
+     * @param string $diets
+     *
+     * @return Person
+     */
+    public function setWorkloadPercentage($workloadPercentage)
+    {
+        $this->workload_percentage = $workloadPercentage;
+
+        return $this;
+    }
+
+    /**
+     * Get diets
+     *
+     * @return string
+     */
+    public function getWorkloadPercentage(): int
+    {
+        return $this->workload_percentage ?: 100;
     }
 
     /**
