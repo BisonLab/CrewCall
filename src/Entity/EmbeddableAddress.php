@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Address
@@ -32,6 +33,10 @@ class EmbeddableAddress
      * @var string
      * @ORM\Column(name="country_code", type="string", length=4, nullable=true)
      * @Gedmo\Versioned
+     * @Assert\Length(
+     *      max = 3,
+     *      maxMessage = "Country code can be max {{ limit }} characters long. It is not the coutry, but the code, like NO or UK."
+     * )
      */
     protected $countryCode;
 

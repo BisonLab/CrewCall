@@ -60,6 +60,7 @@ parameters:
             - ['addressLine1']
             - ['addressLine2']
             - ['postalCode', 'postalName']
+            # This is the country code. Which may not be very useful.
             - ['country']
 
     # This basically says itself - Maybe false should be default, but at least
