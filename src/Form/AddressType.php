@@ -18,7 +18,12 @@ class AddressType extends AbstractType
     {
         foreach($options['address_elements'] as $elem) {
             // If it guesses, addresslines wil be texareas and that I will not
-            $builder->add($elem, TextType::class, ['required'=>false]);
+            // Seems like embeddable addreess and this does not work with
+            // Assert. which means I have to hack here.
+            if ($elem == "countryCode")
+                $builder->add($elem, TextType::class, ['required'=>false, 'attr' => ['size' => 3, 'maxlength' => 3]]);
+            else
+                $builder->add($elem, TextType::class, ['required'=>false]);
         }
 /*
         $builder
