@@ -47,6 +47,14 @@
 {% if job.event.location.address_flat.postalName is not empty %},{{ job.event.location.address_flat.postalName }}{% endif %}
             </span>
         </div>
+        {% if job.event.contact_info | length > 0 %}
+            {% for ci in job.event.contact_info %}
+            <div>
+              <span class="font-weight-bold">Contact: </span>
+              <pre >{{ ci.body }}</pre>
+            </div>
+            {% endfor %}
+        {% endif %}
       </div>
     </div>
   </div><!-- end collapsed row -->
