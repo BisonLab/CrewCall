@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Entity\Person;
+
 class CrewCallRetriever
 {
     private $em;
@@ -18,7 +20,7 @@ class CrewCallRetriever
         if ('crewcall' == $context->getSystem()) {
             // There should be only one.
             if ('person' == $context->getObjectName()) {
-                return $this->em->getRepository('App:Person')->find($context->getExternalId());
+                return $this->em->getRepository(Person::class)->find($context->getExternalId());
             }
         }
         return null;

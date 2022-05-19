@@ -16,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 use App\Lib\ExternalEntityConfig;
 use App\Entity\JobLog;
+use App\Entity\Job;
 
 class JobLogType extends AbstractType
 {
@@ -39,7 +40,7 @@ class JobLogType extends AbstractType
                 'label' => "Break",
                 'attr' => array('size'=> 3, 'tabindex' => 2)))
            ->add('job', EntityType::class,
-                array('class' => 'App:Job'))
+                array('class' => Job::class))
            ;
     }
     

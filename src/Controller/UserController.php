@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 
 use App\Entity\Person;
+use App\Entity\PersonState;
 use App\Entity\Shift;
 use App\Entity\Job;
 
@@ -97,7 +98,7 @@ class UserController extends CommonController
                 array('all' => true, 'from' => $from, 'to' => $to));
             // $states = $user->getStates();
             $em = $this->getDoctrine()->getManager();
-            $states = $em->getRepository('App:PersonState')
+            $states = $em->getRepository(PersonState::class)
                 ->findByPerson($user,
                 array('from_date' => $from, 'to_date' => $to));
             // No idea why someone would want it, but useful for testing.

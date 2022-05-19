@@ -725,7 +725,7 @@ class UserFrontController extends CommonController
         $em = $this->getDoctrine()->getManager();
         $ccjobs = $this->container->get('crewcall.jobs');
 
-        $jobs = $em->getRepository('App:Job')
+        $jobs = $em->getRepository(Job::class)
             ->findJobsForPerson($person, $options);
 
         // Just walk through it once, alas overlap check here aswell.

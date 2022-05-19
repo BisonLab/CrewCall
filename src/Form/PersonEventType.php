@@ -12,6 +12,8 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Lib\ExternalEntityConfig;
 use App\Entity\PersonRoleEvent;
+use App\Entity\Role;
+use App\Entity\Person;
 
 class PersonEventType extends AbstractType
 {
@@ -22,13 +24,13 @@ class PersonEventType extends AbstractType
     {
         $builder
            ->add('person', EntityType::class, array(
-                    'class' => 'App:Person',
+                    'class' => Person::class,
                     'label' => "Person",
                     'choices' => $options['people'],
                     'required' => true
                 ))
            ->add('role', EntityType::class,
-               array('class' => 'App:Role'))
+               array('class' => Role::class))
         ;
     }
     

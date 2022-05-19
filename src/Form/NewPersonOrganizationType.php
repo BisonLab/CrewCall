@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Lib\ExternalEntityConfig;
+use App\Entity\Organization;
+use App\Entity\Role;
 
 class NewPersonOrganizationType extends AbstractType
 {
@@ -27,9 +29,9 @@ class NewPersonOrganizationType extends AbstractType
            ->add('last_name', TextType::class, array('label' => "Last name", 'required' => true))
            ->add('mobile_phone_number', TextType::class, array('label' => "Phone number", 'required' => true))
            ->add('organization', EntityType::class,
-               array('class' => 'App:Organization'))
+               array('class' => Organization::class))
            ->add('role', EntityType::class,
-               array('class' => 'App:Role'))
+               array('class' => Role::class))
         ;
     }
     

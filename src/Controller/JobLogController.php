@@ -13,8 +13,9 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 
 use App\Entity\Job;
-use App\Entity\Person;
 use App\Entity\JobLog;
+use App\Entity\Shift;
+use App\Entity\Person;
 
 /**
  * Job controller.
@@ -33,7 +34,7 @@ class JobLogController extends CommonController
         $em = $this->getDoctrine()->getManager();
         $job = null;
         if ($job_id = $request->get('job')) {
-            $job = $em->getRepository('App:Job')->find($job_id);
+            $job = $em->getRepository(Job::class)->find($job_id);
         }
         if (!$job)
             return $this->returnNotFound($request, 'No job to tie the log to');
@@ -76,7 +77,7 @@ class JobLogController extends CommonController
                 // We have a loblog, but is it a cheat or not?
                 // First, check cheat, aka "All in the shift".
                 if ($shift_id = $data['shift'] ?? null) {
-                    $shift = $em->getRepository('App:Shift')
+                    $shift = $em->getRepository(Shift::class)
                         ->find($shift_id);
                     $in = new \DateTime($data['in']['date'] . " " . $data['in']['time']);
                     $out = new \DateTime($data['out']['date'] . " " . $data['out']['time']);
@@ -85,7 +86,7 @@ class JobLogController extends CommonController
                         $joblog->setIn($in);
                         $joblog->setOut($out);
                         $joblog->setJob($job);
-                        if ($overlap = $em->getRepository('App:JobLog')->checkOverlapForPerson($joblog)) {
+                        if ($overlap = $em->getRepository(JobLog::class)->checkOverlapForPerson($joblog)) {
                             return new Response("Found existing work in the timeframe you entered. Shift is " . (string)current($overlap)->getJob()->getShift() . " and person is " . (string)$job->getPerson(), Response::HTTP_CONFLICT);
                         }
                         $em->persist($joblog);
@@ -93,7 +94,7 @@ class JobLogController extends CommonController
                 // And if not, this is just one persons in and out.
                 } else {
                     // Check overlap.
-                    if ($overlap = $em->getRepository('App:JobLog')->checkOverlapForPerson($joblog)) {
+                    if ($overlap = $em->getRepository(JobLog::class)->checkOverlapForPerson($joblog)) {
                         return new Response("Found existing work in the timeframe you entered. Shift is " . (string)current($overlap)->getJob()->getShift(), Response::HTTP_CONFLICT);
                     }
                     $em->persist($joblog);
@@ -120,11 +121,11 @@ class JobLogController extends CommonController
         // TODO: Let the joblog_handler handle this aswell.
         $job = null;
         if ($job_id = $request->get('job')) {
-            $job = $em->getRepository('App:Job')->find($job_id);
+            $job = $em->getRepository(Job::class)->find($job_id);
         }
         $shift = null;
         if ($shift_id = $request->get('shift')) {
-            $shift = $em->getRepository('App:Shift')->find($shift_id);
+            $shift = $em->getRepository(Shift::class)->find($shift_id);
         }
 
         $joblog = new JobLog();

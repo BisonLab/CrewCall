@@ -12,6 +12,8 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Lib\ExternalEntityConfig;
 use App\Entity\PersonOrganization;
+use App\Entity\Organization;
+use App\Entity\Role;
 
 class ExistingPersonOrganizationType extends AbstractType
 {
@@ -23,9 +25,9 @@ class ExistingPersonOrganizationType extends AbstractType
         $builder
            ->add('person', UsernameFormType::class, array('label' => "Search with name, phone number or email address", 'required' => true))
            ->add('organization', EntityType::class,
-               array('class' => 'App:Organization'))
+               array('class' => Organization::class))
            ->add('role', EntityType::class,
-               array('class' => 'App:Role'))
+               array('class' => Role::class))
         ;
     }
     

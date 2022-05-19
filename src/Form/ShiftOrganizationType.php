@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 use App\Entity\ShiftOrganization;
+use App\Entity\Organization;
 
 class ShiftOrganizationType extends AbstractType
 {
@@ -22,7 +23,7 @@ class ShiftOrganizationType extends AbstractType
            ->add('amount', TextType::class, array('required' => true, 'attr' => array('size' => 3, 'pattern' => '[0-9]{1,3}')))
             ->add('shift')
             ->add('organization', EntityType::class,
-                array('class' => 'App:Organization',
+                array('class' => Organization::class,
                     'query_builder' => function(EntityRepository $er) {
                     return $er->createQueryBuilder('o')
                      ->where("o.state = 'ACTIVE'")

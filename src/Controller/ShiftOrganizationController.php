@@ -2,13 +2,15 @@
 
 namespace App\Controller;
 
-use App\Entity\ShiftOrganization;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use BisonLab\CommonBundle\Controller\CommonController as CommonController;
+
+use App\Entity\Organization;
+use App\Entity\ShiftOrganization;
 
 /**
  * Shiftorganization controller.
@@ -27,11 +29,11 @@ class ShiftOrganizationController extends CommonController
         $em = $this->getDoctrine()->getManager();
         if ($shift_id = $request->get('shift')) {
             $em = $this->getDoctrine()->getManager();
-            if ($shift = $em->getRepository('App:Shift')->find($shift_id)) {
+            if ($shift = $em->getRepository(Shift::class)->find($shift_id)) {
                 $shiftOrganizations = $shift;
             }
         } else {
-            $shiftOrganizations = $em->getRepository('App:ShiftOrganization')->findAll();
+            $shiftOrganizations = $em->getRepository(ShiftOrganization::class)->findAll();
         }
 
         // Again, ajax-centric.
@@ -71,7 +73,7 @@ class ShiftOrganizationController extends CommonController
         // If this has a shift set here, it's not an invalid create attempt.
         if ($shift_id = $request->get('shift')) {
             $em = $this->getDoctrine()->getManager();
-            if ($shift = $em->getRepository('App:Shift')->find($shift_id)) {
+            if ($shift = $em->getRepository(Shift::class)->find($shift_id)) {
                 $shiftOrganization->setShift($shift);
                 $form->setData($shiftOrganization);
             }

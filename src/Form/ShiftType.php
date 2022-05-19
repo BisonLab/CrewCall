@@ -16,6 +16,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Lib\ExternalEntityConfig;
 use App\Entity\Shift;
+use App\Entity\FunctionEntity;
 
 class ShiftType extends AbstractType
 {
@@ -40,7 +41,7 @@ class ShiftType extends AbstractType
                 'choices' => ExternalEntityConfig::getStatesAsChoicesFor('Shift')))
            ->add('amount', TextType::class, array('required' => true, 'attr' => array('size' => 3, 'pattern' => '[0-9]{1,3}')))
            ->add('function', EntityType::class,
-               array('class' => 'App:FunctionEntity',
+               array('class' => FunctionEntity::class,
                    'query_builder' => function(EntityRepository $er) use ($options) {
                         return $er->createQueryBuilder('fe')
                              ->where("fe.state in (:active_states)")

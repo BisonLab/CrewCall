@@ -12,6 +12,7 @@ use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 use App\Entity\Organization;
 use App\Entity\PersonRoleOrganization;
 use App\Entity\Person;
+use App\Entity\Role;
 
 /**
  * Organization controller.
@@ -29,7 +30,7 @@ class OrganizationController extends CommonController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $organizations = $em->getRepository('App:Organization')->findAll();
+        $organizations = $em->getRepository(Organization::class)->findAll();
 
         return $this->render('organization/index.html.twig', array(
             'organizations' => $organizations,
@@ -225,7 +226,7 @@ class OrganizationController extends CommonController
             }
         }
 
-        if ($contact = $em->getRepository('App:Role')->findOneBy(['name' => 'Contact'])) {
+        if ($contact = $em->getRepository(Role::class)->findOneBy(['name' => 'Contact'])) {
             $exists_form->get('role')->setData($contact);
             $new_form->get('role')->setData($contact);
         }

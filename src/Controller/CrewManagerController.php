@@ -14,6 +14,8 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 use App\Entity\Job;
 use App\Entity\JobLog;
+use App\Entity\Shift;
+use App\Entity\Event;
 
 /**
  * Crew Manager controller.
@@ -46,7 +48,7 @@ class CrewManagerController extends CommonController
 
         $date = new \DateTime();
         if ($shift_id = $request->get('shift')) {
-            if (!$shift = $em->getRepository('App:Shift')
+            if (!$shift = $em->getRepository(Shift::class)
                 ->find($shift_id))
                 throw $this->createNotFoundException('Shift not found');
             if (!$user->isCrewManager($shift))
@@ -56,7 +58,7 @@ class CrewManagerController extends CommonController
         } else {
             if ($request->get('date'))
                 $date = new \DateTime($request->get('date'));
-            $dated_events = $em->getRepository('App:Event')
+            $dated_events = $em->getRepository(Event::class)
                 ->findEvents([
                     'on_date' => $date,
                     'booked' => true,

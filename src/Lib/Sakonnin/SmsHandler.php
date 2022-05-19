@@ -3,6 +3,7 @@
 namespace App\Lib\Sakonnin;
 
 use BisonLab\SakonninBundle\Entity\MessageContext;
+use App\Entity\Job;
 
 /*
  */
@@ -36,7 +37,7 @@ class SmsHandler
         $em = $this->container->get('doctrine.orm.crewcall_entity_manager');
 
         // Does the job exist?
-        if (!$job = $em->getRepository('App:Job')->findOneBy(['ucode' => $ucode])) {
+        if (!$job = $em->getRepository(Job::class)->findOneBy(['ucode' => $ucode])) {
             return null;
         }
         // The sender matches the job owner?

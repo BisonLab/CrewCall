@@ -12,6 +12,7 @@ use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 use App\Entity\Location;
 use App\Entity\PersonRoleLocation;
 use App\Entity\Person;
+use App\Entity\FunctionEntity;
 
 /**
  * Location controller.
@@ -29,7 +30,7 @@ class LocationController extends CommonController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $locations = $em->getRepository('App:Location')->findAll();
+        $locations = $em->getRepository(Location::class)->findAll();
 
         return $this->render('location/index.html.twig', array(
             'locations' => $locations,
@@ -46,7 +47,7 @@ class LocationController extends CommonController
         $location = new Location();
         if ($parent_id = $request->get('parent')) {
             $em = $this->getDoctrine()->getManager();
-            if ($parent = $em->getRepository('App:Location')->find($parent_id)) {
+            if ($parent = $em->getRepository(Location::class)->find($parent_id)) {
                 $location->setParent($parent);
             }
         }
@@ -176,7 +177,7 @@ class LocationController extends CommonController
             }
         }
 
-        if ($contact = $em->getRepository('App:FunctionEntity')->findOneBy(['name' => 'Contact'])) {
+        if ($contact = $em->getRepository(FunctionEntity::class)->findOneBy(['name' => 'Contact'])) {
             $exists_form->get('function')->setData($contact);
             $new_form->get('function')->setData($contact);
         }

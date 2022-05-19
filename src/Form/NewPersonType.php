@@ -13,6 +13,9 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Lib\ExternalEntityConfig;
 use App\Form\AddressType;
 use App\Entity\Person;
+use App\Entity\Role;
+use App\Entity\Organization;
+use App\Entity\FunctionEntity;
 
 class NewPersonType extends PersonType
 {
@@ -24,7 +27,7 @@ class NewPersonType extends PersonType
         parent::buildForm($builder, $options);
         // Must have an initial function.
         $builder->add('function', EntityType::class,
-               array('class' => 'App:FunctionEntity',
+               array('class' => FunctionEntity::class,
                     'required' => true,
                     'mapped' => false,
                     'placeholder' => "Required",
@@ -38,14 +41,14 @@ class NewPersonType extends PersonType
                ));
         if ($options['internal_organization_config']['allow_external_crew']) {
             $builder->add('role', EntityType::class,
-               array('class' => 'App:Role',
+               array('class' => Role::class,
                      'required' => true,
                      'mapped' => false,
                      'preferred_choices' => [$options['role']],
                      'label' => "Role.",
                 ))
                 ->add('organization', EntityType::class,
-                    array('class' => 'App:Organization',
+                    array('class' => Organization::class,
                      'required' => true,
                      'mapped' => false,
                      'preferred_choices' => [$options['organization']],

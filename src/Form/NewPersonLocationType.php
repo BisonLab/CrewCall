@@ -14,6 +14,8 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Lib\ExternalEntityConfig;
+use App\Entity\Location;
+use App\Entity\Role;
 
 class NewPersonLocationType extends AbstractType
 {
@@ -28,9 +30,9 @@ class NewPersonLocationType extends AbstractType
            ->add('last_name', TextType::class, array('label' => "Last name", 'required' => true))
            ->add('mobile_phone_number', TextType::class, array('label' => "Phone number", 'required' => true))
            ->add('location', EntityType::class,
-               array('class' => 'App:Location'))
+               array('class' => Location::class))
            ->add('role', EntityType::class,
-               array('class' => 'App:Role'))
+               array('class' => Role::class))
         ;
     }
     

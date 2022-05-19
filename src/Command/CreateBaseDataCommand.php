@@ -210,7 +210,7 @@ EOT
     private function _messageTypes(InputInterface $input, OutputInterface $output)
     {
         $this->mt_repo = $this->sakonnin_em
-                ->getRepository('BisonLabSakonninBundle:MessageType');
+                ->getRepository(MessageType::class);
 
         foreach ($this->message_types as $name => $type) {
             // Handling a parent.

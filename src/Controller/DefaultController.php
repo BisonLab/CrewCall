@@ -9,6 +9,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 
+use App\Entity\Event;
+use App\Entity\Person;
+use App\Entity\Orgganization;
+use App\Entity\Location;
+
 class DefaultController extends CommonController
 {
     /**
@@ -57,7 +62,7 @@ class DefaultController extends CommonController
         $organizations = new \Doctrine\Common\Collections\ArrayCollection();
 
         foreach (array('name', 'description') as $field) {
-            $result = $em->getRepository('App:Event')
+            $result = $em->getRepository(Event::class)
                         ->searchByField($field, trim($value));
             foreach ($result as $i) {
                 if (!$events->contains($i))
@@ -66,7 +71,7 @@ class DefaultController extends CommonController
         }
 
         foreach (array('email', 'username', 'full_name', 'mobile_phone_number') as $field) {
-            $result = $em->getRepository('App:Person')
+            $result = $em->getRepository(Person::class)
                         ->searchByField($field, trim($value));
             foreach ($result as $i) {
                 if (!$persons->contains($i))
@@ -81,7 +86,7 @@ class DefaultController extends CommonController
         }
 
         foreach (array('name', 'description') as $field) {
-            $result = $em->getRepository('App:Location')
+            $result = $em->getRepository(Location::class)
                         ->searchByField($field, trim($value));
             foreach ($result as $i) {
                 if (!$locations->contains($i))
@@ -90,7 +95,7 @@ class DefaultController extends CommonController
         }
 
         foreach (array('name', 'organization_number') as $field) {
-            $result = $em->getRepository('App:Organization')
+            $result = $em->getRepository(Organization::class)
                         ->searchByField($field, trim($value));
             foreach ($result as $i) {
                 if (!$organizations->contains($i))

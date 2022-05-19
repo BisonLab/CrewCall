@@ -19,6 +19,7 @@ use App\Entity\Person;
 use App\Entity\PersonState;
 use App\Entity\PersonFunction;
 use App\Entity\PersonRoleOrganization;
+use App\Entity\Job;
 use App\Entity\FunctionEntity;
 use App\Lib\ExternalEntityConfig;
 use App\Form\ChangePasswordFosType;
@@ -41,8 +42,8 @@ class PersonController extends CommonController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $people = $em->getRepository('App:Person')->findAll();
-        $fe_repo = $em->getRepository('App:FunctionEntity');
+        $people = $em->getRepository(Person::class)->findAll();
+        $fe_repo = $em->getRepository(FunctionEntity::class);
 
         $functions = $fe_repo->findAll();
         return $this->render('person/index.html.twig', array(
@@ -62,8 +63,8 @@ class PersonController extends CommonController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $fe_repo = $em->getRepository('App:FunctionEntity');
-        $job_repo = $em->getRepository('App:Job');
+        $fe_repo = $em->getRepository(FunctionEntity::class);
+        $job_repo = $em->getRepository(Job::class);
 
         $select_grouping = $request->get('select_grouping');
         $simplified = $request->get('simplified');
@@ -85,7 +86,7 @@ class PersonController extends CommonController
                 ]);
             }
         } else {
-                $people = $this->filterPeople($em->getRepository('App:Person')->findAll(),[
+                $people = $this->filterPeople($em->getRepository(Person::class)->findAll(),[
                     'crew_only' => true,
                     'select_grouping' => $select_grouping,
                     'on_date' => $on_date,
@@ -111,8 +112,8 @@ class PersonController extends CommonController
     public function listByFunctionAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $fe_repo = $em->getRepository('App:FunctionEntity');
-        $job_repo = $em->getRepository('App:Job');
+        $fe_repo = $em->getRepository(FunctionEntity::class);
+        $job_repo = $em->getRepository(Job::class);
 
         $fid = $request->get('function_id');
         $select_grouping = $request->get('select_grouping');
@@ -147,8 +148,8 @@ class PersonController extends CommonController
     public function listByRoleAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $role_repo = $em->getRepository('App:Role');
-        $person_repo = $em->getRepository('App:Person');
+        $role_repo = $em->getRepository(Role::class);
+        $person_repo = $em->getRepository(Person::class);
 
         $on_date = $request->get('on_date');
         $role = null;
@@ -182,7 +183,7 @@ class PersonController extends CommonController
     public function listApplicantsAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $people = $em->getRepository('App:Person')->findByState('APPLICANT');
+        $people = $em->getRepository(Person::class)->findByState('APPLICANT');
 
         return $this->render('person/applicants.html.twig', array(
             'applicants' => $people));
@@ -204,8 +205,8 @@ class PersonController extends CommonController
         $addressing = $this->container->get('crewcall.addressing');
         $address_elements = $addressing->getFormElementList($person);
         $internal_organization_config = $this->container->getParameter('internal_organization');
-        $first_org = $em->getRepository('App:Organization')->getInternalOrganization();
-        $first_role = $em->getRepository('App:Role')->getDefaultRole();
+        $first_org = $em->getRepository(Organization::class)->getInternalOrganization();
+        $first_role = $em->getRepository(Role::class)->getDefaultRole();
 
         $form = $this->createForm('App\Form\NewPersonType',
             $person, [
@@ -552,7 +553,7 @@ class PersonController extends CommonController
         // Gotta be able to handle two-letter usernames.
         if (strlen($term) > 1) {
             $em = $this->getDoctrine()->getManager();
-            $repo = $em->getRepository("App:Person");
+            $repo = $em->getRepository(Person::class);
 
             $q = $repo->createQueryBuilder('u')
                 ->where('lower(u.username) LIKE :term')

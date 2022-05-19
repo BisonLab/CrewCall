@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 
 use App\Entity\PersonFunction;
+use App\Entity\Person;
+use App\Entity\FunctionEntity;
 
 /**
  * PersonFunction controller.
@@ -34,8 +36,8 @@ class PersonFunctionController extends CommonController
 
 
         $em = $this->getDoctrine()->getManager();
-        $function = $em->getRepository('App:FunctionEntity')->find($fe_id);
-        $person = $em->getRepository('App:Person')->find($p_id);
+        $function = $em->getRepository(FunctionEntity::class)->find($fe_id);
+        $person = $em->getRepository(Person::class)->find($p_id);
         if (!$person || !$function) {
             return new JsonResponse(array("error" => "Could not find person or function"), Response::HTTP_UNPROCESSABLE_ENTITY);
         }

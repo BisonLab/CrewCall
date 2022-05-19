@@ -27,7 +27,7 @@ class RoleController extends CommonController
     public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $roles = $em->getRepository('App:Role')->findAll();
+        $roles = $em->getRepository(Role::class)->findAll();
 
         return $this->render('role/index.html.twig', array(
             'roles' => $roles,

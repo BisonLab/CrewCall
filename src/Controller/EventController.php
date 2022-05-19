@@ -12,8 +12,11 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 use BisonLab\CommonBundle\Controller\CommonController as CommonController;
+
 use App\Entity\Event;
 use App\Entity\PersonRoleEvent;
+use App\Entity\Role;
+use App\Entity\FunctionEntity;
 
 /**
  * Event controller.
@@ -30,7 +33,7 @@ class EventController extends CommonController
     public function indexAction(Request $request, $access)
     {
         $em = $this->getDoctrine()->getManager();
-        $eventrepo = $em->getRepository('App:Event');
+        $eventrepo = $em->getRepository(Event::class);
 
         $past = $upcoming = false;
         if ($request->get('past')) {
@@ -76,7 +79,7 @@ class EventController extends CommonController
         $event = new Event();
         if ($parent_id = $request->get('parent')) {
             $em = $this->getDoctrine()->getManager();
-            if ($parent = $em->getRepository('App:Event')->find($parent_id)) {
+            if ($parent = $em->getRepository(Event::class)->find($parent_id)) {
                 $event->setParent($parent);
             }
         }
@@ -142,8 +145,8 @@ class EventController extends CommonController
             ));
         }
 
-        $role_repo = $em->getRepository('App:Role');
-        $function_repo = $em->getRepository('App:FunctionEntity');
+        $role_repo = $em->getRepository(Role::class);
+        $function_repo = $em->getRepository(FunctionEntity::class);
         $pre = new PersonRoleEvent();
         $pre->setEvent($event);
         if ($contact = $role_repo->findOneByName('Contact'))
@@ -354,8 +357,8 @@ class EventController extends CommonController
         $pre = new PersonRoleEvent();
         $pre->setEvent($event);
 
-        $role_repo = $em->getRepository('App:Role');
-        $function_repo = $em->getRepository('App:FunctionEntity');
+        $role_repo = $em->getRepository(Role::class);
+        $function_repo = $em->getRepository(FunctionEntity::class);
         $role = $role_repo->findOneByName('Crew Manager');
         $function = $function_repo->findOneByName('Crew Manager');
         if (!$role && !$function) {

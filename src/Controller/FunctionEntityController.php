@@ -12,6 +12,7 @@ use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 use App\Lib\ExternalEntityConfig;
 use App\Entity\FunctionEntity;
 use App\Entity\PersonFunction;
+use App\Entity\Person;
 
 /**
  * Functionentity controller.
@@ -28,7 +29,7 @@ class FunctionEntityController extends CommonController
     public function indexAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $functionEntities = $em->getRepository('App:FunctionEntity')->findAll();
+        $functionEntities = $em->getRepository(FunctionEntity::class)->findAll();
 
         return $this->render('functionentity/index.html.twig', array(
             'functionEntities' => $functionEntities,
@@ -43,11 +44,11 @@ class FunctionEntityController extends CommonController
     public function pickerAction(Request $request, $access)
     {
         $em = $this->getDoctrine()->getManager();
-        $functionEntities = $em->getRepository('App:FunctionEntity')->findAllActive();
+        $functionEntities = $em->getRepository(FunctionEntity::class)->findAllActive();
         $has_functions = $has_f_ids = array();
         $add_to = null;
         if ($person_id = $request->get('person_id')) {
-            $person = $em->getRepository('App:Person')->find($person_id);
+            $person = $em->getRepository(Person::class)->find($person_id);
             $update = "PersonFunction";
             $update_id = $person_id;
             foreach ($person->getPersonFunctions() as $hf) {
@@ -88,7 +89,7 @@ class FunctionEntityController extends CommonController
         $em = $this->getDoctrine()->getManager();
         // So, let's handle these based on what to update.
         if ($update == "PersonFunction") {
-            $person = $em->getRepository('App:Person')->find($update_id);
+            $person = $em->getRepository(Person::class)->find($update_id);
             $has_functions = $request->request->get('has_functions');
             $pfs = array();
             foreach ($person->getPersonFunctions() as $pf) { 
@@ -99,7 +100,7 @@ class FunctionEntityController extends CommonController
             }
             foreach ($has_functions as $hf) {
                 if (!in_array($hf, $pfs)) {
-                    $function = $em->getRepository('App:FunctionEntity')->find($hf);
+                    $function = $em->getRepository(FunctionEntity::class)->find($hf);
                     $pf = new PersonFunction();
                     $pf->setFunction($function);
                     $pf->setFromDate(new \DateTime());

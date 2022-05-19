@@ -2,6 +2,8 @@
 
 namespace App\Lib\Dashboarder;
 
+use App\Entity\Shift;
+
 class AdminUpcomingShifts
 {
     private $router;
@@ -20,7 +22,7 @@ class AdminUpcomingShifts
 
     public function dashize(\App\Entity\Person $user)
     {
-        $shifts = $this->entitymanager->getRepository('App:Shift')
+        $shifts = $this->entitymanager->getRepository(Shift::class)
             ->findUpcoming(array('limit' => 15));
         return $this->twig->render('dashboarder/adminupcomingshifts.html.twig',
             array('shifts' => $shifts));

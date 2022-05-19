@@ -59,7 +59,7 @@ class Jobs
 
     public function jobsForPerson(Person $person, $options = array())
     {
-        $jobs = $this->em->getRepository('App:Job')
+        $jobs = $this->em->getRepository(Job::class)
             ->findJobsForPerson($person, $options);
         $c = $this->checkOverlap($jobs);
         return $c;
@@ -83,7 +83,7 @@ class Jobs
             $functions[] = $pf->getFunction();
         }
         $options['open'] = true;
-        $shifts = $this->em->getRepository('App:Shift')
+        $shifts = $this->em->getRepository(Shift::class)
             ->findUpcomingForFunctions($functions, $options);
 
         foreach ($shifts as $sf) {
@@ -159,7 +159,7 @@ class Jobs
      */
     public function checkOverlapForPerson(Job $job, $options = array())
     {
-        $job_repo = $this->em->getRepository('App:Job');
+        $job_repo = $this->em->getRepository(Job::class);
         return $job_repo->checkOverlapForPerson($job, $options);
     }
 }

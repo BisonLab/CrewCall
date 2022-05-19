@@ -49,7 +49,7 @@ class SummaryController extends CommonController
     public function personJobsJobAction(Request $request, $access)
     {
         $em = $this->getDoctrine()->getManager();
-        if (!$job = $em->getRepository('App:Job')->find($request->get("job")))
+        if (!$job = $em->getRepository(Job::class)->find($request->get("job")))
             return $this->returnNotFound($request, 'Unable to find job.');
         $options = [];
         // I'll default today +2 days. Add options at will and need.
@@ -83,15 +83,15 @@ class SummaryController extends CommonController
         // Switch it.
         switch ($entity) {
             case 'person':
-                $entity = $em->getRepository('App:Person')->find($id);
+                $entity = $em->getRepository(Person::class)->find($id);
                 break;
             // Feels wrong, but it's kinda effective and is reuse. Only lists the jobs now +2 days.
             case 'person_jobs':
-                $entity = $em->getRepository('App:Person')->find($id);
+                $entity = $em->getRepository(Person::class)->find($id);
                 $summary = $this->personJobs($entity);
                 break;
             case 'event':
-                $entity = $em->getRepository('App:Event')->find($id);
+                $entity = $em->getRepository(Event::class)->find($id);
                 break;
             default:
                 return $this->returnNotFound($request,'Unable to find class.');

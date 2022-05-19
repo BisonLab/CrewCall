@@ -12,6 +12,9 @@ use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 
 use App\Entity\Job;
 use App\Entity\JobLog;
+use App\Entity\Shift;
+use App\Entity\Event;
+use App\Entity\Person;
 
 /**
  * Job controller.
@@ -32,7 +35,7 @@ class JobController extends CommonController
         $shift = null;
         if ($shift_id = $request->get('shift')) {
             $em = $this->getDoctrine()->getManager();
-            $shift = $em->getRepository('App:Shift')->find($shift_id);
+            $shift = $em->getRepository(Shift::class)->find($shift_id);
         }
         /*
          * If you ask yourself why this is not set as a route option you are
@@ -77,7 +80,7 @@ class JobController extends CommonController
         $em = $this->getDoctrine()->getManager();
 
         $conflicts = [];
-        if ($job->isBooked() && $overlap = $em->getRepository('App:Job')->checkOverlapForPerson($job, ['booked_only' => true, 'return_jobs' => true])) {
+        if ($job->isBooked() && $overlap = $em->getRepository(Job::class)->checkOverlapForPerson($job, ['booked_only' => true, 'return_jobs' => true])) {
             foreach ($overlap as $ojob) {
                 $overlapped = $ojob->getShift();
                 $conflicts[] = 
@@ -121,7 +124,7 @@ class JobController extends CommonController
         $state = $request->get('state');
 
         $em = $this->getDoctrine()->getManager();
-        $jobrepo = $em->getRepository('App:Job');
+        $jobrepo = $em->getRepository(Job::class);
         $conflicts = [];
         foreach ($jobs as $job_id) {
             if (!$job = $jobrepo->find($job_id))
@@ -162,13 +165,13 @@ class JobController extends CommonController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $person_repo = $em->getRepository('App:Person');
+            $person_repo = $em->getRepository(Person::class);
             if (!$person = $person_repo->find($form->get('pname')->getData()))
                 return $this->returnNotFound($request, 'No person to tie the jobs to');
             $job->setPerson($person);
 
             $conflicts = [];
-            if ($job->isBooked() && $overlap = $em->getRepository('App:Job')->checkOverlapForPerson($job, ['booked_only' => true, 'return_jobs' => true])) {
+            if ($job->isBooked() && $overlap = $em->getRepository(Job::class)->checkOverlapForPerson($job, ['booked_only' => true, 'return_jobs' => true])) {
                 foreach ($overlap as $ojob) {
                     $overlapped = $ojob->getShift();
                     $conflicts[] = 
@@ -215,7 +218,7 @@ class JobController extends CommonController
         // If this has a shift set here, it's not an invalid create attempt.
         if ($shift_id = $request->get('shift')) {
             $em = $this->getDoctrine()->getManager();
-            if ($shift = $em->getRepository('App:Shift')->find($shift_id)) {
+            if ($shift = $em->getRepository(Shift::class)->find($shift_id)) {
                 $job->setShift($shift);
                 $form->setData($job);
             }
@@ -241,7 +244,7 @@ class JobController extends CommonController
         $jobs = $request->get('jobs');
 
         $em = $this->getDoctrine()->getManager();
-        $jobrepo = $em->getRepository('App:Job');
+        $jobrepo = $em->getRepository(Job::class);
         foreach ($jobs as $job_id) {
             if (!$job = $jobrepo->find($job_id))
                 return new JsonResponse(array("status" => "NOT FOUND"), Response::HTTP_NOT_FOUND);
@@ -261,8 +264,8 @@ class JobController extends CommonController
         $moves = $request->get('moves');
 
         $em = $this->getDoctrine()->getManager();
-        $jobrepo = $em->getRepository('App:Job');
-        $shiftrepo = $em->getRepository('App:Shift');
+        $jobrepo = $em->getRepository(Job::class);
+        $shiftrepo = $em->getRepository(Shift::class);
         foreach ($moves as $job_id => $shift_id) {
             if (!$job = $jobrepo->find($job_id))
                 return new JsonResponse(array("status" => "Job not found"),
@@ -301,7 +304,7 @@ class JobController extends CommonController
     public function jobsSendMessageAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $jrepo = $em->getRepository('App:Job');
+        $jrepo = $em->getRepository(Job::class);
         $sm = $this->get('sakonnin.messages');
         $body = $request->request->get('body');
         $subject = $request->request->get('subject') ?? "Message from CrewCall";

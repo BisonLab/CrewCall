@@ -15,6 +15,8 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Lib\ExternalEntityConfig;
 use App\Entity\Event;
+use App\Entity\Organization;
+use App\Entity\Location;
 
 class EventType extends AbstractType
 {
@@ -37,7 +39,7 @@ class EventType extends AbstractType
                 'label' => 'Status',
                 'choices' => ExternalEntityConfig::getStatesAsChoicesFor('Event')))
             ->add('location', EntityType::class,
-                array('class' => 'App:Location',
+                array('class' => Location::class,
                     'query_builder' => function(EntityRepository $er) {
                     return $er->createQueryBuilder('l')
                      ->where("l.state = 'OPEN'")
@@ -45,7 +47,7 @@ class EventType extends AbstractType
                     },
                 ))
             ->add('organization', EntityType::class,
-                array('class' => 'App:Organization',
+                array('class' => Organization::class,
                     'query_builder' => function(EntityRepository $er) {
                     return $er->createQueryBuilder('o')
                      ->where("o.state = 'ACTIVE'")
@@ -56,7 +58,7 @@ class EventType extends AbstractType
                 array(
                     'required' => false,
                     'placeholder' => "",
-                    'class' => 'App:Event',
+                    'class' => Event::class,
                     'query_builder' => function(EntityRepository $er) {
                         $today = new \DateTime();
                         return $er->createQueryBuilder('e')

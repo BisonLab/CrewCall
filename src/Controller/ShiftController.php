@@ -84,7 +84,7 @@ class ShiftController extends CommonController
 
         // If this has a event set here, it's not an invalid create attempt.
         if ($event_id = $request->get('event')) {
-            if ($event = $em->getRepository('App:Event')->find($event_id)) {
+            if ($event = $em->getRepository(Event::class)->find($event_id)) {
                 $shift->setEvent($event);
                 // Better have something to start with.
                 $shift->setStart(clone($event->getStart()));
@@ -94,7 +94,7 @@ class ShiftController extends CommonController
             }
         }
         if ($from_shift = $request->get('from_shift')) {
-            if ($fshift = $em->getRepository('App:Shift')->find($from_shift)) {
+            if ($fshift = $em->getRepository(Shift::class)->find($from_shift)) {
                 $shift->setEvent($fshift->getEvent());
                 // We have something to start with
                 $shift->setStart($fshift->getStart());
