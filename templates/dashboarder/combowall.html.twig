@@ -66,9 +66,9 @@
              <span></span>
              </button>
              <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" href="#" onClick="return setStateOnSakonninMessage({{ message.messageid }}, 'ARCHIVED');">Archive</a>
-                <a class="dropdown-item" href="#" onClick='return editCombo({{ message.messageid }});'>Edit</a>
-                <a class="dropdown-item" href="#" onClick='return $("#delcombo_{{ message.messageid }}").click();'>Delete</a>
+                <a class="dropdown-item" href="#" onClick="return setStateOnSakonninMessage('{{ message.messageid }}', 'ARCHIVED');">Archive</a>
+                <a class="dropdown-item" href="#" onClick="return editCombo('{{ message.messageid }}');">Edit</a>
+                <a class="dropdown-item" href="#" onClick="return $('#delcombo_{{ message.messageid }}').click();">Delete</a>
             </div>
           </div>
         </div>
