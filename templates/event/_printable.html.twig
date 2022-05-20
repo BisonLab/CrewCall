@@ -46,10 +46,10 @@
 {% endif %}
 </table>
 
-<table id="printEventTable" class="printable-table">
 
 {% for shift in event.shifts %}
 {% if shift.jobs | length > 0%}
+<table id="printEventTable" class="printable-table">
 <thead>
   <tr class="shifthead">
     <td colspan="4">
@@ -57,24 +57,24 @@
     </td>
   </tr>
   <tr class="jobshead">
-    <th class="epName">Name</th>
+    <th class="epName" width="25%">Name</th>
 {% if all or Mobile is defined %}
-    <th class="epMobile">Mobile</th>
+    <th class="epMobile" width="10%">Mobile</th>
 {% endif %}
 {% if all or Diets is defined %}
-    <th class="epDiets">Diets</th>
+    <th class="epDiets" width="10%">Diets</th>
 {% endif %}
 {% if all or Comments is defined %}
-    <th class="epComments">Comments</th>
+    <th class="epComments" width="15%">Comments</th>
 {% endif %}
 {% if all or Checks is defined %}
-    <th class="epChecks">Checks</th>
+    <th class="epChecks" width="15%">Checks</th>
 {% endif %}
 {% if all or Hours1 is defined %}
-    <th class="epHours1">Hours 1</th>
+    <th class="epHours1" width="15%">Hours 1</th>
 {% endif %}
 {% if all or Hours2 is defined %}
-    <th class="epHours2">Hours 2</th>
+    <th class="epHours2" width="10%">Hours 2</th>
 {% endif %}
   </tr>
 </thead>
@@ -140,5 +140,5 @@
 
 {% endif %}
 
-{% endfor %}
 </table>
+{% endfor %}
