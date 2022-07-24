@@ -11,7 +11,7 @@ use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 
 use App\Entity\Event;
 use App\Entity\Person;
-use App\Entity\Orgganization;
+use App\Entity\Organization;
 use App\Entity\Location;
 
 class DefaultController extends CommonController
