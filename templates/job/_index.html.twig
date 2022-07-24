@@ -84,7 +84,9 @@
           </td>
             {% set reason = job.person.occupied({'datetime': job.start, 'reason': true}) %}
             <td {% if reason %}class="ccWarn"{% endif %} data-order="{{ job.person.lastname }}">
-            {{ job.person }}
+                <a href="{{ path('person_show', { 'id': job.person.id }) }}">
+                {{ job.person }}
+                </a>
             </td>
             <td>
             <a tabindex="0" href="#" title="Log Summary" id="popLogSummary_job_{{ job.id }}" onClick="return popLogSummary('job', {{ job.id }});"><span class="fas fa-list-alt"></span></a>
