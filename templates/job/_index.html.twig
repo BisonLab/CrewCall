@@ -71,7 +71,7 @@
     {% if pnotes | length > 0 %}
             <a href="#" title="Person Notes" onClick="return openSakonninMessageLogBox('{{ path('message_context_search', {'access': 'ajax', 'system': pncontext.system, 'object_name': pncontext.object_name, 'external_id': pncontext.external_id, 'criterias': {'message_types': ['AdminNote', 'PersonNote'] }}) }}', 'Notes about {{ job.person }}')"><span style="font-size: 15px" class="fas fa-comment"></span></a>
     {% endif %}
-        {% set overjobs = cc_jobs.checkoverlapforperson(job, {'same_day': true, 'booked_only': true, 'return_jobs': true }) %}
+        {% set overjobs = cc_jobs.checkoverlapforperson(job, {'return_jobs': true }) %}
         {% if overjobs | length > 0 %}
 <div id="overlap_popover_content_{{ job.id }}" class="d-none">
 {% for ojob in overjobs %}

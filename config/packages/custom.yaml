@@ -75,6 +75,17 @@ parameters:
     # The crew manager tab in the user frontend.
     enable_crew_manager: true
 
+    # Job overlaps. A few options for it.
+    
+    # What is considered overlap? Only booked jobs if you ask me.
+    job_overlap_booked_only: true
+
+    # If any job the same day are to be considered overlap:
+    job_overlap_same_day: true
+
+    # Any job with less than these hours is considered an overlap
+    job_overlap_hours: 4
+
     bisonlab_reports.report_classes:
         - App\Lib\Reports\Reports
     # For generated reports, usuaslly uuseful to be able to grab from the web.

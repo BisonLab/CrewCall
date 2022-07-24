@@ -5,6 +5,7 @@ namespace App\Repository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 use App\Entity\Job;
 use App\Entity\Person;
@@ -15,8 +16,11 @@ use App\Lib\ExternalEntityConfig;
  */
 class JobRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $params;
+
+    public function __construct(ManagerRegistry $registry, ParameterBagInterface $params)
     {
+        $this->params = $params;
         parent::__construct($registry, Job::class);
     }
     /*
@@ -274,9 +278,9 @@ class JobRepository extends ServiceEntityRepository
             ->setParameter('person', $person);
 
         /*
-         * Options. More or less useful.
+         * Options/Params/config. More or less useful.
          */
-        if ($options['same_day'] ?? false) {
+        if ($this->params->get('job_overlap_same_day')) {
             $from_day = clone($from);
             // This just looks so wrong.
             $qb
@@ -294,7 +298,11 @@ class JobRepository extends ServiceEntityRepository
             ;
         }
 
-        if ($options['booked_only'] ?? false) {
+        // TODO: Make this one work. Will it cooperate with same day?
+        if ($this->params->get('job_overlap_hours')) {
+        }
+
+        if ($this->params->get('job_overlap_booked_only')) {
             $states = ExternalEntityConfig::getBookedStatesFor('Job');
             $qb->andWhere('j.state in (:states)')
                 ->setParameter('states', $states);
