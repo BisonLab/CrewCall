@@ -152,7 +152,7 @@
             {% include 'event/_note.html.twig' %}
         {% endfor %}
        {% include 'event/_add_note.html.twig' with {'event': event, 'type': 'AdminNote' } %}
-        <a href="#" onClick='return openCcModalFromDiv("eventaddnoteform_AdminNote", "Add an Admin Note");'>Add an Admin Note</a><br />
+        <a href="#" onClick='return openCcModalFromDiv("eventaddnoteform_AdminNote_{{ event.id }}", "Add an Admin Note");'>Add an Admin Note</a><br />
       </div><!-- Notes pane -->
 
       <div class="tab-pane" id="filestab_{{ event.id }}">
