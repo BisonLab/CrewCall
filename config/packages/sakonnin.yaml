@@ -1,7 +1,7 @@
 parameters:
     sakonnin.user:
         class: App:Person
-        entity: \App\Entity\Person
+        entity: App\Entity\Person
 
     sakonnin.function_factories:
         - BisonLab\SakonninBundle\Lib\Sakonnin\SakonninFunctions
