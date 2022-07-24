@@ -83,6 +83,9 @@
             <a class="dropdown-item" href="#" onClick="return grabNewJobForm({{shift.id}});">Add person</a>
             <a class="dropdown-item" href="#" onClick="return grabNewShiftOrganizationForm({{shift.id}});">Add crew from an organization</a>
             <a class="dropdown-item" href="#" onClick='return openCcModalFromDiv("shiftnotes_{{ shift.id }}", "Notes on shift");';>Notes</a>
+{% if shift.jobs | length > 0%}
+            <a class="dropdown-item" href="#" onClick="return openPrintShiftWindow({{ shift.id }});">Print</a>
+{% endif %}
             <a tabindex="0" class="dropdown-item" href="#" title="Log Summary" id="popLogSummary_shift_{{ shift.id }}" onClick="return popLogSummary('shift', {{ shift.id }});">Changelog</a>
             <a class="dropdown-item" href="#" onClick="return grabEditShiftForm({{ shift.id }}, {{ shift.event.id }});">Edit</a>
             <a class="dropdown-item" href="#" onClick="return deleteShift({{ shift.id }});">Delete</a>

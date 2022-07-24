@@ -42,6 +42,21 @@ class ShiftController extends CommonController
     }
 
     /**
+     * Finds and displays a event entity.
+     *
+     * @Route("/{id}/show_printable", name="shift_show_printable", methods={"GET"})
+     */
+    public function showPrintableAction(Request $request, Shift $shift)
+    {
+        $em = $this->getDoctrine()->getManager();
+        return $this->render('shift/printable.html.twig', array(
+            'shift' => $shift,
+            'state' => $request->get('state'),
+            'all' => true,
+        ));
+    }
+
+    /**
      * Creates a new shift entity.
      *
      * @Route("/new", name="shift_new", methods={"GET", "POST"})

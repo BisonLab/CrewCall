@@ -1,0 +1,89 @@
+<table id="printEventTable" class="printable-table">
+<thead>
+  <tr class="shifthead">
+    <td colspan="4">
+    <h4>{{ shift }} {{ shift.start | date("H.i") }} -> {{ shift.end | date("H.i") }}</h4>
+    </td>
+  </tr>
+  <tr class="jobshead">
+    <th class="epName" width="25%">Name</th>
+{% if all or Mobile is defined %}
+    <th class="epMobile" width="10%">Mobile</th>
+{% endif %}
+{% if all or Diets is defined %}
+    <th class="epDiets" width="10%">Diets</th>
+{% endif %}
+{% if all or Comments is defined %}
+    <th class="epComments" width="15%">Comments</th>
+{% endif %}
+{% if all or Checks is defined %}
+    <th class="epChecks" width="15%">Checks</th>
+{% endif %}
+{% if all or Hours1 is defined %}
+    <th class="epHours1" width="15%">Hours 1</th>
+{% endif %}
+{% if all or Hours2 is defined %}
+    <th class="epHours2" width="10%">Hours 2</th>
+{% endif %}
+  </tr>
+</thead>
+
+<tbody class="jobsbody">
+  {% for job in shift.jobs({'sort_by': 'last_name'}) %}
+   {% if state is empty or job.state == state %}
+    <tr class="jobs">
+        <td nowrap="nowrap" class="epName">{{ job.person.name }}</td>
+{% if all or Mobile is defined %}
+        <td nowrap="nowrap" class="epMobile">{{ job.person.mobilephonenumber }}</td>
+{% endif %}
+{% if all or Diets is defined %}
+        <td nowrap="nowrap" class="epDiets">{{ job.person.dietslabels | join(", ")}}</td>
+{% endif %}
+{% if all or Comments is defined %}
+{% set jobcommcontext = {
+        'message_types': ['JobComment'],
+        'order': 'DESC',
+        'system': 'crewcall',
+        'object_name': 'job',
+        'external_id': job.id
+}
+%}
+        <td nowrap="nowrap" class="epComments">
+{% for note in sakonnin_messages.MessagesForContext(jobcommcontext) %}
+{{ note.body }}
+{% endfor %}
+        </td>
+{% endif %}
+{% if all or Checks is defined %}
+{% set jobinfocontext = {
+        'message_types': ['InformCheck'],
+        'order': 'DESC',
+        'system': 'crewcall',
+        'object_name': 'job',
+        'external_id': job.id
+    }
+%}
+        <td nowrap="nowrap" class="epChecks">
+{% for note in sakonnin_messages.MessagesForContext(jobinfocontext) %}
+{{ note.body }}
+{% endfor %}
+        </td>
+{% endif %}
+{% if all or Hours1 is defined %}
+        <td nowrap="nowrap" class="epHours1">
+            In: <input type="text" size="4"/>
+            Out: <input type="text" size="4"/>
+            Break: <input type="text" size="4"/>
+        </td>
+{% endif %}
+{% if all or Hours2 is defined %}
+        <td nowrap="nowrap" class="epHours2">
+            In: <input type="text" size="4"/>
+            Out: <input type="text" size="4"/>
+        </td>
+{% endif %}
+    </tr>
+   {% endif %}
+  {% endfor %}
+  </tbody>
+</table>

@@ -209,6 +209,14 @@ function recountShift(shift_id) {
     return false;
 }
 
+function openPrintShiftWindow(shift_id)
+{
+    url = "{{ path('shift_show_printable', { 'id': "XXX"}) }}";
+    url = url.replace('XXX', shift_id);
+    w = popmeup(url);
+    return false;
+}
+
 </script>
 <div id="editShift">
 </div>
