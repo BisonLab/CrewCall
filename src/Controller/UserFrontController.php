@@ -916,6 +916,7 @@ class UserFrontController extends CommonController
             $eventarr = [
                 'name' => (string)$event,
                 'id' => $event->getId(),
+                'parent_id' => $event->getParent() ? $event->getParent()->getId() : null,
                 'description' => $event->getDescription(),
                 'location' => [
                     'name' => $location->getName(),

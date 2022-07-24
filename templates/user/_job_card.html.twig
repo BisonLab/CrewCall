@@ -58,6 +58,24 @@
       </div>
     </div>
   </div><!-- end collapsed row -->
+{% if view != "opportunities" %}
+        {% set filecontext = {
+                    'system': 'crewcall',
+                    'object_name': 'event',
+                    'external_id': job.event.id
+            }
+        %}
+        {% include 'user/_eventfiles.html.twig' with filecontext %}
+    {% if job.event.parent_id %}
+        {% set filecontext = {
+                    'system': 'crewcall',
+                    'object_name': 'event',
+                    'external_id': job.event.parent_id
+            }
+        %}
+        {% include 'user/_eventfiles.html.twig' with filecontext %}
+    {% endif %}
+{% endif %}
 
 {% for note in job.inform_notes %}
   <div class="row p-1">
@@ -102,7 +120,7 @@
 </fieldset>
 {% endif %}
 </div><!-- end row -->
-{% endfor %}
+{% endfor %}{# checks #}
   <div class="row">
     <div class="col-12">
       <button id="signup_button_{{ job.id }}" class="{% if disabled %}disabled {% endif %}btn btn-dark ml-3" type="submit"><i class="fas fa-check text-success"></i> Sign Up</button>
