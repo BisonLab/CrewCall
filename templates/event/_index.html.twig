@@ -40,7 +40,7 @@
         <td>{{ event.location }}</td>
         <td>{{ event.statelabel }}</td>
         {% if with_amounts %}
-            <td>
+            <td style="white-space: nowrap;">
             {% set amounts = event.jobsamountbystate %}
 {# Alternatives.
             <span title="Booked" class="ccAmount ccNeeded">{{ event.bookedamount }}</span>
@@ -62,11 +62,11 @@
 
 {# hacks, blame laziness #}
 {% if upcoming %}
-    <table class="sortable_table table table-striped-greyhead table-sm" data-order='[[ 1, "asc" ]]'>
+    <table class="sortable_table column-searchable table table-striped-greyhead table-sm" data-order='[[ 1, "asc" ]]'>
 {% elseif past %}
-    <table class="sortable_table table table-striped-greyhead table-sm" data-order='[[ 1, "desc" ]]'>
+    <table class="sortable_table column-searchable table table-striped-greyhead table-sm" data-order='[[ 1, "desc" ]]'>
 {% else %}
-    <table class="sortable_table table table-striped-greyhead table-sm" data-order='[[ 1, "asc" ]]'>
+    <table class="sortable_table column-searchable table table-striped-greyhead table-sm" data-order='[[ 1, "asc" ]]'>
 {% endif %}
 
         <thead>
@@ -77,10 +77,22 @@
             <th>Location</th>
             <th>Status</th>
     {% if not past %}
-            <th class="no-sort">Amounts</th>
+            <th class="no-sort" style="white-space: nowrap;">Amounts</th>
     {% endif %}
         </tr>
-    </thead>
+        </thead>
+        <tfoot>
+        <tr class="searchrow">
+            <th class="no-sort">&nbsp;</th>
+            <th class="searchcol">When</th>
+            <th class="searchcol">Event</th>
+            <th class="searchcol">Location</th>
+            <th class="searchcol">Status</th>
+    {% if not past %}
+            <th class="no-sort" style="white-space: nowrap;">&nbsp;</th>
+    {% endif %}
+        </tr>
+        </tfoot>
     <tbody>
 
     {% if past %}

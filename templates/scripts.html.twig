@@ -49,6 +49,37 @@ function setupSortable(sortable_table, selectable) {
         };
     }
 
+    if ($(sortable_table).hasClass("column-searchable")) {
+        $(sortable_table).find('tfoot').find('th').each( function () {
+            if ($(this).hasClass('selectcol') || $(this).hasClass('no-search') || $(this).hasClass('no-sort')) {
+                return;
+            }
+            var title = $(this).text();
+            $(this).html( '<input type="text" placeholder="Search" size="15"/>' );
+        } );
+
+        options["initComplete"] = function () {
+            var r = $(sortable_table).find('tfoot').find('tr');
+            r.find('th').each(function(){
+                $(this).css('padding', 8);
+            });
+            $(sortable_table).find('thead').append(r);
+            $('#search_0').css('text-align', 'center');
+
+            this.api().columns().every(function () {
+                var that = this;
+
+                $('input', this.footer()).on('keyup change clear', function () {
+                    if (that.search() !== this.value) {
+                        that
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+        }
+    }
+
     if (selectable) {
         options["columnDefs"].push( {
             "label": "Select All",
@@ -57,10 +88,10 @@ function setupSortable(sortable_table, selectable) {
             'checkboxes': true
         });
     }
-/*
- * Not really working.
-    $.fn.dataTable.ext.order.intl("{{ javascript_locale }}");
- */
+
+    /*
+     * All options set up and ready.
+     */
     sorted_table = $(sortable_table).DataTable( options );
     sorted_table.on( 'page.dt', function () {
         $('html, body').animate({
