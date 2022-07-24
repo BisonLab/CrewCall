@@ -181,6 +181,17 @@ class Job
     }
 
     /**
+     * Get state order
+     *
+     * @return string 
+     */
+    public function getStateOrder($state = null)
+    {
+        $state = $state ?: $this->getState();
+        return ExternalEntityConfig::getStatesFor('Job')[$state]['order'];
+    }
+
+    /**
      * Get states
      *
      * @return array 
