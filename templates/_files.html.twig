@@ -7,6 +7,7 @@
            <th>Uploaded At</th>
            <th>Uploaded By</th>
            <th>&nbsp;</th>
+           <th>&nbsp;</th>
        </tr>
    </thead>
     <tbody>
@@ -27,12 +28,14 @@ $("#img_{{sfile.id}}").ezPlus({
         <td>{{ sfile.createdat|date('Y-m-d H:i:s') }}</td>
         <td>{{ sfile.createdby }}</td>
         <td>
+            <a href="{{ path('file_download', { 'file_id': sfile.fileid }) }}"><button class="btn btn-link fas fa-file-download"></button></a>
+            <a href="#" onClick="return grabEditSakonninFileForm('{{ sfile.fileid }}');"><button class="btn btn-link edit_glyph"></button></a>
+        </td>
+        <td>
             {% set delete_form = sakonnin_files.getdeleteform(sfile, {'create_view': true}) %}
             {{ form_start(delete_form)}}
             {{ form_rest(delete_form)}}
             <input type="hidden" name="back" value="{{ app.request.uri }}">
-            <a href="{{ path('file_download', { 'file_id': sfile.fileid }) }}"><button class="btn btn-link fas fa-file-download"></button></a>
-            <a href="#" onClick="return grabEditSakonninFileForm('{{ sfile.fileid }}');"><button class="btn btn-link edit_glyph"></button></a>
             <button type="submit" name="Delete" class="btn btn-link remove_glyph"></button>
             {{ form_end(delete_form)}}
         </td>
