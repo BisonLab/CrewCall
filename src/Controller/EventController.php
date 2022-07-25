@@ -245,7 +245,7 @@ class EventController extends CommonController
     }
 
     /**
-     * Sets "CONFIRMED" on the event and all shifts underneith.
+     * Sets a state on the event and all shifts underneith.
      *
      * @Route("/{id}/state/{state}", name="event_state", methods={"POST"})
      */

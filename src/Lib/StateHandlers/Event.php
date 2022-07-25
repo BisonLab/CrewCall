@@ -25,7 +25,18 @@ class Event
     {
         if ($to == "READY") {
             $uow = $this->em->getUnitOfWork();
-            foreach ($event->getShifts() as $shift) {
+            foreach ($event->getChildren() as $child) {
+                if ($child->getState() == "READY")
+                    continue;
+                $child->setState('READY');
+                if ($from === false)
+                    continue;
+                $meta = $this->em->getClassMetadata(get_class($child));
+                $uow->computeChangeSet($meta, $child);
+                $uow->computeChangeSets();
+                $uow->recomputeSingleEntityChangeSet($meta, $child);
+            }
+            foreach ($event->getAllShifts() as $shift) {
                 if ($shift->getState() == "CLOSED")
                     continue;
                 $shift->setState("CLOSED");
