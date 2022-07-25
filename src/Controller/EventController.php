@@ -169,11 +169,13 @@ class EventController extends CommonController
          * event is to use the function.
          */
         $add_crewman_form = null;
-        $crew_manager_role = $this->container->getParameter('crew_manager_role');
-        $crewman_role = $role_repo->findOneByName($crew_manager_role);
-        $crewman_functions = $function_repo->findBy(['crew_manager' => true]);
-        if ($crewman_role && !empty($crewman_functions)) {
-            $add_crewman_form = true;
+        if ($this->container->getParameter('enable_crew_manager')) {
+            $crew_manager_role = $this->container->getParameter('crew_manager_role');
+            $crewman_role = $role_repo->findOneByName($crew_manager_role);
+            $crewman_functions = $function_repo->findBy(['crew_manager' => true]);
+            if ($crewman_role && !empty($crewman_functions)) {
+                $add_crewman_form = true;
+            }
         }
 
         $deleteForm  = $this->createDeleteForm($event);
