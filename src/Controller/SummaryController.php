@@ -154,7 +154,7 @@ class SummaryController extends CommonController
                 return $this->returnNotFound($request,'Unable to find class.');
                 break;
         }
-        return  $this->showLogPage($request,$access, $class, $id,
+        return $this->showLogPage($request,$access, $class, $id,
             ['html' => 'summaryLogPopContent.html.twig']);
     }
     

@@ -298,8 +298,8 @@ class Calendar
         else
             $td = $ps->getToDate();
         $c['end'] = $td;
-        $c['title'] = (string)$ps->getState();
-        $c['content'] = (string)$ps->getState();
+        $c['title'] = (string)$ps->getStateLabel();
+        $c['popup_content'] = (string)$ps->getStateLabel();
         $c['color'] = "blue";
         $c['textColor'] = "white";
         return $c;

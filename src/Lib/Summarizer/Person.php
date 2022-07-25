@@ -33,6 +33,20 @@ class Person
             'label' => 'Mobile'
             );
 
+        if ($person->getEmail()) {
+            $email = $person->getEmail();
+            if (in_array($access, ["ajax", "web"]))
+                $content = '<a href="mailto:' . $email  . '">' . $email . '</a>';
+            else
+                $content = $email;
+            $summary[] = array(
+                'name' => 'email',
+                'value' => $content,
+                'label' => 'Email address',
+                'html' => true
+                );
+        }
+
         $state_text = '';
         foreach ($person->getStates(['from_now' => true]) as $stateobj) {
             if (!empty($state_text))

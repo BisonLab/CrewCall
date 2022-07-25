@@ -3,7 +3,11 @@
   {% if s.value is defined %}
     <tr>
     <th>{{ s.label }}</th>
+{% if s.html is defined and s.html %}
+    <td>{{ s.value | raw }}</td>
+{% else %}
     <td>{{ s.value }}</td>
+{% endif %}
     </tr>
   {% endif %}
 {% endfor %}
