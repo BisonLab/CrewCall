@@ -12,6 +12,9 @@ parameters:
                     VEGETARIAN:
                         label: "Vegetarian"
                         chooseable: true
+                    NO-PORK:
+                        label: "No pork"
+                        chooseable: true
                     LACTOSE:
                         label: "Lactose intolerant"
                         chooseable: true
