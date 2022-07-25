@@ -242,10 +242,14 @@ class Calendar
             $c['textColor'] = "white";
         }
         // For the text in the ical calendar thingie.
+                // What is in the title 
+                // 'What: ' . (string)$job->getEvent() . "\n"
         $c['content'] = 
-              'What: ' . (string)$job->getEvent() . "\n"
+            'Where: ' . (string)$job->getLocation() . "\n"
+            . 'When: ' . $job->getStart()->format('H:i') 
+                . " -> " . $job->getEnd()->format('H:i') . "\n"
             . 'Work: ' . (string)$job->getFunction() . "\n"
-            . 'Where: ' . (string)$job->getLocation() . "\n";
+        ;
 
         $url =  $this->router->generate('user_job_calendar_item', 
             array('id' => $job->getId()));
@@ -265,6 +269,10 @@ class Calendar
         } else {
             $c['popup_content'] = preg_replace("/\n/", "<br />"
                 , $c['content']);
+        }
+        if ($this->user->isAdmin()) {
+            $c['popup_content'] .= '<br><a href="'
+                . $url  . '">Go to event</a>';
         }
         return $c;
     }
