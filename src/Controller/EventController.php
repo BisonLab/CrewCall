@@ -169,9 +169,10 @@ class EventController extends CommonController
          * event is to use the function.
          */
         $add_crewman_form = null;
-        $crewman_role = $role_repo->findOneByName('Crew Manager');
-        $crewman_function = $function_repo->findOneByName('Crew Manager');
-        if ($crewman_role && $crewman_function) {
+        $crew_manager_role = $this->container->getParameter('crew_manager_role');
+        $crewman_role = $role_repo->findOneByName($crew_manager_role);
+        $crewman_functions = $function_repo->findBy(['crew_manager' => true]);
+        if ($crewman_role && !empty($crewman_functions)) {
             $add_crewman_form = true;
         }
 
@@ -357,16 +358,25 @@ class EventController extends CommonController
         $pre = new PersonRoleEvent();
         $pre->setEvent($event);
 
+        $crew_manager_role = $this->container->getParameter('crew_manager_role');
         $role_repo = $em->getRepository(Role::class);
+        $role = $role_repo->findOneByName($crew_manager_role);
+
         $function_repo = $em->getRepository(FunctionEntity::class);
-        $role = $role_repo->findOneByName('Crew Manager');
-        $function = $function_repo->findOneByName('Crew Manager');
-        if (!$role && !$function) {
+        $functions = $function_repo->findBy(['crew_manager' => true]);
+
+        if (!$role && empty($functions)) {
             return new JsonResponse(array("status" => "No role or function"), Response::HTTP_NOT_FOUND);
         }
         $pre->setRole($role);
 
-        $people = $function->getPeople();
+        $people = new ArrayCollection();
+        foreach ($functions as $f) {
+            foreach ($f->getPeople() as $p) {
+                if (!$people->contains($p))
+                    $people->add($p);
+            }
+        }
         foreach ($event->getOrganization()->getPeople() as $p) {
             if (!$people->contains($p))
                 $people->add($p);

@@ -20,6 +20,10 @@
                 <td>{{ functionEntity.statelabel }}</td>
             </tr>
             <tr>
+                <th>Crew Manager</th>
+                <td>{{ functionEntity.crewmanager  ? "Yes" : "No" }}</td>
+            </tr>
+            <tr>
              <th>
                 <a href="{{ path('function_edit', { 'id': functionEntity.id }) }}"  class="btn-sm btn-dark">Edit</a>
                 <br>
@@ -27,7 +31,7 @@
                     <input class="btn-sm btn-danger" type="submit" value="Delete">
                 {{ form_end(delete_form) }}
              </th>
-             <td>&nbsp</td>
+             <td>&nbsp;</td>
             </tr>
         </tbody>
     </table>

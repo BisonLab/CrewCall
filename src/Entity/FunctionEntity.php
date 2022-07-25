@@ -64,6 +64,12 @@ class FunctionEntity
     private $state;
 
     /**
+     * For the obvious use.
+     * @ORM\Column(type="boolean")
+     */
+    private $crew_manager = false;
+
+    /**
      * This is for the non-connected functions.
      * @ORM\OneToMany(targetEntity="PersonFunction", mappedBy="function",
      * cascade={"remove"})
@@ -188,6 +194,18 @@ class FunctionEntity
     public static function getStatesList()
     {
         return array_keys(ExternalEntityConfig::getStatesFor('FunctionEntity'));
+    }
+
+    public function getCrewManager(): bool
+    {
+        return $this->crew_manager;
+    }
+
+    public function setCrewManager(bool $crew_manager): self
+    {
+        $this->crew_manager = $crew_manager;
+
+        return $this;
     }
 
     /**

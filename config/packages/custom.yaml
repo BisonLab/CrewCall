@@ -75,6 +75,13 @@ parameters:
     # The crew manager tab in the user frontend.
     enable_crew_manager: true
 
+    # The role that will be applied.
+    crew_manager_role: 'Crew Manager'
+
+    # What constitutes a crew manager?
+    crew_manager_functions:
+        - 'Crew Manager'
+
     # Job overlaps. A few options for it.
     
     # What is considered overlap? Only booked jobs if you ask me.
