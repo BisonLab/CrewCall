@@ -108,7 +108,9 @@
         {% else %}
             {{ evmacros.print_event_tr(event, dateformat, true, true) }}
             {% for child in event.children %}
-                {{ evmacros.print_event_tr(child, dateformat, false, true) }}
+                {% if child.end >= date() %}
+                    {{ evmacros.print_event_tr(child, dateformat, false, true) }}
+                {% endif %}
             {% endfor %}
         {% endif %}
       {% endif %}
