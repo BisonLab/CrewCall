@@ -1,5 +1,5 @@
 {% macro list_joblogs(jobloglist) %}
-    <table class="table table-sm">
+    <table id="person_joblog_table" class="table table-sm">
     <thead>
     <tr><th>What</th><th>In</th><th>Out</th><th>Break</th><th>Worked</th></tr>
     </thead>
@@ -41,3 +41,20 @@
 {% import _self as jlmacros %}
 <h3>Job Log</h3>
 {{ jlmacros.list_joblogs(joblogs) }}
+
+<script>
+$(document).ready(function() {
+    var foobar = $( "#person_joblog_table").dataTable({
+        order: [[ 2, 'desc' ], [ 1, 'asc' ]],
+        paging: false,
+        searching: false,
+        info: false,
+        columnDefs: [
+            {
+                "targets": "no-sort",
+                "orderable": false,
+            }
+        ]
+    });
+});
+</script>
