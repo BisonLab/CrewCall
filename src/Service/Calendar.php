@@ -68,48 +68,47 @@ class Calendar
                 else
                     $ed = new \DateTime($end);
 
-                // First, break each frog into days.
                 /*
-                 * For now, they decided only start day to be shown.
-                 * And I kinda agree.
-                while ($sd <= $ed) {
+                 * For states, break each frog into days.
+                */
+                if ($frog instanceOf PersonState) {
+                    while ($sd <= $ed) {
+                        $s = $sd->format("Ymd") . $cal['color'];
+                    
+                        $cal['start'] = $sd->format("Y-m-d\T01:00");
+                        $cal['end'] = $sd->format("Y-m-d\T10:00");
+                        $cal['title'] = ' ';
+                        $cal['textColor'] = $cal['color'];
+                        $sd->modify('+1 day');
+
+                        // Can not continue / drop until sd has been modified.
+                        // (Avoiding eternal loops.)
+                        if (isset($summary_arr[$s]))
+                            continue;
+
+                        $arr[] = $cal;
+                        $summary_arr[$s] = true;
+                    }
+                } else {
+                    /*
+                     * This one does not add a dot for each day in the shift.
+                     */
                     $s = $sd->format("Ymd") . $cal['color'];
-                
                     $cal['start'] = $sd->format("Y-m-d\T01:00");
                     $cal['end'] = $sd->format("Y-m-d\T10:00");
                     $cal['title'] = ' ';
                     $cal['textColor'] = $cal['color'];
-                    $sd->modify('+1 day');
 
                     // Can not continue / drop until sd has been modified.
                     // (Avoiding eternal loops.)
                     if (isset($summary_arr[$s]))
                         continue;
-
+                    // Can't do popups for some random (first of the day) job.
+                    $cal['popup_title'] = "";
+                    $cal['popup_content'] = "";
                     $arr[] = $cal;
                     $summary_arr[$s] = true;
                 }
-                */
-                /*
-                 * This one does not add a dot for each day in the shift.
-                 */
-                $s = $sd->format("Ymd") . $cal['color'];
-            
-                $cal['start'] = $sd->format("Y-m-d\T01:00");
-                $cal['end'] = $sd->format("Y-m-d\T10:00");
-                $cal['title'] = ' ';
-                $cal['textColor'] = $cal['color'];
-
-                // Can not continue / drop until sd has been modified.
-                // (Avoiding eternal loops.)
-                if (isset($summary_arr[$s]))
-                    continue;
-
-                // Can't do popups for some random (first of the day) job.
-                $cal['popup_title'] = "";
-                $cal['popup_content'] = "";
-                $arr[] = $cal;
-                $summary_arr[$s] = true;
             }
         }
         return $arr;

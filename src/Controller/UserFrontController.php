@@ -508,6 +508,7 @@ class UserFrontController extends CommonController
 
     /**
      * Lists all the users jobs as calendar events.
+     * Now also personstates.
      *
      * @Route("/me_calendar", name="uf_me_calendar")
      */
@@ -532,6 +533,7 @@ class UserFrontController extends CommonController
         if ($state = $request->get('state'))
             $options['state'] = $state;
         $jobs = $jobservice->jobsForPerson($user, $options);
+        $states = $user->getStates();
 
         // If the date difference exeeds a week, we want to just send the
         // summary.
@@ -540,9 +542,15 @@ class UserFrontController extends CommonController
         $no_summary = $request->get('no_summary');
         // 20 days and above? Summary it is.        
         if (!$no_summary && (($to_t - $from_t) > 1728000)) {
-            $calitems = $calendar->toFullCalendarSummary($jobs, $user);
+            $calitems = array_merge(
+                $calendar->toFullCalendarSummary($jobs, $user),
+                $calendar->toFullCalendarSummary($states, $user)
+            );
         } else {
-            $calitems = $calendar->toFullCalendarArray($jobs, $user);
+            $calitems = array_merge(
+                $calendar->toFullCalendarArray($jobs, $user),
+                $calendar->toFullCalendarArray($states, $user)
+            );
         }
         return new JsonResponse($calitems, Response::HTTP_OK);
     }
