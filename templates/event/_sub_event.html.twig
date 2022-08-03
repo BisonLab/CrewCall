@@ -142,7 +142,7 @@
             {% include 'event/_note.html.twig' with {'event': event, 'note': note, 'subject': false  } %}
         {% endfor %}
         <br>
-       {% include 'event/_add_note.html.twig' with {'event': event, 'type': 'InformNote' } %}
+       {% include 'event/_add_note.html.twig' with {'event': event, 'type': 'InformNote', 'subject': false } %}
         <a href="#" onClick='return openCcModalFromDiv("eventaddnoteform_InformNote_{{ event.id }}");'>Add an information note</a><br />
       </div>
 
