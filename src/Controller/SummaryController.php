@@ -64,7 +64,7 @@ class SummaryController extends CommonController
                 $value = $job->getStart()->format("d M H:i")
                     . " -> " .
                     $job->getEnd()->format("d M H:i")
-                    . "(" . $job->getState() . ")";
+                    . "(" . $job->getStateLabel() . ")";
                 $summary[] = [
                     'label' => $label,
                     'value' => $value

@@ -18,24 +18,46 @@
 {% endmacro %}
 <table class="table table-sm">
     <tr>
-    <th>Hours this week</th>
-    <td>{{ summary.week_hours }}</td>
+    <th>Interval</th>
+    <th>Total Hours</th>
+    <th>Full days</th>
+    <th>Three Quart days</th>
+    <th>Half days</th>
     </tr>
     <tr>
-    <th>Hours last 7 days</th>
-    <td>{{ summary.l7days_hours }}</td>
+    <th>This week</th>
+    <td>{{ summary.week.hours }}</td>
+    <td>{{ summary.week.full }}</td>
+    <td>{{ summary.week.three_quart }}</td>
+    <td>{{ summary.week.half }}</td>
     </tr>
     <tr>
-    <th>Hours this month</th>
-    <td>{{ summary.month_hours }}</td>
+    <th>Last 7 days</th>
+    <td>{{ summary.l7days.hours }}</td>
+    <td>{{ summary.l7days.full }}</td>
+    <td>{{ summary.l7days.three_quart }}</td>
+    <td>{{ summary.l7days.half }}</td>
     </tr>
     <tr>
-    <th>Hours this year</th>
-    <td>{{ summary.year_hours }}</td>
+    <th>This month</th>
+    <td>{{ summary.month.hours }}</td>
+    <td>{{ summary.month.full }}</td>
+    <td>{{ summary.month.three_quart }}</td>
+    <td>{{ summary.month.half }}</td>
     </tr>
     <tr>
-    <th>Hours last year</th>
-    <td>{{ summary.last_year_hours }}</td>
+    <th>This year</th>
+    <td>{{ summary.year.hours }}</td>
+    <td>{{ summary.year.full }}</td>
+    <td>{{ summary.year.three_quart }}</td>
+    <td>{{ summary.year.half }}</td>
+    </tr>
+    <tr>
+    <th>Last year</th>
+    <td>{{ summary.last_year.hours }}</td>
+    <td>{{ summary.last_year.full }}</td>
+    <td>{{ summary.last_year.three_quart }}</td>
+    <td>{{ summary.last_year.half }}</td>
     </tr>
     </table>
 {% import _self as jlmacros %}

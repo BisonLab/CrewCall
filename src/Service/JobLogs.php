@@ -19,17 +19,27 @@ class JobLogs
 
     public function getJobLogsForPerson(Person $person, $options = array())
     {
-        // This has to do a lot more. It should use criterias to narrow down
-        // the amount of joblog entries. Maybe even do this with a join!
-        // Right now I'll just return the summary and all joblogs there is.
+        /*
+         * This has to do a lot more. It should use criterias to narrow down
+         * the amount of joblog entries. Maybe even do this with a join!
+         * Right now I'll just return the summary and all joblogs there is.
+         */
         $summary = array(
-            'week'      => 0,
-            'l7days'    => 0,
-            'month'     => 0,
-            'year'      => 0,
-            'last_year' => 0,
-            'total'     => 0,
+            'week'      => ['minutes' => 0, 'hours' => 0,'full' => 0,'three_quart' => 0,'half' => 0],
+            'l7days'    => ['minutes' => 0, 'hours' => 0,'full' => 0,'three_quart' => 0,'half' => 0],
+            'month'     => ['minutes' => 0, 'hours' => 0,'full' => 0,'three_quart' => 0,'half' => 0],
+            'year'      => ['minutes' => 0, 'hours' => 0,'full' => 0,'three_quart' => 0,'half' => 0],
+            'last_year' => ['minutes' => 0, 'hours' => 0,'full' => 0,'three_quart' => 0,'half' => 0],
+            'total'     => ['minutes' => 0, 'hours' => 0,'full' => 0,'three_quart' => 0,'half' => 0],
         );
+        /*
+         * TODO: Make these configurable.
+         * Over 360 minutter (6 timer) = Full day.
+         * Between 270 og 360 minutter = Three quart day
+         * Under 270 minutter = Half day
+         */
+        $three_quart_day_minutes = 360;
+        $half_day_minutes = 270;
 
         /*
          * strtotime is not to be trusted and "first day of " will only work
@@ -60,31 +70,71 @@ class JobLogs
                     'job' => (string)$jl->getShift()
                 ];
                 // DateTime interval does NOT work. Stupidly enough.
-                $summary['total'] += $minutes;
+                $summary['total']['minutes'] += $minutes;
 
                 if ($out < $first_of_year && $out > $first_of_last_year) {
-                    $summary['last_year'] += $minutes;
+                    $summary['last_year']['minutes'] += $minutes;
+                    if ($minutes > $three_quart_day_minutes)
+                        $summary['last_year']['full']++;
+                    elseif ($minutes > $half_day_minutes 
+                            && $minutes <= $three_quart_day_minutes)
+                        $summary['last_year']['three_quart']++;
+                    elseif ($minutes > 0
+                            && $minutes <= $half_day_minutes)
+                        $summary['last_year']['half']++;
                 }
                 if ($out > $first_of_week) {
-                    $summary['week'] += $minutes;
+                    $summary['week']['minutes'] += $minutes;
+                    if ($minutes > $three_quart_day_minutes)
+                        $summary['week']['full']++;
+                    elseif ($minutes > $half_day_minutes 
+                            && $minutes <= $three_quart_day_minutes)
+                        $summary['week']['three_quart']++;
+                    elseif ($minutes > 0
+                            && $minutes <= $half_day_minutes)
+                        $summary['week']['half']++;
                 }
                 if ($out > $l7days) {
-                    $summary['l7days'] += $minutes;
+                    $summary['l7days']['minutes'] += $minutes;
+                    if ($minutes > $three_quart_day_minutes)
+                        $summary['l7days']['full']++;
+                    elseif ($minutes > $half_day_minutes 
+                            && $minutes <= $three_quart_day_minutes)
+                        $summary['l7days']['three_quart']++;
+                    elseif ($minutes > 0
+                            && $minutes <= $half_day_minutes)
+                        $summary['l7days']['half']++;
                 }
                 if ($out > $first_of_month) {
-                    $summary['month'] += $minutes;
+                    $summary['month']['minutes'] += $minutes;
+                    if ($minutes > $three_quart_day_minutes)
+                        $summary['month']['full']++;
+                    elseif ($minutes > $half_day_minutes 
+                            && $minutes <= $three_quart_day_minutes)
+                        $summary['month']['three_quart']++;
+                    elseif ($minutes > 0
+                            && $minutes <= $half_day_minutes)
+                        $summary['month']['half']++;
                 }
                 if ($out > $first_of_year) {
-                    $summary['year'] += $minutes;
+                    $summary['year']['minutes'] += $minutes;
+                    if ($minutes > $three_quart_day_minutes)
+                        $summary['year']['full']++;
+                    elseif ($minutes > $half_day_minutes 
+                            && $minutes <= $three_quart_day_minutes)
+                        $summary['year']['three_quart']++;
+                    elseif ($minutes > 0
+                            && $minutes <= $half_day_minutes)
+                        $summary['year']['half']++;
                 }
             }
         }
-        $summary['week_hours']      = $this->mToHm($summary['week']);
-        $summary['l7days_hours']    = $this->mToHm($summary['l7days']);
-        $summary['month_hours']     = $this->mToHm($summary['month']);
-        $summary['year_hours']      = $this->mToHm($summary['year']);
-        $summary['last_year_hours'] = $this->mToHm($summary['last_year']);
-        $summary['total_hours']     = $this->mToHm($summary['total']);
+        $summary['week']['hours']      = $this->mToHm($summary['week']['minutes']);
+        $summary['l7days']['hours']    = $this->mToHm($summary['l7days']['minutes']);
+        $summary['month']['hours']     = $this->mToHm($summary['month']['minutes']);
+        $summary['year']['hours']      = $this->mToHm($summary['year']['minutes']);
+        $summary['last_year']['hours'] = $this->mToHm($summary['last_year']['minutes']);
+        $summary['total_hours']['hours']     = $this->mToHm($summary['total']['minutes']);
         return [
             'joblog_array' => $joblog_array,
             'joblogs' => $joblogs,

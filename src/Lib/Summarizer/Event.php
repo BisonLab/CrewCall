@@ -29,7 +29,7 @@ class Event
 
         $summary[] = array(
             'name' => 'state',
-            'value' => (string)$event->getState(),
+            'value' => (string)$event->getStateLabel(),
             'label' => 'State'
             );
 
