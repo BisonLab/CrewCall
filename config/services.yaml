@@ -55,7 +55,7 @@ services:
     crewcall.joblogs:
         class: App\Service\JobLogs
         public: true
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager", "@parameter_bag"]
 
     crewcall.retriever:
         class: App\Service\CrewCallRetriever

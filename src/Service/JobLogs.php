@@ -11,10 +11,12 @@ use App\Entity\Shift;
 class JobLogs
 {
     private $em;
+    private $params;
 
-    public function __construct($em)
+    public function __construct($em, $params)
     {
         $this->em = $em;
+        $this->params = $params;
     }
 
     public function getJobLogsForPerson(Person $person, $options = array())
@@ -25,21 +27,16 @@ class JobLogs
          * Right now I'll just return the summary and all joblogs there is.
          */
         $summary = array(
-            'week'      => ['minutes' => 0, 'hours' => 0,'full' => 0,'three_quart' => 0,'half' => 0],
-            'l7days'    => ['minutes' => 0, 'hours' => 0,'full' => 0,'three_quart' => 0,'half' => 0],
-            'month'     => ['minutes' => 0, 'hours' => 0,'full' => 0,'three_quart' => 0,'half' => 0],
-            'year'      => ['minutes' => 0, 'hours' => 0,'full' => 0,'three_quart' => 0,'half' => 0],
-            'last_year' => ['minutes' => 0, 'hours' => 0,'full' => 0,'three_quart' => 0,'half' => 0],
-            'total'     => ['minutes' => 0, 'hours' => 0,'full' => 0,'three_quart' => 0,'half' => 0],
+            'week'      => ['minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
+            'l7days'    => ['minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
+            'month'     => ['minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
+            'year'      => ['minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
+            'last_year' => ['minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
+            'total'     => ['minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
         );
-        /*
-         * TODO: Make these configurable.
-         * Over 360 minutter (6 timer) = Full day.
-         * Between 270 og 360 minutter = Three quart day
-         * Under 270 minutter = Half day
-         */
-        $three_quart_day_minutes = 360;
-        $half_day_minutes = 270;
+
+        $full_day_minutes = $this->params->get('full_day_minutes');
+        $half_day_minutes = $full_day_minutes / 2;;
 
         /*
          * strtotime is not to be trusted and "first day of " will only work
@@ -74,55 +71,40 @@ class JobLogs
 
                 if ($out < $first_of_year && $out > $first_of_last_year) {
                     $summary['last_year']['minutes'] += $minutes;
-                    if ($minutes > $three_quart_day_minutes)
+                    if ($minutes > $half_day_minutes)
                         $summary['last_year']['full']++;
-                    elseif ($minutes > $half_day_minutes 
-                            && $minutes <= $three_quart_day_minutes)
-                        $summary['last_year']['three_quart']++;
                     elseif ($minutes > 0
                             && $minutes <= $half_day_minutes)
                         $summary['last_year']['half']++;
                 }
                 if ($out > $first_of_week) {
                     $summary['week']['minutes'] += $minutes;
-                    if ($minutes > $three_quart_day_minutes)
+                    if ($minutes > $half_day_minutes)
                         $summary['week']['full']++;
-                    elseif ($minutes > $half_day_minutes 
-                            && $minutes <= $three_quart_day_minutes)
-                        $summary['week']['three_quart']++;
                     elseif ($minutes > 0
                             && $minutes <= $half_day_minutes)
                         $summary['week']['half']++;
                 }
                 if ($out > $l7days) {
                     $summary['l7days']['minutes'] += $minutes;
-                    if ($minutes > $three_quart_day_minutes)
+                    if ($minutes > $half_day_minutes)
                         $summary['l7days']['full']++;
-                    elseif ($minutes > $half_day_minutes 
-                            && $minutes <= $three_quart_day_minutes)
-                        $summary['l7days']['three_quart']++;
                     elseif ($minutes > 0
                             && $minutes <= $half_day_minutes)
                         $summary['l7days']['half']++;
                 }
                 if ($out > $first_of_month) {
                     $summary['month']['minutes'] += $minutes;
-                    if ($minutes > $three_quart_day_minutes)
+                    if ($minutes > $half_day_minutes)
                         $summary['month']['full']++;
-                    elseif ($minutes > $half_day_minutes 
-                            && $minutes <= $three_quart_day_minutes)
-                        $summary['month']['three_quart']++;
                     elseif ($minutes > 0
                             && $minutes <= $half_day_minutes)
                         $summary['month']['half']++;
                 }
                 if ($out > $first_of_year) {
                     $summary['year']['minutes'] += $minutes;
-                    if ($minutes > $three_quart_day_minutes)
+                    if ($minutes > $half_day_minutes)
                         $summary['year']['full']++;
-                    elseif ($minutes > $half_day_minutes 
-                            && $minutes <= $three_quart_day_minutes)
-                        $summary['year']['three_quart']++;
                     elseif ($minutes > 0
                             && $minutes <= $half_day_minutes)
                         $summary['year']['half']++;
