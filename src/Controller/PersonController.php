@@ -318,7 +318,7 @@ class PersonController extends CommonController
         $context_forms = $this->createContextForms('App:Person', $contexts);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->updateContextForms($request,'App:Person', "\App\Entity\\PersonContext", $person);
+            $this->updateContextForms($request,'App:Person', "App\Entity\\PersonContext", $person);
 
             $this->getDoctrine()->getManager()->flush();
 
