@@ -30,13 +30,14 @@ class Person
         $summary[] = array(
             'name' => 'mobile_phone_number',
             'value' => (string)$person->getMobilePhoneNumber(),
-            'label' => 'Mobile'
+            'label' => 'Mobile',
             );
 
-        if ($person->getEmail()) {
-            $email = $person->getEmail();
+        if ($email = $person->getEmail()) {
             if (in_array($access, ["ajax", "web"]))
-                $content = '<a href="mailto:' . $email  . '">' . $email . '</a>';
+                $content = '<a href="mailto:' . $email  . '">'
+                    . $email . '</a>'
+                    ;
             else
                 $content = $email;
             $summary[] = array(

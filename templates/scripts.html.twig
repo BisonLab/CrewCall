@@ -173,6 +173,8 @@ function popSummary(entity, entity_id, uid = '') {
     $.fn.popover.Constructor.Default.whiteList.div = [];
     $.fn.popover.Constructor.Default.whiteList.tbody = [];
     $.fn.popover.Constructor.Default.whiteList.thead = [];
+    $.fn.popover.Constructor.Default.whiteList.href = [];
+    $.fn.popover.Constructor.Default.whiteList.class = [];
 
     res = $.ajax({
             url: url,
@@ -184,8 +186,7 @@ function popSummary(entity, entity_id, uid = '') {
             html: true,
             placement: "top",
             content: contenthtml,
-            title: poptitle,
-            trigger: "focus"
+            title: poptitle
         });
         $( popelement ).popover("show");
 
