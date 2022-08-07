@@ -13,8 +13,13 @@
 <tbody>
 {% for person in people %}
     <tr>
-        <td style="white-space:nowrap;" data-order="{{ person.username }}"><a href="{{ path('person_show', { 'id': person.id }) }}">{{ person.username }}</a></td>
-        <td style="white-space:nowrap;" data-order="{{ person.lastname }}"><a href="{{ path('person_show', { 'id': person.id }) }}">{{ person.fullname }}</a></td>
+        <td style="white-space:nowrap;" data-order="{{ person.username }}">
+            <a tabindex="0" href="#" id="popSummary_person_{{ person.id }}" onClick="return popSummary('person', {{ person.id }});"><span style="font-size: 15px" class="fas fa-info-circle"></span></a>
+            <a href="{{ path('person_show', { 'id': person.id }) }}">{{ person.username }}</a>
+        </td>
+        <td style="white-space:nowrap;" data-order="{{ person.lastname }}">
+            <a href="{{ path('person_show', { 'id': person.id }) }}">{{ person.fullname }}</a>
+        </td>
         <td>
             {% for f in person.functions %} {{ f.name }},{% endfor %}</td>
         <td>{{ person.mobilephonenumber }}</td>
