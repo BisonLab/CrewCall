@@ -25,6 +25,7 @@ class PersonType extends AbstractType
             ->add('first_name')
             ->add('last_name')
             ->add('date_of_birth', BirthdayType::class, array('required' => false))
+            ->add('workload_percentage')
             ->add('diets', ChoiceType::class,array(
                 'choices' => ExternalEntityConfig::getTypesAsChoicesFor('Person', 'Diet'),
                 'expanded'  => true,
