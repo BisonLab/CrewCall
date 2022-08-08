@@ -72,13 +72,14 @@ function grabEditJobLogForm(joblog_id, shift_id) {
 }
 
 function submitNewJobLogForm(shift_id, popat) {
-    newJobLogFormData = $( "#newJobLogForm" ).serialize();
+    var newJobLogFormData = $( "#newJobLogForm" ).serialize();
+    var url = $( "#newJobLogForm" ).attr('action');
     $.ajax({
         beforeSend: function(req) {
           req.setRequestHeader("Accept", "application/json");
         },
         type: "POST",
-        url: "{{ path('joblog_new', { 'access': 'ajax' }) }}",
+        url: url,
         data: newJobLogFormData,
         dataType: "text",
         async: true,

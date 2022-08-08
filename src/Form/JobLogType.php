@@ -27,20 +27,18 @@ class JobLogType extends AbstractType
     {
         $builder
            ->add('in', DateTimeType::class, array(
-                'label' => "In",
+                'label' => "In:",
                 'date_widget' => "single_text",
                 'time_widget' => "single_text",
                 'attr' => array('autofocus' => true, 'tabindex' => 0)))
            ->add('out', DateTimeType::class, array(
-                'label' => "Out",
+                'label' => "Out:",
                 'date_widget' => "single_text",
                 'time_widget' => "single_text",
                 'attr' => array('tabindex' => 1)))
            ->add('break_minutes', IntegerType::class, array(
-                'label' => "Break",
+                'label' => "Break in mins: ",
                 'attr' => array('size'=> 3, 'tabindex' => 2)))
-           ->add('job', EntityType::class,
-                array('class' => Job::class))
            ;
     }
     

@@ -16,6 +16,7 @@ use App\Entity\Job;
 use App\Entity\JobLog;
 use App\Entity\Shift;
 use App\Entity\Person;
+use App\Form\JobLogType;
 
 /**
  * Job controller.
@@ -66,59 +67,7 @@ class JobLogController extends CommonController
     {
         $em = $this->getDoctrine()->getManager();
         $joblog = new JobLog();
-        $form = $this->createForm('App\Form\JobLogType', $joblog);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-
-            // So much ado for csrf:
-            if ($form->isValid()) {
-                $data = $request->request->get($form->getName());
-                // We have a loblog, but is it a cheat or not?
-                // First, check cheat, aka "All in the shift".
-                if ($shift_id = $data['shift'] ?? null) {
-                    $shift = $em->getRepository(Shift::class)
-                        ->find($shift_id);
-                    $in = new \DateTime($data['in']['date'] . " " . $data['in']['time']);
-                    $out = new \DateTime($data['out']['date'] . " " . $data['out']['time']);
-                    foreach($shift->getJobs() as $job) {
-                        $joblog = new JobLog();
-                        $joblog->setIn($in);
-                        $joblog->setOut($out);
-                        $joblog->setJob($job);
-                        if ($overlap = $em->getRepository(JobLog::class)->checkOverlapForPerson($joblog)) {
-                            return new Response("Found existing work in the timeframe you entered. Shift is " . (string)current($overlap)->getJob()->getShift() . " and person is " . (string)$job->getPerson(), Response::HTTP_CONFLICT);
-                        }
-                        $em->persist($joblog);
-                    }
-                // And if not, this is just one persons in and out.
-                } else {
-                    // Check overlap.
-                    if ($overlap = $em->getRepository(JobLog::class)->checkOverlapForPerson($joblog)) {
-                        return new Response("Found existing work in the timeframe you entered. Shift is " . (string)current($overlap)->getJob()->getShift(), Response::HTTP_CONFLICT);
-                    }
-                    $em->persist($joblog);
-                }
-
-                $em->flush();
-
-                if ($this->isRest($access)) {
-                    return new JsonResponse(array("status" => "OK"),
-                        Response::HTTP_CREATED);
-                } else { 
-                    // Should I have non-rest at all?
-                    return $this->redirectToRoute('job_show',
-                        array('id' => $job->getId()));
-                }
-            } else {
-                $errors = $this->handleFormErrors($form);
-                return new JsonResponse(array("status" => "ERROR",
-                    'errors' => $errors), 422);
-            }
-        }
-
-        // Start anew. (Result of newAction doing both and not new and create)
-        // TODO: Let the joblog_handler handle this aswell.
         $job = null;
         if ($job_id = $request->get('job')) {
             $job = $em->getRepository(Job::class)->find($job_id);
@@ -128,34 +77,101 @@ class JobLogController extends CommonController
             $shift = $em->getRepository(Shift::class)->find($shift_id);
         }
 
-        $joblog = new JobLog();
-        if ($job)
-            $joblog->setJob($job);
         if (!$job && !$shift)
             return $this->returnNotFound($request, 'No job to tie the log to');
 
         if ($shift) {
             $joblog->setIn($shift->getStart());
             $joblog->setOut($shift->getEnd());
-            $form = $this->createForm('App\Form\JobLogType', $joblog);
-            $form->remove('job');
-            $form->add('shift', EntityType::class, [
-                'class' => 'App:Shift', 'data' => $shift]);
         } else {
             $joblog->setJob($job);
             $joblog->setIn($job->getShift()->getStart());
             $joblog->setOut($job->getShift()->getEnd());
-            $form = $this->createForm('App\Form\JobLogType', $joblog);
         }
+        $form = $this->createForm(JobLogType::class, $joblog);
 
         if ($this->isRest($access)) {
             return $this->render('joblog/_new.html.twig', array(
+                'job' => $job,
+                'shift' => $shift,
                 'form' => $form->createView(),
             ));
         }
+
         return $this->render('joblog/new.html.twig', array(
+            'job' => $job,
+            'shift' => $shift,
             'form' => $form->createView(),
         ));
+    }
+
+    /**
+     * Creates one or more new JobLog entries.
+     * I am splitting new and create as good old symfony.
+     * Just too much code in the submit part to keep all in one.
+     *
+     * @Route("/create", name="joblog_create", methods={"GET", "POST"})
+     */
+    public function createAction(Request $request, $access)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $joblog = new JobLog();
+        $form = $this->createForm(JobLogType::class, $joblog);
+        $form->handleRequest($request);
+
+        $job = null;
+        if ($job_id = $request->get('job')) {
+            $job = $em->getRepository(Job::class)->find($job_id);
+        }
+        $shift = null;
+        if ($shift_id = $request->get('shift')) {
+            $shift = $em->getRepository(Shift::class)->find($shift_id);
+        }
+
+        if (!$job && !$shift)
+            return $this->returnNotFound($request, 'No job to tie the log to');
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $request->request->get($form->getName());
+            // We have a loblog, but is it a cheat or not?
+            // First, check cheat, aka "All in the shift".
+            if ($shift) {
+                $in = new \DateTime($data['in']['date'] . " " . $data['in']['time']);
+                $out = new \DateTime($data['out']['date'] . " " . $data['out']['time']);
+                foreach($shift->getJobs() as $job) {
+                    $joblog = new JobLog();
+                    $joblog->setIn($in);
+                    $joblog->setOut($out);
+                    $joblog->setJob($job);
+                    if ($overlap = $em->getRepository(JobLog::class)->checkOverlapForPerson($joblog)) {
+                        return new Response("Found existing work in the timeframe you entered. Shift is " . (string)current($overlap)->getJob()->getShift() . " and person is " . (string)$job->getPerson(), Response::HTTP_CONFLICT);
+                    }
+                    $em->persist($joblog);
+                }
+            // And if not, this is just one persons in and out.
+            } else {
+                $joblog->setJob($job);
+                // Check overlap.
+                if ($overlap = $em->getRepository(JobLog::class)->checkOverlapForPerson($joblog)) {
+                    return new Response("Found existing work in the timeframe you entered. Shift is " . (string)current($overlap)->getJob()->getShift(), Response::HTTP_CONFLICT);
+                }
+                $em->persist($joblog);
+            }
+
+            $em->flush();
+
+            if ($this->isRest($access)) {
+                return new JsonResponse(array("status" => "OK"),
+                    Response::HTTP_CREATED);
+            } else { 
+                // Should I have non-rest at all?
+                return $this->redirectToRoute('job_show',
+                    array('id' => $job->getId()));
+            }
+        }
+        $errors = $this->handleFormErrors($form);
+        return new JsonResponse(array("status" => "ERROR",
+            'errors' => $errors), 422);
     }
 
     /**
@@ -195,7 +211,7 @@ class JobLogController extends CommonController
      */
     public function editAction(Request $request, JobLog $joblog, $access)
     {
-        $editForm = $this->createForm('App\Form\JobLogType', $joblog);
+        $editForm = $this->createForm(JobLogType::class, $joblog);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
