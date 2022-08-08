@@ -229,7 +229,6 @@ function popLogSummary(entity, entity_id, placement = 'top') {
       }).done( function( content, textStatus, xhr ) {
         $( popelement ).popover({
             container: 'body',
-            trigger: "focus",
             html: true,
             placement: placement,
             title: 'Log Summary <a href="#" class="close" data-dismiss="alert"><span style="font-size: 12px" class="fas fa-times-circle"></span></a>',
