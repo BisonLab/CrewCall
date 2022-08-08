@@ -290,16 +290,24 @@ class JobRepository extends ServiceEntityRepository
                 ->setParameter('from_day_end', $from_day->format("Y-m-d 23:59"))
             ;
         } else {
-            $qb
-                ->andWhere('s.start <= :to')
-                ->andWhere('s.end >= :from')
-                ->setParameter('to', $to)
-                ->setParameter('from', $from)
-            ;
-        }
-
-        // TODO: Make this one work. Will it cooperate with same day?
-        if ($this->params->get('job_overlap_hours')) {
+            if ($overlap_hours = $this->params->get('job_overlap_hours')) {
+dump($overlap_hours);
+                $fromtime = clone($from);
+                $totime = clone($to);
+                $qb
+                    ->andWhere('s.start >= :totime')
+                    ->andWhere('s.end <= :fromtime')
+                    ->setParameter('fromtime', $fromtime->modify("+11 hours"))
+                    ->setParameter('totime', $totime->modify("-11 hours"))
+                ;
+            } else {
+                $qb
+                    ->andWhere('s.start <= :to')
+                    ->andWhere('s.end >= :from')
+                    ->setParameter('to', $to)
+                    ->setParameter('from', $from)
+                ;
+            }
         }
 
         if ($this->params->get('job_overlap_booked_only')) {

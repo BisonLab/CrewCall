@@ -133,6 +133,15 @@ $(document).ready(function() {
 
     $('[data-toggle="popover"]').popover();
 
+    $(document).on('click', function (e) {
+        var click_closest = $(e.target)[0].closest('.popover');
+        if (!click_closest) {
+             $(".popover").each(function () {
+                $(this).popover("hide");
+             });
+        }
+    });
+
 });
 
 function popmeup(url)
@@ -174,7 +183,6 @@ function popSummary(entity, entity_id, uid = '') {
     $.fn.popover.Constructor.Default.whiteList.tbody = [];
     $.fn.popover.Constructor.Default.whiteList.thead = [];
     $.fn.popover.Constructor.Default.whiteList.href = [];
-    $.fn.popover.Constructor.Default.whiteList.class = [];
 
     res = $.ajax({
             url: url,
@@ -221,7 +229,6 @@ function popLogSummary(entity, entity_id, placement = 'top') {
       }).done( function( content, textStatus, xhr ) {
         $( popelement ).popover({
             container: 'body',
-            trigger: "focus",
             html: true,
             placement: placement,
             title: 'Log Summary <a href="#" class="close" data-dismiss="alert"><span style="font-size: 12px" class="fas fa-times-circle"></span></a>',
