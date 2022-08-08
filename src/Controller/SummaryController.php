@@ -133,22 +133,22 @@ class SummaryController extends CommonController
         // Switch it.
         switch ($entity) {
             case 'shift':
-                $class = 'App:Shift';
+                $class = Shift::class;
                 break;
             case 'organization':
-                $class = 'App:Organization';
+                $class = Organization::class;
                 break;
             case 'location':
-                $class = 'App:Location';
+                $class = Location::class;
                 break;
             case 'person':
-                $class = 'App:Person';
+                $class = Person::class;
                 break;
             case 'event':
-                $class = 'App:Event';
+                $class = Event::class;
                 break;
             case 'job':
-                $class = 'App:Job';
+                $class = Job::class;
                 break;
             default:
                 return $this->returnNotFound($request,'Unable to find class.');

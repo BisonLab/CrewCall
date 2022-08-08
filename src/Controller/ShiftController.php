@@ -292,7 +292,7 @@ class ShiftController extends CommonController
      */
     public function showLogAction(Request $request, $access, $id)
     {
-        return  $this->showLogPage($request,$access, "App:Shift", $id);
+        return  $this->showLogPage($request,$access, Shift::class, $id);
     }
 
     /**

@@ -239,7 +239,7 @@ class LocationController extends CommonController
      */
     public function showLogAction(Request $request, $access, $id)
     {
-        return  $this->showLogPage($request,$access, "App:Location", $id);
+        return  $this->showLogPage($request,$access, Location::class, $id);
     }
 
     /**

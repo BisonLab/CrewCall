@@ -140,7 +140,7 @@ class OrganizationController extends CommonController
      */
     public function showLogAction(Request $request, $access, $id)
     {
-        return  $this->showLogPage($request,$access, "App:Organization", $id);
+        return  $this->showLogPage($request,$access, Organization::class, $id);
     }
 
     /**

@@ -394,7 +394,7 @@ class PersonController extends CommonController
      */
     public function showLogAction(Request $request, $access, $id)
     {
-        return  $this->showLogPage($request,$access, "App:Person", $id);
+        return  $this->showLogPage($request,$access, Person::class, $id);
     }
 
     /**

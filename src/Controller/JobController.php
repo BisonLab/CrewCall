@@ -293,7 +293,7 @@ class JobController extends CommonController
      */
     public function showLogAction(Request $request, $access, $id)
     {
-        return  $this->showLogPage($request,$access, "App:Job", $id);
+        return  $this->showLogPage($request,$access, Job::class, $id);
     }
 
     /**

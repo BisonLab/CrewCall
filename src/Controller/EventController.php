@@ -332,7 +332,7 @@ class EventController extends CommonController
             $em = $this->getDoctrine()->getManager();
             $qb = $em->createQueryBuilder();
             $qb->select('e')
-                 ->from('App:Event', 'e')
+                 ->from(Event::class, 'e')
                  ->where('e.end > :from')
                  ->andWhere('e.start < :to')
                  ->setParameter('from', $from, \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)
@@ -606,7 +606,7 @@ class EventController extends CommonController
             $em = $this->getDoctrine()->getManager();
             $qb = $em->createQueryBuilder();
             $qb->select('e')
-                 ->from('App:Event', 'e')
+                ->from(Event::class, 'e')
                 ->where('lower(e.name) LIKE :term')
                 ->setParameter('term', strtolower($term) . '%');
 
