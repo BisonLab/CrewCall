@@ -115,6 +115,7 @@
           <a class="nav-link" href="#lsnotestab_{{ event.id }}" data-toggle="tab">Lists sent</a>
           </li>
 {% endif %}
+{% include '@Custom/event/_custom_navtabs.html.twig' ignore missing %}
       </ul>
 
       <div class="tab-content ">
@@ -188,6 +189,7 @@
         {% endfor %}
       </div>
 {% endif %}
+{% include '@Custom/event/_custom_tabcontent.html.twig' ignore missing %}
   </div>
 
   </div>
