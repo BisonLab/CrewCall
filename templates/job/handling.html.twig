@@ -189,9 +189,10 @@ function submitNewJobForm(shift_id, force = false) {
 }
 
 function popPersonJobs(person_id, job_id) {
+
     url = "{{ path('summary_person_jobs_job', {'access': 'ajax' }) }}?job=" + job_id;
     var popelement = "#popSummary_person_jobs_" + person_id + job_id;
-    var poptitle = 'Jobs <a href="#" class="close" data-dismiss="alert"><span style="font-size: 15px" class="fas fa-times-circle"></span></a>';
+    var poptitle = 'Jobs <a href="#" class="close" data-dismiss="alert"><span class="fas fa-times-circle"></span></a>';
 
     /*
      * I'll rather do this than sanitize: false, which is too wide.
@@ -203,6 +204,7 @@ function popPersonJobs(person_id, job_id) {
     $.fn.popover.Constructor.Default.whiteList.div = [];
     $.fn.popover.Constructor.Default.whiteList.tbody = [];
     $.fn.popover.Constructor.Default.whiteList.thead = [];
+    $.fn.popover.Constructor.Default.whiteList.href = [];
 
     res = $.ajax({
             url: url,
@@ -210,11 +212,12 @@ function popPersonJobs(person_id, job_id) {
             dataType: 'html'
       }).done( function( contenthtml, textStatus, xhr ) {
         $( popelement ).popover({
+            trigger: 'focus',
             delay: 500,
             html: true,
+            title: poptitle,
             placement: "auto",
-            trigger: "focus",
-            content: contenthtml,
+            content: contenthtml
         });
         /* May not need $( popelement ).attr('data-original-title', poptitle); */
         $( popelement ).popover("show");
@@ -303,6 +306,8 @@ function popOverlap(job_id) {
 
     popcontent = $("#overlap_popover_content_" + job_id).html();
     var popelement = "#overlap_popover_" + job_id;
+    var poptitle = 'Job Logs <a href="#" class="close" data-dismiss="alert"><span class="fas fa-times-circle"></span></a>';
+
     /*
      * I'll rather do this than the option "sanitize: false", which is too wide.
      */
@@ -315,11 +320,12 @@ function popOverlap(job_id) {
     $.fn.popover.Constructor.Default.whiteList.thead = [];
 
     $( popelement ).popover({
+        trigger: 'focus',
         delay: 500,
         html: true,
         placement: "auto",
-        content: popcontent,
-        trigger: "focus",
+        title: poptitle,
+        content: popcontent
     });
     $( popelement ).popover("show");
     return false;

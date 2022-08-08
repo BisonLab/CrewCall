@@ -7,6 +7,7 @@ function grabNewJobLogForm(job_id, shift_id) {
     } else {
         url = url + "?job=" + job_id;
     }
+    var poptitle = 'Add Work  <a href="#" class="close" data-dismiss="alert"><span style="font-size: 15px" class="fas fa-times-circle"></span></a>';
 
     $.get(url, function( contenthtml ) {
         popat = "#addJobLog_"+job_id;
@@ -17,9 +18,8 @@ function grabNewJobLogForm(job_id, shift_id) {
             html: true,
             sanitize: false,
             placement: 'left',
-            title: 'Add Work  <a href="#" class="close" data-dismiss="alert"><span style="font-size: 15px" class="fas fa-times-circle"></span></a>',
-            content: contenthtml,
-            trigger: "focus"
+            title: poptitle,
+            content: contenthtml
         });
         $( popat ).popover("show");
         $( "#joblog_job").hide();
@@ -44,12 +44,15 @@ function grabNewJobLogForm(job_id, shift_id) {
 function grabEditJobLogForm(joblog_id, shift_id) {
     url = "{{ path('joblog_edit', { 'access': 'ajax', 'id': 'XXX' }) }}";
     url = url.replace('XXX', joblog_id);
+
+    var poptitle = 'Edit <a href="#" class="close" data-dismiss="alert"><span class="fas fa-times-circle"></span></a>';
+
     $.get(url, function( content ) {
         $( "#editJobLog_"+joblog_id ).popover({
             html: true,
             sanitize: false,
             placement: 'left',
-            title: 'Edit <a href="#" class="close" data-dismiss="alert">&times;</a>',
+            title: poptitle,
             content: content
         });
         $( "#editJobLog_"+joblog_id ).popover("show");

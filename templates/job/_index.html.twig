@@ -59,7 +59,7 @@
             <td>
             <input class="job_list_checkbox_{{ shift.event.id }}" type="checkbox" name="job_list" value="{{ job.id }},{{ job.person.id }}">
             <a tabindex="0" href="#" id="popSummary_person_{{ job.person.id }}{{ job.id}}" onClick="return popSummary('person', {{ job.person.id }},{{ job.id}});"><span style="font-size: 15px" class="fas fa-info-circle"></span></a>
-            <a tabindex="0" href="#" title="Jobs" id="popSummary_person_jobs_{{ job.person.id }}{{ job.id }}" onClick="return popPersonJobs({{ job.person.id }}, {{ job.id }});"><span style="font-size: 15px" class="fas fa-user-clock"></span></a>
+            <a tabindex="0" href="#" id="popSummary_person_jobs_{{ job.person.id }}{{ job.id }}" onClick="return popPersonJobs({{ job.person.id }}, {{ job.id }});"><span style="font-size: 15px" class="fas fa-user-clock"></span></a>
     {% set pncontext = {
                 'message_types': ['AdminNote', 'PersonNote'],
                 'system': 'crewcall',

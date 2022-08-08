@@ -137,7 +137,11 @@ $(document).ready(function() {
         var click_closest = $(e.target)[0].closest('.popover');
         if (!click_closest) {
              $(".popover").each(function () {
-                $(this).popover("hide");
+                var should = this.getElementsByClassName("summaryTable");
+                var shouldl = this.getElementsByClassName("summaryLogTable");
+                if (should.length > 0 || shouldl.length > 0) {
+                    $(this).popover("hide");
+                }
              });
         }
     });
@@ -182,7 +186,6 @@ function popSummary(entity, entity_id, uid = '') {
     $.fn.popover.Constructor.Default.whiteList.tbody = [];
     $.fn.popover.Constructor.Default.whiteList.thead = [];
     $.fn.popover.Constructor.Default.whiteList.href = [];
-    $.fn.popover.Constructor.Default.whiteList.class = [];
 
     res = $.ajax({
             url: url,
