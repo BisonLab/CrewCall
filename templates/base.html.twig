@@ -5,29 +5,29 @@
 
 <header class="fixed-top" id="crewcall-header">
 {% block navbar %}
- <nav class="navbar-header">
-    <div class="navbar-header-item">
+<nav class="navbar navbar-header navbar-expand-sm navbar-light">
+ <div class="container-fluid">
+    <div class="col-2 ccLogo">
       <a class="navbar-brand" href="{{ path('dashboard') }}">
        <img src="{{ asset('images/logo.gif') }}" border="0" height="40">
+      CrewCall
       </a>
     </div>
-    <div class="navbar-header-item mr-auto navbar-title">
-        CrewCall</br>
-{% if app.user %}
-        <div class="user">{{ app.user }}</div>
-{% endif %}
-    </div>
-    <div class="navbar-header-item">
-        {{ knp_menu_render('mainmenu') }}
-    </div>
     {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-    <div class="navbar-header-item ml-auto">
-        {{ knp_menu_render('usermenu') }}
+    <div class="col-9" id="ccmiddlemenu">
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#cc-navbar-collapse" aria-expanded="false" aria-controls="navbarSupportedContent" aria-label="Toggle navigation">
+         <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="cc-navbar-collapse">
+          {{ knp_menu_render('mainmenu') }}
+      </div>
+    </div>
+    <div class="navbar-header col-1 ml-auto ccUsermenu" id="ccheadmenu">
+          {{ knp_menu_render('usermenu') }}
     </div>
     {% endif %}
-  </div> <!-- end row -->
- </nav>
-</div>
+ </div><!-- container-fluid -->
+</nav>
 {% endblock %}
 </header>
 
