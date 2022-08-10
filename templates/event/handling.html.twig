@@ -22,7 +22,9 @@ $(document).ready(function() {
 
     // And initially, if not set.
     setEventAccStatus();
-    handleJobLists();
+    // This one just makes it all jump too much. Since I ajax the grabbing,
+    // large events ends up quite messy. This is from feedback from my users.
+    // handleJobLists();
 });
 
 function handleEventAccStatus() {

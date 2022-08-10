@@ -18,6 +18,9 @@ function grabJobList(shift_id, dont_store = false) {
     if (dont_store || typeof(Storage) === "undefined") {
         return false;
     }
+    // Feedback from my users says this is just too hopping and messy.
+    return false;
+    // Let's see if they are more happy now.
     var evjoblists = {};
     if (localStorage.evjoblists) {
         evjoblists = JSON.parse(localStorage.evjoblists);
