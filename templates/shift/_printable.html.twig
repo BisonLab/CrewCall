@@ -29,8 +29,8 @@
 </thead>
 
 <tbody class="jobsbody">
-  {% for job in shift.jobs({'sort_by': 'last_name'}) %}
-   {% if state is empty or job.state == state %}
+{% for job in shift.jobs({'sort_by': 'last_name'}) %}
+ {% if not booked or job.booked %}
     <tr class="jobs">
         <td nowrap="nowrap" class="epName">{{ job.person.name }}</td>
 {% if all or Mobile is defined %}
@@ -83,7 +83,7 @@
         </td>
 {% endif %}
     </tr>
-   {% endif %}
+   {% endif %}{# job.booked #}
   {% endfor %}
   </tbody>
 </table>

@@ -51,7 +51,7 @@ class ShiftController extends CommonController
         $em = $this->getDoctrine()->getManager();
         return $this->render('shift/printable.html.twig', array(
             'shift' => $shift,
-            'state' => $request->get('state'),
+            'booked' => true,
             'all' => true,
         ));
     }
