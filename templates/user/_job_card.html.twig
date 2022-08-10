@@ -58,7 +58,7 @@
       </div>
     </div>
   </div><!-- end collapsed row -->
-{% if view != "opportunities" %}
+{% if job.booked %}
         {% set filecontext = {
                     'system': 'crewcall',
                     'object_name': 'event',
