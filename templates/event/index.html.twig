@@ -7,17 +7,17 @@
     
 <div class="row">
 
- <div class="col-sm-3">
+ <div class="col-3">
     {% if past %}
-      <h1>Past Events</h1>
+      <h3>Past Events</h3>
     {% elseif upcoming %}
-      <h1>Upcoming Events</h1>
+      <h3>Upcoming Events</h3>
     {% else %}
-      <h1>Ongoing Events</h1>
+      <h3>Ongoing Events</h3>
     {% endif %}
  </div>
 
- <div class="col-sm-1" style="margin-top: 10px;">
+ <div class="col-1">
     {% if not upcoming %}
    <a href="{{ path('event_index', {'upcoming': true }) }}" class="btn-sm btn-light">Upcoming</a>
     {% endif %}
@@ -25,13 +25,13 @@
     <a href="{{ path('event_index', {'past': true }) }}" class="btn-sm btn-light">Past</a>
     {% endif %}
  </div>
- <div class="col-sm-3" style="margin-top: 20px;">
+ <div class="col-3">
 {#
     <input id="hidereadycheckbox" type="checkbox" onChange="checkReadyCheckbox(this)">Hide ready events</input>
  #}
  </div>
 
- <div class="col-sm-2 ml-auto" style="margin-top: 10px;">
+ <div class="col-2 ml-auto">
    <a href="{{ path('event_new') }}" class="btn-sm btn-dark">New Event</a>
  </div>
 
