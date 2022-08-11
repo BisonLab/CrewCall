@@ -9,7 +9,9 @@
     {{ form_end(edit_form) }}
 
     <a href="{{ path('function_show', {'id': functionEntity.id}) }}" class="btn-sm btn-dark">Cancel</a>
+{% if functionEntity.deleteable %}
     {{ form_start(delete_form) }}
         <input class="btn-sm btn-danger" type="submit" value="Delete">
     {{ form_end(delete_form) }}
+{% endif %}
 {% endblock %}

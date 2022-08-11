@@ -330,4 +330,12 @@ class FunctionEntity
             return $states;
         }
     }
+
+    public function isDeleteable()
+    {
+        if ($this->getShifts()->count() > 0)
+            return false;     
+        return true;
+    }
+    
 }
