@@ -44,6 +44,12 @@ class SummaryController extends CommonController
 
     /**
      *
+     * I guess this should be configureable based on the users preference.
+     *
+     * Right now it's -1 +3 days and assigned and confirmed jobs.
+     * (I guess it should be booked, but this is more useful for my current
+     * users)
+     *
      * @Route("/person_jobs_job", name="summary_person_jobs_job", methods={"GET"})
      */
     public function personJobsJobAction(Request $request, $access)
@@ -52,14 +58,16 @@ class SummaryController extends CommonController
         if (!$job = $em->getRepository(Job::class)->find($request->get("job")))
             return $this->returnNotFound($request, 'Unable to find job.');
         $options = [];
-        // I'll default today +2 days. Add options at will and need.
-        $options['from'] = $job->getStart()->setTime(0, 0);
+        $from = clone($job->getStart());
+        $options['from'] = $from->modify('-1 day');
         $to = clone($job->getStart());
-        $options['to'] = $to->modify('+1 day');
+        $options['to'] = $to->modify('+2 days');
         $summary = [];
         $person = $job->getPerson();
         foreach($this->get('crewcall.jobs')->jobsForPerson(
             $person, $options) as $job) {
+                if (!in_array($job->getState(), ['ASSIGNED', 'CONFIRMED']))
+                    continue;
                 $label = (string)$job . " at " . (string)$job->getEvent();
                 $value = $job->getStart()->format("d M H:i")
                     . " -> " .
