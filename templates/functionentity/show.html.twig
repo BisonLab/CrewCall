@@ -26,10 +26,6 @@
             <tr>
              <th>
                 <a href="{{ path('function_edit', { 'id': functionEntity.id }) }}"  class="btn-sm btn-dark">Edit</a>
-                <br>
-{{ form_start(remove_people_form) }}
-    <input class="btn-sm btn-danger" type="submit" value="Remove all from this function">
-{{ form_end(remove_people_form) }}
 {% if functionEntity.deleteable %}
                 <br>
                 {{ form_start(delete_form) }}
@@ -52,16 +48,18 @@
 
   <div class="tab-content">
     <div class="tab-pane active" id="peopletab">
-      <table id="apTable" class="sortable_table table table-sm">
+      <table id="peoplewithfunctionstable" class="table table-sm">
       <thead>
           <tr>
               <th>Name</th>
               <th>Email</th>
               <th>Phone</th>
+              <th class="selectcol">Select</th>
           </tr>
       </thead>
       <tbody>
-          {% for person in functionEntity.people %}
+          {% for pf in functionEntity.personfunctions %}
+            {% set person = pf.person %}
           <tr>
           <td>
               <a href="{{ path('person_show', { 'id': person.id }) }}">
@@ -70,12 +68,65 @@
           </td>
           <td>{{ person.email }}</td>
           <td>{{ person.mobilephonenumber }}</td>
+          <td class="personfunction_select">{{ pf.id }}</td>
           </tr>
           {% endfor %}
       </tbody>
+      <tfoot>
+         <th>&nbsp;</th>
+         <th>&nbsp;</th>
+         <th>&nbsp;</th>
+         <th>
+{{ form_start(remove_people_form) }}
+    <input class="btn-sm btn-danger" type="submit" value="Remove">
+{{ form_end(remove_people_form) }}
+        </th>
+      </tfoot>
     </table>
     </div>
   </div>
  </div>
 </div><!-- End Row -->
+
+<script>
+
+$(document).ready(function() {
+
+    var selectable_table = setupSortable($( '#peoplewithfunctionstable' ), true);
+
+    $('#removePeopleForm').on('submit', function(eventObj) {
+
+        var $btn = $(document.activeElement);
+        var form = this;
+
+        var rows_selected = selectable_table.column('.selectcol').checkboxes.selected();
+
+      // Iterate over all selected checkboxes
+      $.each(rows_selected, function(index, rowId){
+         // Create a hidden element
+         $(form).append(
+             $('<input class="peoplefunctions_list">')
+                .attr('type', 'hidden')
+                .attr('name', 'personfunctions[]')
+                .val(rowId)
+         );
+      });
+    });
+
+        postdata = $(form).serialize();
+        $.ajax({
+            type: "POST",
+            url: "{{ path('function_remove_people', {'id': functionEntity.id}) }}",
+            data: postdata,
+            success: function(data)
+            {
+                parent.location.reload();
+            }
+        });
+        eventObj.preventDefault();
+});
+
+</script>
+
+
 {% endblock %}

@@ -148,10 +148,12 @@ class FunctionEntityController extends CommonController
     public function showAction(FunctionEntity $functionEntity)
     {
         $deleteForm = $this->createDeleteForm($functionEntity);
+        $removePeopleForm = $this->createRemovePeopleForm($functionEntity);
 
         return $this->render('functionentity/show.html.twig', array(
             'functionEntity' => $functionEntity,
             'delete_form' => $deleteForm->createView(),
+            'remove_people_form' => $removePeopleForm->createView(),
         ));
     }
 
@@ -163,6 +165,7 @@ class FunctionEntityController extends CommonController
     public function editAction(Request $request, FunctionEntity $functionEntity)
     {
         $deleteForm = $this->createDeleteForm($functionEntity);
+        $removePeopleForm = $this->createRemovePeopleForm($functionEntity);
         $editForm = $this->createForm('App\Form\FunctionEntityType', $functionEntity);
         $editForm->handleRequest($request);
 
@@ -176,6 +179,7 @@ class FunctionEntityController extends CommonController
             'functionEntity' => $functionEntity,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'remove_people_form' => $removePeopleForm->createView(),
         ));
     }
 
@@ -186,6 +190,10 @@ class FunctionEntityController extends CommonController
      */
     public function deleteAction(Request $request, FunctionEntity $functionEntity)
     {
+        if (!$functionEntity->isDeleteable())
+            return $this->redirectToRoute('function_show',
+                array('id' => $functionEntity->getId()));
+
         $form = $this->createDeleteForm($functionEntity);
         $form->handleRequest($request);
 
@@ -198,6 +206,33 @@ class FunctionEntityController extends CommonController
     }
 
     /**
+     * Removes everyone from the function.
+     *
+     * @Route("/{id}", name="function_remove_people", methods={"POST"})
+     */
+    public function removePeopleAction(Request $request, FunctionEntity $functionEntity)
+    {
+        $form = $this->createRemovePeopleForm($functionEntity);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $repo = $em->getRepository(PersonFunction::class);
+            foreach ($request->request->get('personfunctions') as $pfid) {
+dump($pfid);
+                $pf = $repo->find($pfid);
+dump($pf);
+                if ($pf->getFunction() !== $functionEntity)
+                    continue;
+                $em->remove($pf);
+            }
+            $em->flush();
+        }
+        return $this->redirectToRoute('function_show',
+            array('id' => $functionEntity->getId()));
+    }
+
+    /**
      * Creates a form to delete a functionEntity entity.
      *
      * @param FunctionEntity $functionEntity The functionEntity entity
@@ -207,8 +242,26 @@ class FunctionEntityController extends CommonController
     private function createDeleteForm(FunctionEntity $functionEntity)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('function_delete', array('id' => $functionEntity->getId())))
+            ->setAction($this->generateUrl('function_delete',
+                array('id' => $functionEntity->getId())))
             ->setMethod('DELETE')
+            ->getForm()
+        ;
+    }
+
+    /**
+     * Creates a form to remove people.
+     *
+     * @param FunctionEntity $functionEntity The functionEntity entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createRemovePeopleForm(FunctionEntity $functionEntity)
+    {
+        return $this->createFormBuilder(null, ['attr' => ['id' => 'removePeopleForm']])
+            ->setAction($this->generateUrl('function_remove_people',
+                array('id' => $functionEntity->getId())))
+            ->setMethod('POST')
             ->getForm()
         ;
     }
