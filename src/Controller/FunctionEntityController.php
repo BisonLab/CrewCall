@@ -219,9 +219,7 @@ class FunctionEntityController extends CommonController
             $em = $this->getDoctrine()->getManager();
             $repo = $em->getRepository(PersonFunction::class);
             foreach ($request->request->get('personfunctions') as $pfid) {
-dump($pfid);
                 $pf = $repo->find($pfid);
-dump($pf);
                 if ($pf->getFunction() !== $functionEntity)
                     continue;
                 $em->remove($pf);
