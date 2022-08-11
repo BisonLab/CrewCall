@@ -10,6 +10,10 @@ html {
  * Modals makes the head and body padding-right jump to 15px
  * (Both header and body)
  */
+header {
+    padding-right: 0 !important;
+}
+
 body {
     padding-right: 0 !important;
     padding-top: 80px;
@@ -41,6 +45,10 @@ em {
 /*
  * Menu number one, the main one.
  */
+.fixed-top {
+    background-color: #f8f8f8;
+}
+
 .ccLogo {
     display: inline-block;
     color: black;
@@ -140,10 +148,26 @@ em {
  * The header Navbar.
  */
 .navbar-header {
+    margin-left: 20px;
+    margin-right: 10px;
+    background-color: #f8f8f8;
+    color: black;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    flex-wrap: wrap;
+    vertical-align: middle;
+    align-items: center;
+    font-size: 16px;
+}
+/*
+.navbar-header {
     background-color: #f8f8f8;
     color: black;
 }
+ */
 
+.navbar-header a,
 .navbar-header .fas,
 .navbar-header .far {
     margin: 3px;
@@ -178,6 +202,16 @@ em {
     white-space: nowrap;
     background-color: transparent;
     border: 0;
+}
+
+.navbar-title {
+    color: black;
+    font-size: 16px;
+    font-weight: bolder;
+}
+.navbar-title .user {
+    font-size: 80%;
+    font-weight: normal;
 }
 /*
 .navbar-header-item-active {
