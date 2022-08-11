@@ -14,4 +14,7 @@
         <input class="btn-sm btn-danger" type="submit" value="Delete">
     {{ form_end(delete_form) }}
 {% endif %}
+{{ form_start(remove_people_form) }}
+    <input class="btn-sm btn-danger" type="submit" value="Remove all from this function">
+{{ form_end(remove_people_form) }}
 {% endblock %}

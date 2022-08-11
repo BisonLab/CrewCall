@@ -26,6 +26,10 @@
             <tr>
              <th>
                 <a href="{{ path('function_edit', { 'id': functionEntity.id }) }}"  class="btn-sm btn-dark">Edit</a>
+                <br>
+{{ form_start(remove_people_form) }}
+    <input class="btn-sm btn-danger" type="submit" value="Remove all from this function">
+{{ form_end(remove_people_form) }}
 {% if functionEntity.deleteable %}
                 <br>
                 {{ form_start(delete_form) }}
