@@ -58,7 +58,7 @@
       </div>
     </div>
   </div><!-- end collapsed row -->
-{% if job.booked %}
+{% if job.state in ['ASSIGNED', 'CONFIRMED'] %}
         {% set filecontext = {
                     'system': 'crewcall',
                     'object_name': 'event',

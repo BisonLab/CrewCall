@@ -743,6 +743,7 @@ class UserFrontController extends CommonController
         foreach ($jobs as $job) {
             $arr = [
                 'name' => (string)$job,
+                'state' => $job->getState(),
                 'id' => $job->getId(),
             ];
             $shiftarr = $this->getShiftArr($job->getShift());
@@ -771,6 +772,8 @@ class UserFrontController extends CommonController
         foreach ($ccjobs->opportunitiesForPerson($person, $options) as $o) {
             $arr = [
                 'name' => (string)$o,
+                // Kinda cheating.
+                'state' => 'OPPORTUNITY',
                 'id' => $o->getId(),
             ];
             if ($options['no_shift_data'] ?? false)
