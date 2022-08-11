@@ -46,7 +46,7 @@ class SummaryController extends CommonController
      *
      * I guess this should be configureable based on the users preference.
      *
-     * Right now it's -1 +3 days and assigned and confirmed jobs.
+     * Right now it's -2 +3 days and assigned and confirmed jobs.
      * (I guess it should be booked, but this is more useful for my current
      * users)
      *
@@ -59,9 +59,9 @@ class SummaryController extends CommonController
             return $this->returnNotFound($request, 'Unable to find job.');
         $options = [];
         $from = clone($job->getStart());
-        $options['from'] = $from->modify('-1 day');
+        $options['from'] = $from->modify('-2 days');
         $to = clone($job->getStart());
-        $options['to'] = $to->modify('+2 days');
+        $options['to'] = $to->modify('+3 days');
         $summary = [];
         $person = $job->getPerson();
         foreach($this->get('crewcall.jobs')->jobsForPerson(
