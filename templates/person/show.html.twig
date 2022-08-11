@@ -339,7 +339,7 @@
         {% if overjobs | length > 0 %}
 <div id="overlap_popover_content_{{ job.id }}" class="d-none">
 {% for ojob in overjobs %}
-{{ ojob.shift }} ({{ ojob.statelabel }} {{ ojob.shift.start|date('H:i') }} -> {{ ojob.shift.end|date('H:i') }})<br>
+{{ ojob.shift }} ({{ ojob.statelabel }} {{ ojob.shift.start|date('d M H:i') }} -> {{ ojob.shift.end|date('H:i') }})<br>
 {% endfor %}
 </div>
             <a tabindex="0" href="#" title="Overlapping Jobs" id="overlap_popover_{{ job.id }}" onClick="return popOverlap({{ job.id }});"><span style="font-size: 15px; color: {% if job.booked %}red{% else %}orange{% endif %};" class="fas fa-exclamation-triangle"></span></a>

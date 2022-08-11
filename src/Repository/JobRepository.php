@@ -23,6 +23,7 @@ class JobRepository extends ServiceEntityRepository
         $this->params = $params;
         parent::__construct($registry, Job::class);
     }
+
     /*
      * Find'em all, or fewer.
      */
@@ -268,20 +269,21 @@ class JobRepository extends ServiceEntityRepository
     public function checkOverlapForPerson($job, $options = [])
     {
         $person = $job->getPerson();
-        $from = $job->getStart();
-        $to = $job->getEnd();
+        $jobstart = $job->getStart();
+        $jobend = $job->getEnd();
         $qb = $this->_em->createQueryBuilder();
         $qb->select('j')
             ->from($this->_entityName, 'j')
             ->innerJoin('j.shift', 's')
-            ->where("j.person = :person")
+            ->andWhere("j.person = :person")
             ->setParameter('person', $person);
 
         /*
          * Options/Params/config. More or less useful.
          */
+        $overlap_hours = $this->params->get('job_overlap_hours') ?: 0;
         if ($this->params->get('job_overlap_same_day')) {
-            $from_day = clone($from);
+            $from_day = clone($jobstart);
             // This just looks so wrong.
             $qb
                 ->andWhere('s.start >= :from_day_start')
@@ -289,17 +291,29 @@ class JobRepository extends ServiceEntityRepository
                 ->setParameter('from_day_start', $from_day->format("Y-m-d 00:00"))
                 ->setParameter('from_day_end', $from_day->format("Y-m-d 23:59"))
             ;
-        } else {
+        } elseif ($overlap_hours == 0) {
             $qb
                 ->andWhere('s.start <= :to')
                 ->andWhere('s.end >= :from')
-                ->setParameter('to', $to)
-                ->setParameter('from', $from)
+                ->setParameter('to', $jobend)
+                ->setParameter('from', $jobstart)
             ;
         }
 
-        // TODO: Make this one work. Will it cooperate with same day?
-        if ($this->params->get('job_overlap_hours')) {
+        if ($overlap_hours > 0) {
+            // Gotta extend the time period to check overlap for to
+            // ±overlap_hours
+            $ft = clone($jobstart);
+            $fromtime = $ft->modify("-" . $overlap_hours . " hours");
+            $t = clone($jobend);
+            $totime = $t->modify("+" . $overlap_hours . " hours");
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->between('s.start', ':fromtime', ':totime'),
+                    $qb->expr()->between('s.end', ':fromtime', ':totime')
+               ) );
+            $qb->setParameter('fromtime', $fromtime);
+            $qb->setParameter('totime', $totime);
         }
 
         if ($this->params->get('job_overlap_booked_only')) {

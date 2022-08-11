@@ -93,8 +93,10 @@ parameters:
     # If any job the same day are to be considered overlap:
     job_overlap_same_day: true
 
-    # Any job with less than these hours is considered an overlap
-    job_overlap_hours: 4
+    # Any job within less than these hours is considered an overlap
+    # Set 0 if only pure overlap (Default)
+    # job_overlap_hours: 4
+    job_overlap_hours: 0
 
     bisonlab_reports.report_classes:
         - App\Lib\Reports\Reports
