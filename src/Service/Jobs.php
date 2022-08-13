@@ -99,7 +99,7 @@ class Jobs
                  * it ends up removing opportunities also when the existing job
                  * is just in the wishlist.
                 foreach ($jobshift as $jsf) {
-                    if ($this->overlap($jsf->getShift(), $sf->getShift()))
+                    if ($this->shiftOverlaps($jsf->getShift(), $sf->getShift()))
                         continue 2;
                 }
                  */
@@ -118,7 +118,7 @@ class Jobs
         $last = null;
         $checked = new \Doctrine\Common\Collections\ArrayCollection();
         foreach ($jobs as $job) {
-            if ($last && $this->overlap($job->getShift(), $last->getShift())) {
+            if ($last && $this->shiftOverlaps($job->getShift(), $last->getShift())) {
                 $job->setOverlap(true);
                 $last->setOverlap(true);
             }
@@ -128,7 +128,7 @@ class Jobs
         return $checked;
     }
 
-    public function overlap(Shift $one, Shift $two)
+    public function shiftOverlaps(Shift $one, Shift $two)
     {
         // Why bother checking if it's the same? :=)
         if ($one === $two) return true;
