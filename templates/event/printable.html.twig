@@ -7,19 +7,19 @@
 
 {{ form_start(mailform) }}
 <div class="row">
-    <div class="col-md-5">
+    <div class="col-6">
         {% for check, checked in prcols %}
         <input name="fields[{{ check }}]" id="epcheck_{{  check  }}" type="checkbox" onClick='return checkChecked("{{  check  }}");' {% if checked %}checked{% endif %}>{{  check  }}</input>
         {% endfor %}
         <a href="#" onClick="return printTableContent();" class="btn-sm btn-dark" id="printbutton">Print</a>
     </div>
-    <div class="col-md-2">
+    <div class="col-2">
         Send as mail to:
     </div>
-    <div class="col-md-2">
+    <div class="col-2">
         {{ form_widget(mailform.email) }}
     </div>
-    <div class="col-md-2">
+    <div class="col-1">
         <button class="btn-sm btn-dark" type="submit">Send</button>
     </div>
 </div>
@@ -48,5 +48,4 @@ $(document).ready(function() {
     {% endif %}
 });
 </script>
-
 {% endblock %}

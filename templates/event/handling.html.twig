@@ -385,17 +385,17 @@ function openNoteModal(modal_content_id, title = "Note") {
 <div id="eventmessage_modal" class="d-none">
     <form name="eventmessage_form" id="eventMessageForm" method="POST">
       <div class="row">
-       <div class="col-sm-6">
+       <div class="col-6">
         <textarea id="eventMessageFormBody" name="body" cols="30" rows="6"></textarea><br>
        </div>
-       <div class="col-sm-3">
+       <div class="col-3">
         <input type="checkbox" name="states[]" value="CONFIRMED" checked>Confirmed</input><br>
         <input type="checkbox" name="states[]" value="ASSIGNED">Assigned</input><br>
         <input type="checkbox" name="states[]" value="INTERESTED">Interested</input><br>
         <input type="checkbox" name="states[]" value="all">All</input><br>
         <div id="eventMessageFormSelect"></div>
        </div>
-       <div class="col-sm-3">
+       <div class="col-3">
             <input type="radio" value="BULKSMS" name="message_type" CHECKED>SMS only</input><br>
             <input type="radio" value="BULKALL" name="message_type">SMS and  Email</input>
         <input class="btn-sm btn-dark" id="evsendmessage" type="submit" name="submit" value="Send">

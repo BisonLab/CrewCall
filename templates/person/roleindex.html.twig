@@ -11,7 +11,7 @@
 {% endif %}
 
 <div class="row">
-<div class="col-sm-8">
+<div class="col-8">
    <form action="{{ path('person_role') }}" method="GET">
 <label>Filter on role</label>
 <select name="role_id">
@@ -27,7 +27,7 @@
     <button class="btn-sm btn-dark" type="submit">Show</button>
     </form>
 </div>
-<div class="col-sm-2">
+<div class="col-2">
 </div>
 
 <table id="sortable_table" class="table table-striped-greyhead table-sm" data-order='[[ 1, "asc" ]]'>

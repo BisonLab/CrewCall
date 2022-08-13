@@ -31,7 +31,7 @@
 
 <div id="combowall">
   <div class="row">
-    <div class="col-sm-12">
+    <div class="col-12">
     <h3>Admin Wall and Todos</h3>
     </div>
   </div>
@@ -51,7 +51,7 @@
  {% if is_granted('show', message) %}
    <div id="sakonninmessage_{{ message.messageid}}">
      <div class="noteText row">
-        <div class="col-sm-9">
+        <div class="col-9">
             <em>{{ message.createdAt | date('Y-m-d') }} - {{ message.createdBy }}</em>
         </div>
       {% if is_granted('edit', message) %}
@@ -62,7 +62,7 @@
 <input id="delcombo_{{ message.messageid }}" type="submit">
 </form>
 </div>
-        <div class="col-sm-3" align="right">
+        <div class="col-3" align="right">
           <div class="dropdown">
              <button class="fas fa-bars" type="button" data-toggle="dropdown">
              <span></span>
@@ -77,12 +77,12 @@
       {% endif %}
      </div>
      <div class="noteText row">
-<div class="col-sm-9">
+<div class="col-9">
 <pre wrap id="sakonninmessagebody_{{ message.messageid }}">
 {{ message.body }}
 </pre>
 </div>
-    <div class="col-sm-3 align-bottom">
+    <div class="col-3 align-bottom">
       {% if message.messagetype == "TODO" %}
           {# OK, are we checked or not? #}
           {% set checked = false %}

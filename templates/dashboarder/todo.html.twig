@@ -1,7 +1,7 @@
 {% include '/dashboarder/handling.html.twig' %}
 <div id="tododash">
   <div class="row">
-    <div class="col-sm-12">
+    <div class="col-12">
     <h3>Todo</h3>
     </div>
   </div><!-- End row -->
@@ -15,7 +15,7 @@
 <div id="sakonninmessage_{{ message.messageid}}">
 
   <div class="row noteText">
-   <div class="col-sm-9">
+   <div class="col-9">
         <em>{{ message.createdAt | date('Y-m-d') }} - {{ message.createdBy }}</em>
    </div>
 {% if is_granted('edit', message) %}
@@ -27,7 +27,7 @@
     <input id="deltodo{{ message.messageid }}" type="submit">
     </form>
   </div>
-   <div class="col-sm-3" align="right">
+   <div class="col-3" align="right">
         <div class="dropdown">
           <button class="fas fa-bars" id='actionburger' type="button" data-toggle="dropdown">
           <span></span>
@@ -43,13 +43,13 @@
  </div><!-- End first row -->
 
  <div class="row noteText">
-   <div class="col-sm-9">
+   <div class="col-9">
 <pre wrap id="sakonninmessagebody_{{ message.messageid }}">
 {{ message.body }}
 </pre>
    </div>
 
-<div class="col-sm-3 align-bottom" align="right">
+<div class="col-3 align-bottom" align="right">
     {% set checked = false %}
     {% set last_reply = message.replies | last %}
     {% if last_reply %}

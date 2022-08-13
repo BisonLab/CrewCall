@@ -4,7 +4,7 @@
 {% block body %}
 {% include '/location/handling.html.twig' %}
 <div class="row">
-  <div class="col-sm-3">
+  <div class="col-3">
     {% if location.parent %}
         <h1>
         <a href="{{ path('location_show', {'id': location.parent.id}) }}">{{ location.parent }}</a> -> {{ location.name }}
@@ -79,7 +79,7 @@
     </table>
 </div>
 
-<div class="col-sm-9 tabbable" id="eventRight">
+<div class="col-9 tabbable" id="eventRight">
   <ul id="tabRight" class="nav nav-tabs">
   <li class="nav-item locationEventsTab">
   <a class="nav-link active" href="#eventstab" data-toggle="tab">Events</a>

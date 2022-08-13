@@ -18,20 +18,20 @@
     <input type="hidden" name="_csrf_token" value="{{ csrf_token('event-edit-note' ~ note.id) }}">
 {% if subject is not defined or subject %}
     <div class="form-group row">
-      <label class="col-form-label col-sm-2">Subject:</label>
-      <div class="col-sm-10">
+      <label class="col-form-label col-2">Subject:</label>
+      <div class="col-10">
         <input class="form-control" type="text" name="subject" size="40" value="{{ note.subject }}">
       </div>
     </div>
 {% endif %}
     <div class="form-group row">
-        <label class="col-form-label col-sm-2 required">Text:</label>
-      <div class="col-sm-10">
+        <label class="col-form-label col-2 required">Text:</label>
+      <div class="col-10">
         <textarea class="form-control" type="textarea" name="body" required="required" cols="40" rows="5">{{ note.body }}</textarea>
       </div>
     </div>
     <div class="form-group row">
-      <div class="col-sm-10">
+      <div class="col-10">
         <input class="btn-sm btn-dark" type="submit" value="Save" />
       </div>
     </div>

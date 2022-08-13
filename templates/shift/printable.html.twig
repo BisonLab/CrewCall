@@ -5,7 +5,7 @@
 {% set prcols = {'Mobile': false , 'Diets': false, 'Checks': false, 'Comments': false, 'Hours1': false, 'Hours2': false} %}
 <div id="unprintableContent">
 <div class="row">
-    <div class="col-md-5">
+    <div class="col-5">
         {% for check, checked in prcols %}
         <input name="fields[{{ check }}]" id="epcheck_{{  check  }}" type="checkbox" onClick='return checkChecked("{{  check  }}");' {% if checked %}checked{% endif %}>{{  check  }}</input>
         {% endfor %}

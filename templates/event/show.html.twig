@@ -9,7 +9,7 @@
 {% include '/shiftorganization/handling.html.twig' %}
 
 <div class="row">
-  <div class="col-sm-6">
+  <div class="col-6">
     {% if event.parent %}
         <h1>
         <a href="{{ path('event_show', {'id': event.parent.id}) }}">{{ event.parent }}</a> -> {{ event.name }}
@@ -18,7 +18,7 @@
         <h1>{{ event.name }}</h1>
     {% endif %}
   </div>
-  <div class="col-sm-6" align="right">
+  <div class="col-6" align="right">
     {% if not event.parent %}
         <a href="{{ path('event_new', {'parent': event.id}) }}" class="btn-sm btn-dark">New sub event</a>
         <a href="{{ path('event_clone', {'event': event.id}) }}" class="btn-sm btn-dark">Create a copy with new start date</a>
