@@ -6,6 +6,9 @@
         <th>State</th>
         <th>Mobile</th>
         <th>Email</th>
+{% if person_jobs is not empty %}
+        <th>Function that day</th>
+{% endif %}
         <th class="selectcol"></th>
     </tr>
 </thead>
@@ -21,6 +24,9 @@
 {% endif %}
         <td>{{ person.mobilephonenumber }}</td>
         <td>{{ person.email }}</td>
+{% if person_jobs is not empty %}
+        <td>{{ person_jobs[person.id] | join(",") }}</td>
+{% endif %}
         <td>{{ person.id }}</td>
     </tr>
 {% endfor %}

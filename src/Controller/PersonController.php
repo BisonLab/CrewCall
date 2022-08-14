@@ -70,8 +70,10 @@ class PersonController extends CommonController
         $simplified = $request->get('simplified');
         $on_date = $request->get('on_date');
 
-        $people = [];
         $functionEntity = null;
+        $people = new \Doctrine\Common\Collections\ArrayCollection();
+        $jobs = null;
+        $person_jobs = null;
         if ($fid = $request->get('function_id')) {
             if (!$functionEntity = $fe_repo->find($fid))
                 return $this->returnNotFound($request, 'No function to filter');
@@ -85,6 +87,35 @@ class PersonController extends CommonController
                     'on_date' => $on_date,
                 ]);
             }
+        } elseif ($on_date
+                && in_array($select_grouping,
+                        ['booked', 'interested', 'assigned', 'confirmed'])) {
+            $states = [];
+            switch($select_grouping) {
+                case 'booked':
+                    $states = ExternalEntityConfig::getBookedStatesFor('Job');
+                    break;
+                case 'interested':
+                    $states = ["INTERESTED"];
+                    break;
+                case 'assigned':
+                    $states = ["ASSIGNED"];
+                    break;
+                case 'confirmed':
+                    $states = ["CONFIRMED"];
+                    break;
+            }
+            $jobs = $job_repo->findJobs([
+                    'from' => $on_date,
+                    'to' => $on_date,
+                    'states' => $states,
+                    ]);
+            foreach ($jobs as $j) {
+                $p = $j->getPerson();
+                $person_jobs[$p->getId()] []= $j;
+                if (!$people->contains($p))
+                    $people->add($p);
+            }
         } else {
                 $people = $this->filterPeople($em->getRepository(Person::class)->findAll(),[
                     'crew_only' => true,
@@ -96,6 +127,8 @@ class PersonController extends CommonController
         $functions = $fe_repo->findAllActive();
         return $this->render('person/crewindex.html.twig', array(
             'people' => $people,
+            'jobs' => $jobs,
+            'person_jobs' => $person_jobs,
             'on_date' => $on_date,
             'simplified' => $simplified,
             'select_grouping' => $select_grouping,

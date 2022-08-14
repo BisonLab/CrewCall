@@ -68,11 +68,17 @@ trait CommonControllerFunctions
                         continue;
                     if (!$filtered->contains($p))
                         $filtered->add($p);
+                    // I did not have this one before but see no reason.
+                    // I'll comment here in case there was.
+                    continue;
                 }
 
                 if ($select_grouping == 'all_crewmembers') {
                     if (!$filtered->contains($p))
                         $filtered->add($p);
+                    // I did not have this one before but see no reason.
+                    // I'll comment here in case there was.
+                    continue;
                 }
 
                 if ($select_grouping == "available") {
