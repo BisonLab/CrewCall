@@ -79,9 +79,14 @@
 
 {% for note in job.inform_notes %}
   <div class="row p-1">
-    <div class="col-12">
+    <div class="col-1">
     <i class="fas fa-info-circle text-secondary"></i>
+    </div>
+    <div class="col-11">
     <span class="ml-1">
+        {% if note.subject is not empty %}
+        <strong>{{ note.subject }}</strong><br>
+        {% endif %}
         {{ note.body }}
     </span>
     </div>

@@ -1,8 +1,10 @@
 {% if sakonnin_files.contexthasfiles(filecontext) %}
 {% for sfile in sakonnin_files.getFilesForContext(filecontext) %}
   <div class="row p-1">
-    <div class="col-12">
+    <div class="col-1">
     <i class="fas fa-info-circle text-secondary"></i>
+    </div>
+    <div class="col-11">
     <span class="ml-1">
       {% if sfile.thumbnailable %}
       <img id="img_{{sfile.id}}" data-zoom-image="{{ path('file_view', { 'file_id': sfile.id }) }}" src="{{ path('uf_file', { 'id': sfile.fileid, 'x': 30, 'y': 30 }) }}">

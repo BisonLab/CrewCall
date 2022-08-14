@@ -5,6 +5,9 @@
   {% if (note.state == "SHOW" or note.state == "UNREAD") %}
   <div class="col-md-6 col-lg-4 col-xl-3 noteCard" id="sakonninnote_{{ note.id}}">
    <p><strong>{{ note.createdAt | date('Y-m-d') }} - {{ note.createdBy }}</strong></p>
+   {% if note.subject is not empty %}
+   <p><strong>{{ note.subject }}</strong></p>
+   {% endif %}
 <p>{{ note.body }}</p>
    </div>
 {% endif %}
@@ -19,6 +22,9 @@
   {% if (note.state == "SHOW" or note.state == "UNREAD") %}
   <div class="col-md-6 col-lg-4 col-xl-3 noteCard" id="sakonninnote_{{ note.id}}">
    <p><strong>{{ note.createdAt | date('Y-m-d') }} - {{ note.createdBy }}</strong></p>
+   {% if note.subject is not empty %}
+   <p><strong>{{ note.subject }}</strong></p>
+   {% endif %}
 <p>{{ note.body }}</p>
    </div>
 {% endif %}
