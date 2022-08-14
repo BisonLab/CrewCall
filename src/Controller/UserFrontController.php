@@ -749,7 +749,7 @@ class UserFrontController extends CommonController
             $shiftarr = $this->getShiftArr($job->getShift());
             $arr = array_merge($arr, $shiftarr);
 
-            if ($lastjob && $ccjobs->overlap($job->getShift(), $lastjob->getShift())) {
+            if ($lastjob && $ccjobs->shiftOverlaps($job->getShift(), $lastjob->getShift())) {
                 $arr['overlap'] = true;
                 $checked->last()['overlap'] = true;
             } else {
