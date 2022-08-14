@@ -32,7 +32,7 @@
           </button>
         <div class="dropdown-menu dropdown-menu-right">
             <a class="dropdown-item" href="#" onClick="return setStateOnSakonninMessage('{{ message.messageid }}', 'ARCHIVED');">Archive</a>
-            <a class="dropdown-item" href="#" onClick="return grabEditSakonninMessageForm('{{ message.messageid }}', {'title':'General Annoucement', 'no_subject': true});">Edit</a>
+            <a class="dropdown-item" href="#" onClick="return grabEditSakonninMessageForm('{{ message.messageid }}', {'title':'General Annoucement'});">Edit</a>
             <a class="dropdown-item" href="#" onClick='return $("#delannounce_{{ message.messageid }}").click();'>Delete</a>
         </div>
       </div>
@@ -45,6 +45,9 @@
   </div><!-- end row -->
   <div class="row noteText">
    <div class="col-10">
+{% if message.subject is not empty %}
+<strong>{{ message.subject }}</strong><br>
+{% endif %}
 <pre wrap id="sakonninmessagebody_{{ message.messageid }}">
 {{ message.body }}
 </pre>
@@ -65,7 +68,6 @@
               'formname': 'c_anouncements',
               'title': 'General Annoucement',
               'reload_after_post': true,
-              'subject': null,
               'state': "SHOW",
               'to_type': "NONE",
               'from_type': "NONE",
