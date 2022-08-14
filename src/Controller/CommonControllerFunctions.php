@@ -8,6 +8,7 @@ trait CommonControllerFunctions
 {
     /*
      * In case of more filters, send request.
+     * Yes, this is horrendously slow.
      */
     public function filterPeople($people, $options)
     {
@@ -24,7 +25,33 @@ trait CommonControllerFunctions
         }
 
         $filtered = new \Doctrine\Common\Collections\ArrayCollection();
+        $jobs = null;
+        if ($on_date) {
+            $states = [];
+            switch($select_grouping) {
+                case 'booked':
+                    $states = ExternalEntityConfig::getBookedStatesFor('Job');
+                    break;
+                case 'interested':
+                    $states = ["INTERESTED"];
+                    break;
+                case 'assigned':
+                    $states = ["ASSIGNED"];
+                    break;
+                case 'confirmed':
+                    $states = ["CONFIRMED"];
+                    break;
+            }
+            $jobs = $job_repo->findJobs([
+                    'from' => $on_date,
+                    'to' => $on_date,
+                    'states' => $states,
+                    ]);
+        }
         foreach ($people as $p) {
+            if ($filtered->contains($p)) {
+                continue;
+            }
             if ($crew_only && !$p->isCrew()) {
                 continue;
             }
@@ -55,37 +82,13 @@ trait CommonControllerFunctions
                         $filtered->add($p);
                     continue;
                 }
-
-                // Now filter based on select_group
-                $jobs = $job_repo->findJobsForPerson($p, [
-                        'from' => $on_date,
-                        'to' => $on_date,
-                        ]);
-                $add_person = false;
                 foreach ($jobs as $j) {
-                    switch($select_grouping) {
-                        case 'booked':
-                            if (in_array($j->getState(),
-                                ExternalEntityConfig::getBookedStatesFor('Job')))
-                                    $add_person = true;
-                            break;
-                        case 'interested':
-                            if ($j->getState() == "INTERESTED")
-                                $add_person = true;
-                            break;
-                        case 'assigned':
-                            if ($j->getState() == "ASSIGNED")
-                                $add_person = true;
-                            break;
-                        case 'confirmed':
-                            if ($j->getState() == "CONFIRMED")
-                                $add_person = true;
-                            break;
+                    if ($j->getPerson() == $p) {
+                        if (!$filtered->contains($p))
+                            $filtered->add($p);
+                        break;
                     }
                 }
-                if ($add_person)
-                    if (!$filtered->contains($p))
-                        $filtered->add($p);
             // And if no on_date set:
             } else {
                 if ($select_grouping == 'all_active') {
@@ -103,5 +106,4 @@ trait CommonControllerFunctions
         }
         return $filtered;
     }
-
 }

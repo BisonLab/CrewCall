@@ -70,12 +70,13 @@ class JobRepository extends ServiceEntityRepository
             ->setParameter('state', $options['state']);
         }
 
-        if (isset($options['states'])) {
+        if (isset($options['states']) && !empty($options['states'])) {
             $qb->andWhere('j.state in (:states)')
             ->setParameter('states', $options['states']);
         }
 
-        if (isset($options['persons'])) {
+        // Yeah, time to agree with yourself Thomas, people or  persons?
+        if (isset($options['persons']) && !empty($options['persons'])) {
             $qb->andWhere('j.person in (:persons)')
             ->setParameter('persons', $options['persons']);
         }
