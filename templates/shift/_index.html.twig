@@ -89,6 +89,7 @@
             <a tabindex="0" class="dropdown-item" href="#" title="Log Summary" id="popLogSummary_shift_{{ shift.id }}" onClick="return popLogSummary('shift', {{ shift.id }});">Changelog</a>
             <a class="dropdown-item" href="#" onClick="return grabEditShiftForm({{ shift.id }}, {{ shift.event.id }});">Edit</a>
             <a class="dropdown-item" href="#" onClick="return deleteShift({{ shift.id }});">Delete</a>
+{% include '@Custom/shift/_custom_menuitems.html.twig' ignore missing %}
       </div>
       </div>
      </td>

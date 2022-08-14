@@ -274,6 +274,7 @@
             <a href="{{ path('event_clone', {'event': event.id}) }}">Create a copy with new start</a>
         </li>
     {% endif %}
+{% include '@Custom/event/_custom_menuitems.html.twig' ignore missing %}
     </ul>
 
    </div> <!-- col-2 -->
