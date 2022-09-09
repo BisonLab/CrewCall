@@ -179,6 +179,11 @@
                     Assign
                 </span>
               </a>
+              <a id="job_toggle_REMOVE_{{ job.id }}" role="button" href="#" onClick="return removeJob({{job.id}}, {{ job.shift.id }});">
+                <span class="ccButtonSmall ccInterested" {% if job.state != "INTERESTED" %}style="display: none;"{% endif %}>
+                    Remove
+                </span>
+              </a>
             </td>
         </tr>
     {% endfor %}

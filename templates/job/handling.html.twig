@@ -20,7 +20,7 @@ function grabJobList(shift_id, dont_store = false) {
     }
     // Feedback from my users says this is just too hopping and messy.
     return false;
-    // Let's see if they are more happy now.
+    {# Let's see if they are more happy now.
     var evjoblists = {};
     if (localStorage.evjoblists) {
         evjoblists = JSON.parse(localStorage.evjoblists);
@@ -30,6 +30,7 @@ function grabJobList(shift_id, dont_store = false) {
     localStorage.evjoblists = JSON.stringify(evjoblists);
 
     return false;
+    #}
 }
 
 function hideJobList(shift_id) {
@@ -349,6 +350,30 @@ function submitJobNote(form) {
             errmsg = "It failed\n";
             errmsg = errmsg + xhr.responseText + "\n";
             alert(errmsg);
+    });
+    return false;
+}
+
+function removeJob(job_id, shift_id) {
+    cheat_url = "{{ path('job_delete', { 'id': 0, 'access': 'ajax'}) }}";
+    url = cheat_url.replace("0", job_id);
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        url: url,
+        type: "POST",
+        data: { '_csrf_token': '{{ csrf_token('job-delete') }}' },
+        async: true,
+        dataType: 'json',
+      }).done( function( cont, textStatus, xhr ) {
+        grabJobList(shift_id);
+        return false;
+      }).fail(function(xhr, status, error) {
+            errmsg = "Failed removing job!\n";
+            errmsg = errmsg + xhr.responseText + "\n";
+            alert(errmsg);
+            return false;
     });
     return false;
 }

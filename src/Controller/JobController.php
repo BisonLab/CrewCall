@@ -237,6 +237,23 @@ class JobController extends CommonController
 
     /**
      *
+     * @Route("/{id}/delete", name="job_delete", methods={"DELETE", "POST"})
+     */
+    public function deleteAction(Request $request, Job $job)
+    {
+        $token = $request->request->get('_csrf_token');
+        if ($token && $this->isCsrfTokenValid('job-delete', $token)) {
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($job);
+            $em->flush();
+            return new JsonResponse(array("status" => "OK"), Response::HTTP_OK);
+        }
+
+        return new JsonResponse(array("status" => "Failed"), Response::HTTP_FORBIDDEN);
+    }
+
+    /**
+     *
      * @Route("/release", name="jobs_release", methods={"POST"})
      */
     public function releaseJobsAction(Request $request)
