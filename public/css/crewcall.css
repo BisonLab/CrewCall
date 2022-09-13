@@ -701,14 +701,13 @@ background-color: #fff;
     border-radius: 0px 17px 17px 0px;
 }
 
-.ccButtonSmall
+.ccButton
 {
     font-weight: bold;
     border-radius: 6px;
     box-sizing: border-box;
     text-align: center;
     display: inline-block;
-    width: 78px;
     padding-top: 4px;
     padding-bottom: 4px;
     padding-left: 8px;
@@ -717,6 +716,11 @@ background-color: #fff;
     margin-right: 3px;
     background-color: #555555;
     color: white;
+}
+
+.ccButtonSmall
+{
+    width: 78px;
 }
 
 .ccTotal

@@ -235,36 +235,46 @@ function popPersonJobs(person_id, job_id) {
     return false;
 }
 
-function select_all_jobs(shift_id, value) {
+function select_all_jobs(event_id, value) {
     if (typeof(value) !== "boolean") {
         value = $(value).prop('checked');
     }
-    $(".job_list_checkbox_" + shift_id).prop('checked', value);
+    $(".job_list_checkbox_" + event_id).prop('checked', value);
 }
 
-function get_selected_jobs(shift_id) {
+function get_selected_jobs(event_id, shift_id = null) {
     list = [];
-    $(".job_list_checkbox_" + shift_id).each(function(index, box) {
+    $(".job_list_checkbox_" + event_id).each(function(index, box) {
         if ($(box).prop('checked') == true) {
             values = box.value.split(",");
-            list.push(values[0]);
+            if (shift_id) {
+                if (values[2] == shift_id)
+                    list.push(values[0]);
+            } else {
+                list.push(values[0]);
+            }
         }
     });
     return list;
 }
 
-function get_selected_persons(shift_id) {
+function get_selected_persons(event_id, shift_id = null) {
     list = [];
     $(".job_list_checkbox_" + shift_id).each(function(index, box) {
         if ($(box).prop('checked') == true) {
             values = box.value.split(",");
-            list.push(values[1]);
+            if (shift_id) {
+                if (values[2] == shift_id)
+                    list.push(values[1]);
+            } else {
+                list.push(values[1]);
+            }
         }
     });
     return list;
 }
 
-function openMessageToJobsModal(shift_id) {
+function openMessageToJobsModal(event_id) {
     content = $("#jobmessage_modal").html();
     $( "#jobModalTitle" ).html('Send Message');
     $( "#jobModalBody" ).html(content);
@@ -272,7 +282,7 @@ function openMessageToJobsModal(shift_id) {
 
     $("#job_list_message_form").submit(function( event ) {
         var btn = $(document.activeElement);
-        list = get_selected_persons(shift_id);
+        list = get_selected_persons(event_id);
         $(".job_list_message_form_plist").remove();
         list.map(function(value) {
             $("#job_list_message_form").append('<input class="job_list_message_form_plist" type="hidden" name="person_list[]" value="'+value+'">');
@@ -286,7 +296,7 @@ function openMessageToJobsModal(shift_id) {
                 success: function(data)
                 {
                     alert(data);
-                    /* select_all_jobs(shift_id, false); */
+                    /* select_all_jobs(event_id, false); */
                     $( "#jobModal" ).modal("hide");
                     $( "#jobModalTitle" ).html("");
                     $( "#jobModalBody" ).html("");
@@ -354,16 +364,18 @@ function submitJobNote(form) {
     return false;
 }
 
-function removeJob(job_id, shift_id) {
-    cheat_url = "{{ path('job_delete', { 'id': 0, 'access': 'ajax'}) }}";
-    url = cheat_url.replace("0", job_id);
+function removeSelectedJobs(event_id, shift_id) {
+    jobs = get_selected_jobs(event_id, shift_id);
+console.log(shift_id);
+console.log(jobs);
+    url = "{{ path('jobs_release') }}";
     $.ajax({
         beforeSend: function(req) {
           req.setRequestHeader("Accept", "application/json");
         },
         url: url,
         type: "POST",
-        data: { '_csrf_token': '{{ csrf_token('job-delete') }}' },
+        data: { '_csrf_token': '{{ csrf_token('job-delete') }}', 'jobs': jobs },
         async: true,
         dataType: 'json',
       }).done( function( cont, textStatus, xhr ) {

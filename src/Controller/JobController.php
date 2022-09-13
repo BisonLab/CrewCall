@@ -258,6 +258,10 @@ class JobController extends CommonController
      */
     public function releaseJobsAction(Request $request)
     {
+        $token = $request->request->get('_csrf_token');
+        if (!$token || !$this->isCsrfTokenValid('job-delete', $token))
+            return new JsonResponse(array("status" => "Failed"), Response::HTTP_FORBIDDEN);
+
         $jobs = $request->get('jobs');
 
         $em = $this->getDoctrine()->getManager();

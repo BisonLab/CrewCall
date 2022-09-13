@@ -47,13 +47,13 @@
 </td>
 <td>
       <a id="job_signout_{{ job.id }}" role="button" href="#" onClick="return openSignJob({{job.id}}, 'out');">
-        <span class="ccButtonSmall">Out</span>
+        <span class="ccButton ccButtonSmall">Out</span>
       </a>
 </td>
 {% else %}
 <td>
       <a id="job_signin_{{ job.id }}" role="button" href="#" onClick="return openSignJob({{job.id}}, 'in');">
-        <span class="ccButtonSmall">In</span>
+        <span class="ccButton ccButtonSmall">In</span>
       </a>
 </td>
 <td>&nbsp;</td>
@@ -83,13 +83,13 @@
 <div id="signinModalBody" class="d-none">
     <input class="d-none" size="5" type="text" id="c_signin_input" value="{{ "now" |  date('H:m') }}"/>
     <div id="c_signin_cont"></div>
-    <button id="ok_signin_button" class="ccButtonSmall">In</button>
+    <button id="ok_signin_button" class="ccButton ccButtonSmall">In</button>
 </div>
 
 <div id="signoutModalBody" class="d-none">
     <input class="d-none" size="5" type="text" id="c_signout_input" value="{{ "now" |  date('H:m') }}"/>
     <div id="c_signout_cont"></div>
-    <button id="ok_signout_button" class="ccButtonSmall">Out</button>
+    <button id="ok_signout_button" class="ccButton ccButtonSmall">Out</button>
 </div>
 
 <script>
