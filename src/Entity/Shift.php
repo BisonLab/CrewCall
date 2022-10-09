@@ -449,6 +449,18 @@ class Shift
     }
 
     /**
+     * Get the amount of people still needed.
+     *
+     * @return int
+     */
+    public function getNeedsAmount()
+    {
+        $needs = $this->getAmount() - $this->getBookedAmount();
+        if ($needs < 1) return 0;
+        return $needs;
+    }
+
+    /**
      * Get the amount of persons registered, including organization
      *
      * @return int

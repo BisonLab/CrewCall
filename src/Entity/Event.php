@@ -554,11 +554,31 @@ class Event
         return $persons;
     }
 
-    public function getNeedsAmount()
+    /*
+     * This is the one with a total count of people needed.
+     */
+    public function getAmount()
     {
         $amount = 0;
         foreach ($this->getShifts() as $shift) {
             $amount += $shift->getAmount();
+        }
+        foreach ($this->getChildren() as $child) {
+            $amount += $child->getAmount();
+        }
+        return $amount;
+    }
+
+    /*
+     * This is the one with a calculation if we need any more people and how
+     * many.
+     *
+     */
+    public function getNeedsAmount()
+    {
+        $amount = 0;
+        foreach ($this->getShifts() as $shift) {
+            $amount += $shift->getNeedsAmount();
         }
         foreach ($this->getChildren() as $child) {
             $amount += $child->getNeedsAmount();

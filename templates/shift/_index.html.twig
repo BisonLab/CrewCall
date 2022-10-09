@@ -59,7 +59,7 @@
         {% set amounts = shift.jobsamountbystate %}
         <span title="All shifts booked" class="fas fa-check" {% if shift.amount - amounts.CONFIRMED > 0 %}style="opacity: 0;"{% endif %}"></span>&nbsp;
         <span id="shift_counter_amount_{{ shift.id }}" title="Total needing" class="ccAmount left ccTotal">{{ shift.amount }}</span>
-        <span id="shift_counter_needing_{{ shift.id }}" title="Still needing" class="ccAmount ccNeeded">{{ shift.amount - shift.bookedamount }}</span>
+        <span id="shift_counter_needing_{{ shift.id }}" title="Still needing" class="ccAmount ccNeeded">{{ shift.needsamount }}</span>
         <span id="shift_counter_CONFIRMED_{{ shift.id }}"  title="Amount Confirmed" class="ccAmount ccConfirmed">{{ amounts.CONFIRMED }}</span>
         <span id="shift_counter_ASSIGNED_{{ shift.id }}" title="Amount Assigned" class="ccAmount ccAssigned">{{ amounts.ASSIGNED }}</span>
         <span id="shift_counter_INTERESTED_{{ shift.id }}" title="Amount Interested" class="ccAmount right ccInterested">{{ amounts.INTERESTED }}</span>
