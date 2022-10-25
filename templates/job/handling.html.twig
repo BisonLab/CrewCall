@@ -260,7 +260,7 @@ function get_selected_jobs(event_id, shift_id = null) {
 
 function get_selected_persons(event_id, shift_id = null) {
     list = [];
-    $(".job_list_checkbox_" + shift_id).each(function(index, box) {
+    $(".job_list_checkbox_" + event_id).each(function(index, box) {
         if ($(box).prop('checked') == true) {
             values = box.value.split(",");
             if (shift_id) {
@@ -366,8 +366,6 @@ function submitJobNote(form) {
 
 function removeSelectedJobs(event_id, shift_id) {
     jobs = get_selected_jobs(event_id, shift_id);
-console.log(shift_id);
-console.log(jobs);
     url = "{{ path('jobs_release') }}";
     $.ajax({
         beforeSend: function(req) {
