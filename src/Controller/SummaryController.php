@@ -10,6 +10,9 @@ use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 use App\Entity\Event;
 use App\Entity\Person;
 use App\Entity\Job;
+use App\Entity\Shift;
+use App\Entity\Organization;
+use App\Entity\Location;
 
 /**
  * Summary / Summarizer controller.
