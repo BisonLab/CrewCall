@@ -59,7 +59,11 @@
         {% set amounts = shift.jobsamountbystate %}
         <span title="All shifts booked" class="fas fa-check" {% if shift.amount - amounts.CONFIRMED > 0 %}style="opacity: 0;"{% endif %}"></span>&nbsp;
         <span id="shift_counter_amount_{{ shift.id }}" title="Total needing" class="ccAmount left ccTotal">{{ shift.amount }}</span>
-        <span id="shift_counter_needing_{{ shift.id }}" title="Still needing" class="ccAmount ccNeeded">{{ shift.needsamount }}</span>
+        {% if shift.amount - shift.bookedamount < 0 %}
+            <span id="shift_counter_needing_{{ shift.id }}" title="This shift is overbooked" class="ccAmount ccNeeded">{{ shift.amount - shift.bookedamount }}</span>
+        {% else %}
+            <span id="shift_counter_needing_{{ shift.id }}" title="Still needing" class="ccAmount ccNeeded">{{ shift.needsamount }}</span>
+        {% endif %}
         <span id="shift_counter_CONFIRMED_{{ shift.id }}"  title="Amount Confirmed" class="ccAmount ccConfirmed">{{ amounts.CONFIRMED }}</span>
         <span id="shift_counter_ASSIGNED_{{ shift.id }}" title="Amount Assigned" class="ccAmount ccAssigned">{{ amounts.ASSIGNED }}</span>
         <span id="shift_counter_INTERESTED_{{ shift.id }}" title="Amount Interested" class="ccAmount right ccInterested">{{ amounts.INTERESTED }}</span>
@@ -86,7 +90,8 @@
 {% if shift.jobs | length > 0%}
             <a class="dropdown-item" href="#" onClick="return openPrintShiftWindow({{ shift.id }});">Print</a>
 {% endif %}
-            <a tabindex="0" class="dropdown-item" href="#" title="Log Summary" id="popLogSummary_shift_{{ shift.id }}" onClick="return popLogSummary('shift', {{ shift.id }});">Changelog</a>
+            {#<a tabindex="0" class="dropdown-item" href="#" title="Log Summary" id="popLogSummary_shift_{{ shift.id }}" onClick="return popLogSummary('shift', {{ shift.id }}, 'bottom');">Changelog</a>#}
+            <a tabindex="0" class="dropdown-item" href="#" title="Log Summary" id="popLogSummary_shift_{{ shift.id }}" onClick="return popLogSummary('shift', {{ shift.id }}, 'bottom');">Changelog</a>
             <a class="dropdown-item" href="#" onClick="return grabEditShiftForm({{ shift.id }}, {{ shift.event.id }});">Edit</a>
             <a class="dropdown-item" href="#" onClick="return deleteShift({{ shift.id }});">Delete</a>
 {% include '@Custom/shift/_custom_menuitems.html.twig' ignore missing %}
