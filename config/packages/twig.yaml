@@ -11,6 +11,7 @@ twig:
         cc_addressing:      "@crewcall.addressing"
         states:             "%app.states%"
         types:              "%app.types%"
+        logo_link_path:     "%env(LOGO_LINK_PATH)%"
 
     form_themes:
         - 'bootstrap_4_horizontal_layout.html.twig'
