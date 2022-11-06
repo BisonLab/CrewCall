@@ -18,7 +18,7 @@ class Calendar
 {
     private $router;
     private $summarizer;
-    private $user;
+    private $person;
 
     public function __construct($router, $summarizer)
     {
@@ -53,9 +53,9 @@ class Calendar
         return $vCalendar->render();
     }
 
-    public function toFullCalendarSummary($frogs, $user = null)
+    public function toFullCalendarSummary($frogs, $person = null)
     {
-        $this->user = $user;
+        $this->person = $person;
         $arr = array();
         $summary_arr = [];
         foreach ($frogs as $frog) {
@@ -114,9 +114,9 @@ class Calendar
         return $arr;
     }
 
-    public function toFullCalendarArray($frogs, $user = null)
+    public function toFullCalendarArray($frogs, $person = null)
     {
-        $this->user = $user;
+        $this->person = $person;
         $arr = array();
         foreach ($frogs as $frog) {
             if ($cal = $this->calToFullCal($frog))
@@ -250,30 +250,32 @@ class Calendar
             . 'Work: ' . (string)$job->getFunction() . "\n"
         ;
 
+        $url =  $this->router->generate('event_show', 
+            array('id' => $job->getEvent()->getId()));
+        $c['popup_content'] = preg_replace("/\n/", "<br />"
+            , $c['content']);
+        $c['popup_content'] .= '<br><a href="'
+            . $url  . '">Go to event</a>';
+        return $c;
+
+        /*
+         * This should do the trick if the person we do this for the the
+         * current user, but
+         *  1) We do not have the current usere here right now
+         *  2) The fullcalendar in the User View does not to popovers.
+
         $url =  $this->router->generate('user_job_calendar_item', 
             array('id' => $job->getId()));
         $c['ical_url'] = $url;
         // For a popover in the internal calendar.
         $c['popup_title'] = (string)$job->getFunction() . " at "
             . (string)$job->getLocation();
-
-        /*
-         * No need to "Put in my calendar" if it's not you.
-         * And we may even want a completely different text.
-         */
-        if ($this->user == $job->getPerson()) {
-            $c['popup_content'] = preg_replace("/\n/", "<br />"
-                , $c['content']) . '<br><a href="'
-                . $url  . '">Put in my calendar</a>';
-        } else {
-            $c['popup_content'] = preg_replace("/\n/", "<br />"
-                , $c['content']);
-        }
-        if ($this->user->isAdmin()) {
-            $c['popup_content'] .= '<br><a href="'
-                . $url  . '">Go to event</a>';
-        }
+        $c['popup_content'] = preg_replace("/\n/", "<br />"
+            , $c['content']) . '<br><a href="'
+            . $url  . '">Put in my calendar</a>';
         return $c;
+
+         */
     }
 
     public function shiftToCal(Shift $shift)
