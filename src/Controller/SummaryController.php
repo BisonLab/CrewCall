@@ -69,7 +69,7 @@ class SummaryController extends CommonController
         $person = $job->getPerson();
         foreach($this->get('crewcall.jobs')->jobsForPerson(
             $person, $options) as $job) {
-                if (!in_array($job->getState(), ['ASSIGNED', 'CONFIRMED']))
+                if (!$job->isBooked())
                     continue;
                 $label = (string)$job . " at " . (string)$job->getEvent();
                 $value = $job->getStart()->format("d M H:i")
