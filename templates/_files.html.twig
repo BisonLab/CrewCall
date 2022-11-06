@@ -24,7 +24,7 @@ $("#img_{{sfile.id}}").ezPlus({
 {% endif %}
         {{ sfile.name }}
         </td>
-        <td>{{ sfile.description }}</td>
+        <td>{{ sfile.description | default("A file to view") }}</td>
         <td>{{ sfile.createdat|date('Y-m-d H:i:s') }}</td>
         <td>{{ sfile.createdby }}</td>
         <td>

@@ -7,10 +7,10 @@
     <div class="col-11">
     <span class="ml-1">
       {% if sfile.thumbnailable %}
-      <img id="img_{{sfile.id}}" data-zoom-image="{{ path('file_view', { 'file_id': sfile.id }) }}" src="{{ path('uf_file', { 'id': sfile.fileid, 'x': 30, 'y': 30 }) }}">
-      {{ sfile.description }}
-      <a href="{{ path('file_download', { 'file_id': sfile.fileid }) }}"><button class="btn btn-link fas fa-file-download"></button></a>
+        <img id="img_{{sfile.id}}" data-zoom-image="{{ path('file_view', { 'file_id': sfile.id }) }}" src="{{ path('uf_file', { 'id': sfile.fileid, 'x': 30, 'y': 30 }) }}">
       {% endif %}
+      {{ sfile.description | default("A file to view") }}
+      <a href="{{ path('file_download', { 'file_id': sfile.fileid }) }}"><button class="btn btn-link fas fa-file-download"></button></a>
     </span>
     </div>
   </div><!-- end row -->
