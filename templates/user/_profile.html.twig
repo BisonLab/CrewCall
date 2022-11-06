@@ -2,12 +2,12 @@
 <p>Please make sure your contact information is up to date at all times</p>
 
 <div class="mb-4">
+{% if profile_picture_url is not null %}
   <div class="row">
     <div class="col-5 col-lg-2">
-        {% if profile_picture_url is not null %}
         <img class="image-circle" src="{{ profile_picture_url }}"></img>
-        {% endif %}
     </div>
+{% endif %}
     <div class="col-7 col-lg-10">
         {% for role in roles %}
         {{ role.description }}</br>
@@ -16,12 +16,47 @@
   </div>
   <div class="row">
     <div class="col-12 col-lg-6 mt-4">
-        <div>Mobile:
-            <span class="font-weight-bold">{{ mobile_phone_number }}</span>
-        </div>
-        <div>E-mail:
-            <span class="font-weight-bold">{{ email }}</span>
-        </div>
+{% if user.email is not empty %}
+      <div>E-mail:
+        <span class="font-weight-bold">{{ user.email }}</span>
+      </div>
+{% endif %}
+{% if user.mobilephonenumber is not empty %}
+      <div>Mobile:
+        <span class="font-weight-bold">{{ user.mobilephonenumber }}</span>
+      </div>
+{% endif %}
+{% if user.homephonenumber is not empty %}
+      <div>Home phone number:
+        <span class="font-weight-bold">{{ user.homephonenumber }}</span>
+      </div>
+{% endif %}
+{% if user.dateofbirth is not empty %}
+      <div>Date of birth:
+        <span class="font-weight-bold">{% if user.dateofbirth %}{{ user.dateofbirth|date('Y-m-d') }}{% endif %}</span>
+      </div>
+{% endif %}
+{% if user.nationality is not empty %}
+      <div>Nationality:
+        <span class="font-weight-bold">{{ user.nationalitycountry }}</span>
+      </div>
+{% endif %}
+{% if user.diets is not empty %}
+      <div>Diets:
+        <span class="font-weight-bold">{{ user.diets | join(", ") }}</span>
+      </div>
+{% endif %}
+  </div>
+{% if user.emergencycontact is not empty %}
+    <div class="col-2 col-lg-2 mt-4">
+        <div>Emergency Contact:</div>
+    </div>
+    <div class="col-7 col-lg-6 mt-4">
+       <span class="font-weight-bold d-block">
+       {{ user.emergencycontact | replace({'\n': "<br>"}) | raw }}
+       </span>
+    </div>
+{% endif %}
     </div>
     <div class="col-12 col-lg-8 mt-4">
         <span class="font-weight-bold d-block">Skills:</span>

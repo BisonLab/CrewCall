@@ -171,10 +171,11 @@ class UserFrontController extends CommonController
             ];
         }
 
-        // Angularfrontent
+        // Angularfrontend
         if (in_array('application/json', $request->getAcceptableContentTypes()))
             return new JsonResponse($retarr, 200);
 
+        $retarr['user'] = $user;
         return $this->render('user/_profile.html.twig', $retarr);
     }
 

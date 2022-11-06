@@ -22,6 +22,8 @@ use App\Entity\PersonRoleOrganization;
 use App\Entity\Job;
 use App\Entity\FunctionEntity;
 use App\Lib\ExternalEntityConfig;
+use App\Form\PersonType;
+use App\Form\NewPersonType;
 use App\Form\ChangePasswordFosType;
 use App\Form\ResetPasswordRequestFormType;
 
@@ -235,18 +237,20 @@ class PersonController extends CommonController
         $person = new Person();
         $person->setSystemRole('ROLE_USER');
         $addressing_config = $this->container->getParameter('addressing');
+        $personfields = $this->container->getParameter('personfields');
         $addressing = $this->container->get('crewcall.addressing');
         $address_elements = $addressing->getFormElementList($person);
         $internal_organization_config = $this->container->getParameter('internal_organization');
         $first_org = $em->getRepository(Organization::class)->getInternalOrganization();
         $first_role = $em->getRepository(Role::class)->getDefaultRole();
 
-        $form = $this->createForm('App\Form\NewPersonType',
+        $form = $this->createForm(NewPersonType::class,
             $person, [
                'addressing_config' => $addressing_config,
                'address_elements' => $address_elements,
                'organization' => $first_org,
                'role' => $first_role,
+               'personfields' => $personfields,
                'internal_organization_config' => $internal_organization_config,
             ]);
         $form->handleRequest($request);
@@ -336,12 +340,14 @@ class PersonController extends CommonController
     public function editAction(Request $request, Person $person)
     {
         $addressing_config = $this->container->getParameter('addressing');
+        $personfields = $this->container->getParameter('personfields');
         $addressing = $this->container->get('crewcall.addressing');
         $address_elements = $addressing->getFormElementList($person);
-        $editForm = $this->createForm('App\Form\PersonType',
+        $editForm = $this->createForm(PersonType::class,
             $person, [
                 'addressing_config' => $addressing_config,
-                'address_elements' => $address_elements
+                'address_elements' => $address_elements,
+                'personfields' => $personfields,
             ]);
         $editForm->remove('plainPassword');
         // $addressing->addToForm($editForm, $person);

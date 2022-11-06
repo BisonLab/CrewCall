@@ -63,6 +63,24 @@ parameters:
             # This is the country code. Which may not be very useful.
             - ['country']
 
+    #
+    # Which of the available fields are you interested in showing and using?
+    # The compulsory: Username, First Name, Last name
+    #
+    # This is set up for a typical volunteering situation. I presume an
+    # employee relation need a few more fields or all.
+    # 
+    personfields:
+    #    - 'date_of_birth'
+    #    - 'diets'
+    #    - 'workload_percentage'
+    #    - 'nationality'
+        - 'emergency_contact'
+        - 'mobile_phone_number'
+    #    - 'home_phone_number'
+        - 'address'
+    #    - 'postal_address'
+
     # This basically says itself - Maybe false should be default, but at least
     # it'll show that registration is possible.
     # But if you want to turn this on you must also comment out the

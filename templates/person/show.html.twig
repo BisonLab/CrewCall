@@ -66,41 +66,65 @@
                     No
                 {%endif%}</td>
             </tr>
+{% if "date_of_birth" in personfields %}
             <tr>
                 <th>Date of birth</th>
                 <td>{% if person.dateofbirth %}{{ person.dateofbirth|date('Y-m-d') }}{% endif %}</td>
             </tr>
+{% endif %}
+{% if "nationality" in personfields %}
+            <tr>
+                <th>Nationality</th>
+                <td>{{ person.nationalitycountry }}</td>
+            </tr>
+{% endif %}
             <tr>
                 <th>E-Mail</th>
                 <td>{{ person.email }}</td>
             </tr>
+{% if "mobile_phone_number" in personfields %}
             <tr>
                 <th>Mobile phone number</th>
                 <td>{{ person.mobilephonenumber }}</td>
             </tr>
+{% endif %}
+{% if "home_phone_number" in personfields %}
             <tr>
                 <th>Home phone number</th>
                 <td>{{ person.homephonenumber }}</td>
             </tr>
+{% endif %}
+{% if "address" in personfields %}
             <tr>
                 <th>Address</th>
                 <td>{{ cc_addressing.compose(person.address, 'html') | raw }}</td>
             </tr>
-{% if person.postaladdress is not empty %}
+{% endif %}
+{% if "postal_address" in personfields and person.postaladdress is not empty %}
             <tr>
                 <th>Postal Address</th>
                 <td>{{ cc_addressing.compose(person.postaladdress, 'html') | raw }}</td>
             </tr>
 {% endif %}
-{% if person.contexts | length > 0 %}
+{% if "diets" in personfields %}
             <tr>
                 <th>Diets</th>
                 <td>{{ person.dietslabels | join(", ")}}</td>
             </tr>
+{% endif %}
+{% if "workload_percentage" in personfields %}
             <tr>
                 <th>Workload</th>
                 <td>{{ person.workloadpercentage }}%</td>
             </tr>
+{% endif %}
+{% if "emergency_contact" in personfields %}
+            <tr>
+                <th>Emergency Contact</th>
+                <td>{{ person.emergencycontact | replace({'\n': "<br>"}) | raw }}</td>
+            </tr>
+{% endif %}
+{% if person.contexts | length > 0 %}
             <tr>
                 <th>External pointers</th>
                 <td>

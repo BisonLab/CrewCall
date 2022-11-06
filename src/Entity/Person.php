@@ -11,6 +11,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Intl\Countries;
 
 use App\Repository\PersonRepository;
 use App\Entity\PersonContext;
@@ -116,7 +117,7 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Another odd one, but it's an increasingly hot topic.
      * @var string
-     * @ORM\Column(name="diets", type="array", length=255, nullable=true)
+     * @ORM\Column(name="diets", type="array", nullable=true)
      * @Gedmo\Versioned
      */
     private $diets;
@@ -135,6 +136,22 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
      * @Gedmo\Versioned
      */
     private $workload_percentage;
+
+    /**
+     * And again. But now I have decided on having these fields, but make the
+     * visibility configureable.
+     * @var string
+     * @ORM\Column(name="nationality", type="string", length=100, nullable=true)
+     * @Gedmo\Versioned
+     */
+    private $nationality;
+
+    /**
+     * @var text
+     * @ORM\Column(name="emergency_contact", type="text", nullable=true)
+     * @Gedmo\Versioned
+     */
+    private $emergency_contact;
 
     /**
      * @var string
@@ -493,6 +510,67 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
     public function getHomePhoneNumber()
     {
         return $this->home_phone_number;
+    }
+
+    /**
+     * Set Nationality
+     *
+     * @param string $nationality
+     *
+     * @return Person
+     */
+    public function setNationality($nationality)
+    {
+        $this->nationality = $nationality;
+
+        return $this;
+    }
+
+    /**
+     * Get Nationality
+     *
+     * @return string
+     */
+    public function getNationality()
+    {
+        return $this->nationality;
+    }
+
+    /**
+     * Get Nationality Country
+     *
+     * @return string
+     */
+    public function getNationalityCountry(): ?string
+    {
+        if ($this->nationality)
+            return Countries::getName($this->nationality);
+
+        return null;
+    }
+
+    /**
+     * Set Emergency Contact
+     *
+     * @param string $emergencyContact
+     *
+     * @return Person
+     */
+    public function setEmergencyContact($emergencyContact): self
+    {
+        $this->emergency_contact = $emergencyContact;
+
+        return $this;
+    }
+
+    /**
+     * Get Emergency Contact
+     *
+     * @return string
+     */
+    public function getEmergencyContact(): ?string
+    {
+        return $this->emergency_contact;
     }
 
     /**
