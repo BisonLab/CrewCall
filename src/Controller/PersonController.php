@@ -114,7 +114,7 @@ class PersonController extends CommonController
                     ]);
             foreach ($jobs as $j) {
                 $p = $j->getPerson();
-                $person_jobs[$p->getId()] []= $j;
+                $person_jobs[$p->getId()] []= (string)$j->getShift();
                 if (!$people->contains($p))
                     $people->add($p);
             }

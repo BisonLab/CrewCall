@@ -4,7 +4,7 @@
         <th>Username</th>
         <th>Name</th>
 {% if person_jobs is not empty %}
-        <th>Function that day</th>
+        <th>Jobs that day</th>
 {% else %}
         <th>Functions</th>
 {% endif %}
@@ -26,9 +26,9 @@
         </td>
         <td>
             {% if person_jobs is not empty %}
-            {{ person_jobs[person.id] | join(",") }}
+            {{ person_jobs[person.id] | join(", ") }}
             {% else %}
-            {{  person.functions| join(",") }}
+            {{  person.functions| join(", ") }}
             {% endif %}
         </td>
         <td>{{ person.mobilephonenumber }}</td>
