@@ -9,14 +9,17 @@
 <th>Job</th>
 <th>In</th>
 <th>Out</th>
+{# <th>Break</th> #}
 </tr>
 </thead>
 <tbody>
-{% for job in joblog_array %}
+{% for job in joblogs %}
 <tr>
-<td>{{ job.job }}</td>
-<td>{{ job.in }}</td>
-<td>{{ job.out }}</td>
+    <td>{{ job.shift }}</td>
+    <td>{{ job.in | date("Y-m-d H:i") }}</td>
+    <td>{{ job.out | date("Y-m-d H:i") }}</td>
+    <td>{{ job.breakminutes }}</td>
+{#     <td>{{ job.workedtime }}</td> #}
 </tr>
 {% endfor %}
 </tbody>

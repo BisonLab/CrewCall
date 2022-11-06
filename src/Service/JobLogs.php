@@ -52,12 +52,12 @@ class JobLogs
         $first_of_year      = new \DateTime(date('Y-01-01'));
         $first_of_last_year = new \DateTime(date('Y-01-01'));
         $first_of_last_year->modify('-1 year');
-        $joblogs = [];
+        $joblogs = new \Doctrine\Common\Collections\ArrayCollection();
         $joblog_array = [];
         foreach ($person->getJobs() as $job) {
             foreach ($job->getJobLogs() as $jl) {
                 // TODO: Check state. I guess "COMPLETED" is the one to use.
-                $joblogs[] = $jl;
+                $joblogs->add($jl);
                 $in  = $jl->getIn();
                 $out = $jl->getOut();
                 $minutes = $jl->getWorkedMinutes();
@@ -117,9 +117,17 @@ class JobLogs
         $summary['year']['hours']      = $this->mToHm($summary['year']['minutes']);
         $summary['last_year']['hours'] = $this->mToHm($summary['last_year']['minutes']);
         $summary['total_hours']['hours']     = $this->mToHm($summary['total']['minutes']);
+
+        // Somehow it's not sorted.
+        $iterator = $joblogs->getIterator();
+        $iterator->uasort(function ($a, $b) {
+            if ($a->getIn()->format("U") == $b->getIn()->format("U")) return 0;
+            return ($a->getIn()->format("U") > $b->getIn()->format("U")) ? -1 : 1;
+        });
+
         return [
             'joblog_array' => $joblog_array,
-            'joblogs' => $joblogs,
+            'joblogs' => iterator_to_array($iterator),
             'summary' => $summary
             ];
     }
