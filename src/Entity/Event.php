@@ -672,13 +672,23 @@ class Event
     }
 
     /**
-     * Is this deleeteable?
+     * Is this deleteable?
      *
      * @return boolean
      */
     public function isDeleteable()
     {
-        return !$this->isBooked() || $this->isFuture();
+        // Do the children first.
+        if ($this->getChildren()->count() > 0)
+            return false;
+
+        // Then, if any booked jobs, no go.
+        foreach ($this->getJobs() as $j) {
+            if ($j->isBooked())
+                return false;
+        }
+
+        return !$this->isBooked();
     }
 
     /**
