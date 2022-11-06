@@ -65,22 +65,29 @@ class SummaryController extends CommonController
         $options['from'] = $from->modify('-2 days');
         $to = clone($job->getStart());
         $options['to'] = $to->modify('+3 days');
-        $summary = [];
+        $summary_booked = [];
+        $summary_interested = [];
         $person = $job->getPerson();
         foreach($this->get('crewcall.jobs')->jobsForPerson(
             $person, $options) as $job) {
-                if (!$job->isBooked())
-                    continue;
                 $label = (string)$job . " at " . (string)$job->getEvent();
                 $value = $job->getStart()->format("d M H:i")
                     . " -> " .
                     $job->getEnd()->format("d M H:i")
                     . "(" . $job->getStateLabel() . ")";
-                $summary[] = [
-                    'label' => $label,
-                    'value' => $value
-                    ];
+                if ($job->isBooked()) {
+                    $summary_booked[] = [
+                        'label' => $label,
+                        'value' => $value
+                        ];
+                } else {
+                    $summary_interested[] = [
+                        'label' => $label,
+                        'value' => $value
+                        ];
+                }
         }
+        $summary = array_merge($summary_booked, $summary_interested);
         if (count($summary) == 0)
             $summary[] = ['label' => "No jobs for this period", 'value' => ""];
         return $this->returnRestData($request, $summary,
