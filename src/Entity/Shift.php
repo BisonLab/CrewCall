@@ -405,11 +405,7 @@ class Shift
      */
     public function getJobsAmountByState($state = null)
     {
-        $amounts = [
-            'INTERESTED' => 0,
-            'ASSIGNED' => 0,
-            'CONFIRMED' => 0,
-            ];
+        $amounts = [];
         foreach ($this->getJobs() as $job) {
             $s = $job->getState();
             if (!isset($amounts[$s]))
@@ -467,13 +463,12 @@ class Shift
      */
     public function getRegisteredAmount()
     {
-        $booked = $this->getJobs()->count();
+        $registered = $this->getJobs()->count();
         foreach ($this->getShiftOrganizations() as $so) {
-            // If they are mentioned, they are booked. Aka amount is by
-            // definition booked.
-            $booked += $so->getAmount();
+            // This amount is the registered amount, bad name I know.
+            $registered += $so->getAmount();
         }
-        return $booked;
+        return $registered;
     }
 
     public function isOpen()
