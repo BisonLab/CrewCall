@@ -72,7 +72,11 @@
 <script>
 $(document).ready(function() {
     var foobar = $( "#person_jobstab_table").dataTable({
-        order: [[ 2, 'desc' ], [ 1, 'asc' ]],
+{% if not past %}
+        order: [[ 1, 'asc' ]],
+{% else %}
+        order: [[ 1, 'desc' ]],
+{% endif %}
         paging: false,
         searching: false,
         info: false,
