@@ -66,13 +66,13 @@
                     No
                 {%endif%}</td>
             </tr>
-{% if "date_of_birth" in personfields %}
+{% if personfields.date_of_birth.enabled %}
             <tr>
                 <th>Date of birth</th>
                 <td>{% if person.dateofbirth %}{{ person.dateofbirth|date('Y-m-d') }}{% endif %}</td>
             </tr>
 {% endif %}
-{% if "nationality" in personfields %}
+{% if personfields.nationality.enabled %}
             <tr>
                 <th>Nationality</th>
                 <td>{{ person.nationalitycountry }}</td>
@@ -82,43 +82,43 @@
                 <th>E-Mail</th>
                 <td>{{ person.email }}</td>
             </tr>
-{% if "mobile_phone_number" in personfields %}
+{% if personfields.mobile_phone_number.enabled %}
             <tr>
                 <th>Mobile phone number</th>
                 <td>{{ person.mobilephonenumber }}</td>
             </tr>
 {% endif %}
-{% if "home_phone_number" in personfields %}
+{% if personfields.home_phone_number.enabled %}
             <tr>
                 <th>Home phone number</th>
                 <td>{{ person.homephonenumber }}</td>
             </tr>
 {% endif %}
-{% if "address" in personfields %}
+{% if personfields.address.enabled %}
             <tr>
                 <th>Address</th>
                 <td>{{ cc_addressing.compose(person.address, 'html') | raw }}</td>
             </tr>
 {% endif %}
-{% if "postal_address" in personfields and person.postaladdress is not empty %}
+{% if personfields.postal_address.enabled and person.postaladdress is not empty %}
             <tr>
                 <th>Postal Address</th>
                 <td>{{ cc_addressing.compose(person.postaladdress, 'html') | raw }}</td>
             </tr>
 {% endif %}
-{% if "diets" in personfields %}
+{% if personfields.diets.enabled %}
             <tr>
                 <th>Diets</th>
                 <td>{{ person.dietslabels | join(", ")}}</td>
             </tr>
 {% endif %}
-{% if "workload_percentage" in personfields %}
+{% if personfields.workload_percentage.enabled %}
             <tr>
                 <th>Workload</th>
                 <td>{{ person.workloadpercentage }}%</td>
             </tr>
 {% endif %}
-{% if "emergency_contact" in personfields %}
+{% if personfields.emergency_contact.enabled %}
             <tr>
                 <th>Emergency Contact</th>
                 <td>{{ person.emergencycontact | replace({'\n': "<br>"}) | raw }}</td>

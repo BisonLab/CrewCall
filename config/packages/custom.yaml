@@ -71,15 +71,47 @@ parameters:
     # employee relation need a few more fields or all.
     # 
     personfields:
-    #    - 'date_of_birth'
-    #    - 'diets'
-    #    - 'workload_percentage'
-    #    - 'nationality'
-        - 'emergency_contact'
-        - 'mobile_phone_number'
-    #    - 'home_phone_number'
-        - 'address'
-    #    - 'postal_address'
+        date_of_birth:
+            enabled: false
+            user_editable: true
+        diets:
+            enabled: false
+            user_editable: true
+        workload_percentage:
+            enabled: false
+            user_editable: false
+        nationality:
+            enabled: false
+            user_editable: true
+        emergency_contact:
+            enabled: false
+            user_editable: true
+        email:
+            enabled: true
+            user_editable: true
+        mobile_phone_number:
+            enabled: true
+            user_editable: true
+        address:
+            enabled: true
+            user_editable: true
+        home_phone_number:
+            enabled: false
+            user_editable: false
+        postal_address:
+            enabled: false
+            user_editable: false
+        # Not entirely personfields, but nice to configure.
+        hours:
+            enabled: true
+            user_editable: false
+        profile_picture:
+            enabled: true
+            user_editable: true
+        # Not that commenting this will hide all functions.
+        functions:
+            enabled: true
+            user_editable: false
 
     # This basically says itself - Maybe false should be default, but at least
     # it'll show that registration is possible.
