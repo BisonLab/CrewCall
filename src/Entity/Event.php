@@ -682,12 +682,6 @@ class Event
         if ($this->getChildren()->count() > 0)
             return false;
 
-        // Then, if any booked jobs, no go.
-        foreach ($this->getJobs() as $j) {
-            if ($j->isBooked())
-                return false;
-        }
-
         return !$this->isBooked();
     }
 
