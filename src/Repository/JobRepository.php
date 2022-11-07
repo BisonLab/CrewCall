@@ -197,7 +197,7 @@ class JobRepository extends ServiceEntityRepository
             $from = new \DateTime("2018-01-01");
         }
 
-        if ($options['from'] ?? false || $options['to'] ?? false) {
+        if (($options['from'] ?? false) || ($options['to'] ?? false)) {
             if (isset($options['from'])) {
                 if ($options['from'] instanceof \DateTime )
                     $from = $options['from'];

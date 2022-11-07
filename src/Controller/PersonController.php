@@ -465,16 +465,21 @@ class PersonController extends CommonController
      *
      * @Route("/{id}/jobs_card", name="person_jobs_card", methods={"GET"})
      */
-    public function showJobsCardAction(Person $person)
+    public function showJobsCardAction(Request $request, Person $person)
     {
         // These for now:
         $options = ['all' => true, 'from' => 'now'];
+
+        if ($past = $request->get('past'))
+            $options = ['past' => true];
+
         $jobs = $this->get('crewcall.jobs')->jobsForPerson(
             $person, $options);
 
         return $this->render('person/_jobstab.html.twig', array(
             'person' => $person,
             'jobs' => $jobs,
+            'past' => $past,
         ));
     }
 

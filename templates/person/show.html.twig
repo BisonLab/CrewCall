@@ -204,7 +204,7 @@
     <a class="nav-link" href="#person_caltab" data-toggle="tab" onClick="return loadCalendar();">Calendar</a>
     </li>
     <li class="nav-item personJobsTab">
-    <a class="nav-link" href="#person_jobstab" data-toggle="tab"  onClick="return grabPersonJobs();">Jobs</a>
+    <a class="nav-link" href="#person_jobstab" data-toggle="tab">Jobs</a>
     </li>
     <li class="nav-item personHoursTab">
     <a class="nav-link" href="#person_hourstab" data-toggle="tab"  onClick="return grabJobLogSummary();">Hours</a>
@@ -339,6 +339,8 @@
   </div><!-- caltab -->
 
   <div class="tab-pane personJobsTab" id="person_jobstab">
+    <a href="#" onClick="return grabPersonJobs();" class="btn-sm btn-light">Upcoming</a>
+    <a href="#" onClick="return grabPersonJobs(true);" class="btn-sm btn-light">Past</a>
   </div><!-- jobstab -->
 
   <div class="tab-pane personAbsenceTab" id="person_absencetab">
@@ -382,11 +384,13 @@ Until I need to reuse, i'll be lazy and keep'em here.
 -->
 <script>
 
-function grabPersonJobs() {
-    if ($( "#person_jobstab div" ).length > 1) {
+function grabPersonJobs(past = false) {
+    if ($( "#person_jobstab div" ).length > 200) {
         return false;
     }
-    url = "{{ path('person_jobs_card', {'access': 'ajax', 'id': person.id }) }}";
+    url = "{{ path('person_jobs_card', {'id': person.id }) }}";
+    if (past)
+        url = url +"?past=true";
     $.get(url, function( data ) {
         $( "#person_jobstab" ).html(data);
     });
