@@ -405,7 +405,11 @@ class Shift
      */
     public function getJobsAmountByState($state = null)
     {
-        $amounts = [];
+        $amounts = [
+            'INTERESTED' => 0,
+            'ASSIGNED' => 0,
+            'CONFIRMED' => 0,
+            ];
         foreach ($this->getJobs() as $job) {
             $s = $job->getState();
             if (!isset($amounts[$s]))
