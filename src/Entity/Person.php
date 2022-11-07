@@ -544,7 +544,7 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
     public function getNationalityCountry(): ?string
     {
         if ($this->nationality)
-            return Countries::getName($this->nationality);
+            return Countries::getAlpha3Name($this->nationality);
 
         return null;
     }

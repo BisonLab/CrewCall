@@ -34,7 +34,8 @@ class PersonType extends AbstractType
             $builder->add('date_of_birth', BirthdayType::class, array('required' => false));
 
         if (in_array('nationality', $options['personfields']))
-            $builder->add('nationality', CountryType::class, array('required' => false));
+            $builder->add('nationality', CountryType::class, array(
+                'alpha3' => true, 'required' => false));
 
         if (in_array('emergency_contact', $options['personfields']))
             $builder->add('emergency_contact', TextareaType::class, array('required' => false));

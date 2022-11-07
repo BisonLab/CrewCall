@@ -7,6 +7,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Intl\Countries;
 use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 
 use App\Entity\Event;
@@ -70,9 +71,20 @@ class DefaultController extends CommonController
             }
         }
 
-        foreach (array('email', 'username', 'full_name', 'mobile_phone_number') as $field) {
-            $result = $em->getRepository(Person::class)
+        foreach (array('email', 'username', 'full_name', 'mobile_phone_number', 'nationality') as $field) {
+
+            // This looks odd but it may occationally even work with the users
+            // own locale.
+            if ($field == 'nationality') {
+                $a3s = Countries::getAlpha3Names();
+                $countries = array_change_key_case(array_flip($a3s));
+                $nval = $countries[strtolower($value)];
+                $result = $em->getRepository(Person::class)
+                            ->searchByField($field, trim($nval));
+            } else {
+                $result = $em->getRepository(Person::class)
                         ->searchByField($field, trim($value));
+            }
             foreach ($result as $i) {
                 if (!$persons->contains($i))
                     $persons->add($i);
