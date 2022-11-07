@@ -438,6 +438,7 @@ class PersonController extends CommonController
 
     /**
      * Finds and returns the jobs for a person.
+     * I can not find this being used anywhere.
      *
      * @Route("/{id}/jobs", name="person_jobs", methods={"GET"})
      */
@@ -457,6 +458,24 @@ class PersonController extends CommonController
             return $this->returnRestData($request, $summary,
                 array('html' => 'summaryPopContent.html.twig'));
         }
+    }
+
+    /**
+     * Pretty darn simple.
+     *
+     * @Route("/{id}/jobs_card", name="person_jobs_card", methods={"GET"})
+     */
+    public function showJobsCardAction(Person $person)
+    {
+        // These for now:
+        $options = ['all' => true, 'from' => 'now'];
+        $jobs = $this->get('crewcall.jobs')->jobsForPerson(
+            $person, $options);
+
+        return $this->render('person/_jobstab.html.twig', array(
+            'person' => $person,
+            'jobs' => $jobs,
+        ));
     }
 
     /**
