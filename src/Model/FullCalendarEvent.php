@@ -99,26 +99,26 @@ class FullCalendarEvent implements \ArrayAccess
      */
     protected $textColor;
 
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->$offset;
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (property_exists($this, $offset)) {
             $this->$offset = $value;
-            return $this;
+            return;
         }
         throw new \InvalidArgumentException("Something tried to set " . $offset . " which does not exist");
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
-        return $this;
+        return;
     }
 
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return property_exists($this, $offset);
     }
