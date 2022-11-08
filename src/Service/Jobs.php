@@ -61,8 +61,6 @@ class Jobs
     {
         $jobs = $this->em->getRepository(Job::class)
             ->findJobsForPerson($person, $options);
-if ($options['no_overlap_filter'] ?? false)
-dump("no_overlap_filter");
 
         if ($options['no_overlap_filter'] ?? false)
             return $jobs;
