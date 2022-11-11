@@ -83,12 +83,12 @@ class Addressing
             return $output;
         } elseif ($format == "html") {
             $hlines = [];
-            // Pretty sure I could to this with address map.
+            // Pretty sure I could do this with address map.
             foreach ($address_lines as $line) {
                 $hline = '';
                 foreach ($line as $k => $elem) { 
                     if (!empty($elem))
-                        $hline .= '<span class="' . $k . '">' . $elem . '</span>';
+                        $hline .= '<span class="' . $k . '">' . $elem . '</span> ';
                 }
                 if (!empty($hline))
                     $hlines[] = $hline;
