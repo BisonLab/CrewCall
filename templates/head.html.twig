@@ -10,7 +10,8 @@
    <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}" />
 {% block stylesheets %}
    <link rel="stylesheet" href="{{ asset('components/jqueryui/themes/smoothness/jquery-ui.min.css') }}" type="text/css" media="all" />
-   <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.css') }}" type="text/css" media="all" />
+   <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.min.css') }}" type="text/css" media="all" />
+   <link rel="stylesheet" href="{{ asset('bootstrap-select/css/bootstrap-select.min.css') }}" type="text/css" media="all" />
    <link rel="stylesheet" href="{{ asset('components/fullcalendar/dist/fullcalendar.min.css') }}" type="text/css" media="all" />
 {#
    <link rel="stylesheet" href="{{ asset('css/datatables.css') }}" type="text/css" media="all" />
@@ -27,6 +28,7 @@
    <script src="{{ asset('components/jquery/jquery.js') }}"></script>
    <script src="{{ asset('components/jqueryui/jquery-ui.js') }}"></script>
    <script src="{{ asset('bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+   <script src="{{ asset('bootstrap-select/js/bootstrap-select.min.js') }}"></script>
    <!-- with datatables.min.js it ends up with the (js-debug)console complaining about pdfmake.min.js.map is missing. -->
 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
    <script src="{{ asset('bundles/bisonlabcommon/datatables/datatables.js') }}"></script>

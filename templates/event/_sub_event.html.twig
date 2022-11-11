@@ -42,12 +42,18 @@
                 <th>Contact Info</th>
                 <td>
         {% for note in event.notesbytype("Contact Info") %}
+            <div class="row">
+            <div class="col-10">
+            <strong>{{ note.subject }}</strong>
+            <pre>{{ note.body }}</pre>
+            </div>
+            <div class="col-1">
             <form method="POST" action="{{ path('event_remove_note', { 'event': event.id, 'note_id': note.id, 'access': 'web' }) }}">
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('event-remove-note' ~ note.id) }}">
-            <strong>{{ note.subject }}</strong>
             <button class="btn remove_glyph" type="submit"></button>
             </form>
-            <pre>{{ note.body }}</pre>
+            </div>
+            </div>
         {% endfor %}
                 <a href="#" id="addContactLink" onClick="return openAddContactInfo({{ event.id }});">Add Contact Info</a>
                 </td>

@@ -1,5 +1,6 @@
 /src/*Bundle
 /public/bootstrap/
+/public/bootstrap*
 /public/font-awesome/
 /public/components/
 /public/userfront/
