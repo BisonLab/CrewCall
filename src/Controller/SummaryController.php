@@ -65,6 +65,7 @@ class SummaryController extends CommonController
         $options['from'] = $from->modify('-2 days');
         $to = clone($job->getStart());
         $options['to'] = $to->modify('+3 days');
+        $summary_datesorted = [];
         $summary_booked = [];
         $summary_interested = [];
         $person = $job->getPerson();
@@ -75,22 +76,25 @@ class SummaryController extends CommonController
                     . " -> " .
                     $job->getEnd()->format("d M H:i")
                     . "(" . $job->getStateLabel() . ")";
+                $arr = [
+                        'label' => $label,
+                        'value' => $value
+                        ];
+                $summary_datesorted[] = $arr;
                 if ($job->isBooked()) {
-                    $summary_booked[] = [
-                        'label' => $label,
-                        'value' => $value
-                        ];
+                    $summary_booked[] = $arr;
                 } else {
-                    $summary_interested[] = [
-                        'label' => $label,
-                        'value' => $value
-                        ];
+                    $summary_interested[] = $arr;
                 }
         }
         $summary = array_merge($summary_booked, $summary_interested);
         if (count($summary) == 0)
             $summary[] = ['label' => "No jobs for this period", 'value' => ""];
-        return $this->returnRestData($request, $summary,
+
+        /*
+         * Yes, this should be a config option since I have the options..
+         */
+        return $this->returnRestData($request, $summary_datesorted,
             array('html' => 'summaryPopContent.html.twig'));
     }
 
