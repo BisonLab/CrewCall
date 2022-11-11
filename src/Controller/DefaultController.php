@@ -78,8 +78,8 @@ class DefaultController extends CommonController
             if ($field == 'nationality') {
                 $a3s = Countries::getAlpha3Names();
                 $countries = array_change_key_case(array_flip($a3s));
-                $nval = $countries[strtolower($value)];
-                $result = $em->getRepository(Person::class)
+                if ($nval = $countries[strtolower($value)] ?? false)
+                    $result = $em->getRepository(Person::class)
                             ->searchByField($field, trim($nval));
             } else {
                 $result = $em->getRepository(Person::class)
