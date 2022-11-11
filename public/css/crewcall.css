@@ -985,6 +985,14 @@ input:checked + .ccSlider:before {
     font-size: 12px;
 }
 
+/* Annoyingly specific */
+.bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+    width: 90%;
+}
+.dropdown .bootstrap-select {
+    width: 90%;
+}
+
 /*
  * Glyphs for this application
  */
