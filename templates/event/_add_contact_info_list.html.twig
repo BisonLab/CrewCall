@@ -23,13 +23,14 @@
 
 {% if loc_infos|length == 0 and org_infos|length == 0%}
 <p>No contact information found.</p>
-{% endif %}
-
-<strong>Pick One</strong>
+{% else %}
 <form id="pick_contact_info_select" method="POST" action="{{ path('event_add_note', { 'access': 'web', 'event': event.id }) }}">
 <input type="hidden" name="_csrf_token" value="{{ csrf_token('event-add-note') }}">
 <input type="hidden" name="type" value="Contact Info">
 <select name="body" class="selectpicker" id="ciselect" data-live-search="true">
+    {% for ci in loc_infos %}
+        <option>{{ ci.subject }} {{ ci.body }}</option>
+    {% endfor %}
     {% for ci in org_infos %}
         {#
         <option>{{ ci.subject }} {{ ci.body }}</option>
@@ -40,7 +41,9 @@
 </select>
 <input class="btn-sm btn-dark" type="submit" value="Add"/>
 </form>
+{% endif %}
 
+{# No go for now.
 {% if loc_infos|length > 0 %}
     <h4>Location info</h4>
     {% for ci in loc_infos %}
@@ -53,6 +56,8 @@
     {{ cimacros.ci_form(ci, event.id) }}
     {% endfor %}
 {% endif %}
+#}
+
 <script>
 $(document).ready(function() {
 $('#ciselect').selectpicker();

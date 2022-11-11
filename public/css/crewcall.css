@@ -981,6 +981,10 @@ input:checked + .ccSlider:before {
     background-color: white;
 }
 
+.bootstrap-select .dropdown-item, .bootstrap-select .filter-option-inner {
+    font-size: 12px;
+}
+
 /*
  * Glyphs for this application
  */
