@@ -96,14 +96,21 @@ class ShiftRepository extends ServiceEntityRepository
                ) )
            ->setParameter('from', $from);
 
-
+        $to = null;
         if (isset($options['to'])) {
             if ($options['to'] instanceof \DateTime )
                 $to = $options['to'];
             else
                 $to = new \DateTime($options['to']);
-            $qb->andWhere('s.end <= :to')
-               ->setParameter('to', $to);
+            // To the end of the day.
+            $to->setTime(23,59);
+            if ($to->diff($from)->d == 0) {
+                $qb->andWhere('s.start <= :to')
+                    ->setParameter('to', $to);
+            } else {
+                $qb->andWhere('s.end <= :to')
+                    ->setParameter('to', $to);
+            }
         }
 
         // There are a few options here. Well, one for now, "booked".

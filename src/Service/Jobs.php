@@ -93,8 +93,8 @@ class Jobs
             // If not open for registration, don't.
             if (!$sf->isOpen())
                 continue;
-            // Already in jobs?
-            if (!$jobshift->contains($sf)) {
+            // Already in jobs? And not asking for all of it anyway.
+            if ($options['include_signed_up'] ?? false || !$jobshift->contains($sf)) {
                 // Check if we have time overlap between already booked job and
                 // the opportunities.
                 /*
