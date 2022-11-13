@@ -2,10 +2,10 @@
 
 {% block body %}
 {% include '/event/handling.html.twig' %}
-{% set prcols = {'Mobile': false , 'Diets': false, 'Checks': false, 'Comments': false, 'Hours1': false, 'Hours2': false} %}
+{% set prcols = {'Mobile': false , 'Diets': false, 'Checks': false, 'Comments': false, 'Hours1': false, 'Hours2': false, 'Numbers': false} %}
 <div id="unprintableContent">
 <div class="row">
-    <div class="col-5">
+    <div class="col-11">
         {% for check, checked in prcols %}
         <input name="fields[{{ check }}]" id="epcheck_{{  check  }}" type="checkbox" onClick='return checkChecked("{{  check  }}");' {% if checked %}checked{% endif %}>{{  check  }}</input>
         {% endfor %}

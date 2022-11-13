@@ -5,6 +5,13 @@
     <h4>{{ shift }} {{ shift.start | date("d.M.y H.i") }} -> {{ shift.end | date("H.i") }}</h4>
     </td>
   </tr>
+{% if all or Numbers is defined %}
+  <tr class="epNumbers">
+    <td colspan="4">
+    <p>Ordered: {{ shift.amount }}, Booked: {{ shift.bookedamount }}, {% if shift.needsamount > 0 %}<span style="color: red;">{% endif %}Needing: {{ shift.needsamount }}</span></p>
+    </td>
+  </tr>
+{% endif %}
   <tr class="jobshead">
     <th class="epName" width="25%">Name</th>
 {% if all or Mobile is defined %}
