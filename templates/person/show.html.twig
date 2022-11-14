@@ -330,7 +330,7 @@
   </div><!-- filestab -->
 
   <div class="tab-pane personFunctionsTab" id="person_functab">
-  </div><!-- functab -->
+  </div><!-- person_functab -->
 
   <div class="tab-pane personCalendarTab" id="person_caltab">
     <br>
@@ -398,12 +398,12 @@ function grabPersonJobs(past = false) {
 }
 
 function grabFunctionPickerTab() {
-    if ($( "#functab div" ).length > 1) {
+    if ($( "#person_functab div" ).length > 1) {
         return false;
     }
     url = "{{ path('function_picker', {'access': 'ajax' }) }}?person_id={{ person.id }}";
     $.get(url, function( data ) {
-        $( "#functab" ).html(data);
+        $( "#person_functab" ).html(data);
     }).done(function() {
         $( ".sfList" ).hide();
     });

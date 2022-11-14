@@ -90,7 +90,7 @@ class FunctionEntityController extends CommonController
         // So, let's handle these based on what to update.
         if ($update == "PersonFunction") {
             $person = $em->getRepository(Person::class)->find($update_id);
-            $has_functions = $request->request->get('has_functions');
+            $has_functions = $request->request->get('has_functions') ?? [];
             $pfs = array();
             foreach ($person->getPersonFunctions() as $pf) { 
                 if (!in_array($pf->getFunctionId(), $has_functions)) {
