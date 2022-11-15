@@ -24,11 +24,11 @@
 {% if loc_infos|length == 0 and org_infos|length == 0%}
 <p>No contact information found.</p>
 {% else %}
-<div class="row">
-<div class="col-10">
 <form id="pick_contact_info_select" method="POST" action="{{ path('event_add_note', { 'access': 'web', 'event': event.id }) }}">
 <input type="hidden" name="_csrf_token" value="{{ csrf_token('event-add-note') }}">
 <input type="hidden" name="type" value="Contact Info">
+<div class="row">
+<div class="col-10">
 <select name="body" class="selectpicker" id="ciselect" data-live-search="true">
     {% for ci in loc_infos %}
         <option>{{ ci.subject }} {{ ci.body }}</option>
@@ -44,9 +44,9 @@
 </div>
 <div class="col-2">
 <input class="btn-sm btn-dark" type="submit" value="Add"/>
+</div>
+</div>
 </form>
-</div>
-</div>
 {% endif %}
 
 {# No go for now.
