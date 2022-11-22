@@ -62,6 +62,10 @@ services:
         public: true
         arguments: ["@doctrine.orm.entity_manager"]
 
+    crewcall_retriever:
+        alias: crewcall.retriever
+        public: true
+
     crewcall.calendar:
         class: App\Service\Calendar
         public: true
@@ -85,9 +89,6 @@ services:
         class: App\Service\Addressing
         public: true
         arguments: ['%locale%','%addressing%']
-
-    crewcall_retriever:
-        alias: crewcall.retriever
 
     crewcall.statechangelistener:
         class: App\EventListener\StateChangeListener
