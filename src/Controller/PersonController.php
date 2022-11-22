@@ -19,6 +19,8 @@ use App\Entity\Person;
 use App\Entity\PersonState;
 use App\Entity\PersonFunction;
 use App\Entity\PersonRoleOrganization;
+use App\Entity\Organization;
+use App\Entity\Role;
 use App\Entity\Job;
 use App\Entity\FunctionEntity;
 use App\Lib\ExternalEntityConfig;

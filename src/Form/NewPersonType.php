@@ -69,7 +69,8 @@ class NewPersonType extends PersonType
             'addressing_config' => [],
             'address_elements' => [],
             'role' => null,
-            'organization' => null
+            'organization' => null,
+            'personfields' => []
         ));
     }
 
