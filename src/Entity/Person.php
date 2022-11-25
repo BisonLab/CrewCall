@@ -254,12 +254,12 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * @see UserInterface
      */
-    public function getIdentifier(): string
+    public function getUserIdentifier(): string
     {
         return $this->getUsername();
     }
 
-    public function setIdentifier(string $identifier): self
+    public function setUserIdentifier(string $identifier): self
     {
         return $this->setUsername($identifier);
     }
