@@ -76,7 +76,7 @@ class Calendar
                         $s = $sd->format("Ymd") . $cal['color'];
                     
                         $cal['start'] = $sd->format("Y-m-d\T01:00");
-                        $cal['end'] = $sd->format("Y-m-d\T10:00");
+                        $cal['end'] = $sd->format("Y-m-d\T23:59");
                         $cal['title'] = ' ';
                         $cal['textColor'] = $cal['color'];
                         $sd->modify('+1 day');
@@ -298,7 +298,8 @@ class Calendar
             $td = new \DateTime("first day of next year");
         else
             $td = $ps->getToDate();
-        $c['end'] = $td;
+        // Gotta set 25:59 to make sure the to_day is included.
+        $c['end'] = $td->modify("23:59");
         $c['title'] = (string)$ps->getStateLabel();
         $c['popup_content'] = (string)$ps->getStateLabel();
         $c['color'] = "blue";
