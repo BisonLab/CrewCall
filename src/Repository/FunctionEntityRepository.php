@@ -19,7 +19,7 @@ class FunctionEntityRepository extends \Doctrine\ORM\EntityRepository
         $this->return_qb = $val;
     }
 
-    public function findAll()
+    public function findAll(): array
     {
         return $this->findBy(array(), array('name' => 'ASC'));
     }

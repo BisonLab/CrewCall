@@ -26,7 +26,8 @@ class RoleRepository extends ServiceEntityRepository
         $io_config = $this->params->get('internal_organization');
         return $this->findOneBy(['name' => $io_config['default_role']]);
     }
-    public function findAll()
+
+    public function findAll(): array
     {
         return $this->findBy(array(), array('name' => 'ASC'));
     }
