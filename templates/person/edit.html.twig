@@ -5,6 +5,9 @@
 
     {{ form_start(edit_form) }}
         {{ form_widget(edit_form) }}
+        {% for aform in attribute_forms %}
+        {{ form_widget(aform) }}
+        {% endfor %}
         <strong>External info</strong>
         <ul>
         {% include '@BisonLabContext/context_forms.html.twig' with { 'context_forms': context_forms } %}

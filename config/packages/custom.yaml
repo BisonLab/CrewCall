@@ -69,48 +69,64 @@ parameters:
     #
     # This is set up for a typical volunteering situation. I presume an
     # employee relation need a few more fields or all.
+    #
+    # It can also handle attributes, for more customization.
+    # attribute: true and you then need label: "Foo Bar"
     # 
     personfields:
         date_of_birth:
             enabled: false
+            attribute: false
             user_editable: true
         diets:
             enabled: false
+            attribute: false
             user_editable: true
         workload_percentage:
             enabled: false
+            attribute: false
             user_editable: false
         nationality:
             enabled: false
+            attribute: false
             user_editable: true
         emergency_contact:
             enabled: false
+            attribute: false
             user_editable: true
         email:
             enabled: true
+            attribute: false
             user_editable: true
         mobile_phone_number:
             enabled: true
+            attribute: false
             user_editable: true
         address:
             enabled: true
+            attribute: false
             user_editable: true
         home_phone_number:
             enabled: false
+            attribute: false
             user_editable: false
         postal_address:
             enabled: false
+            attribute: false
             user_editable: false
         # Not entirely personfields, but nice to configure.
         hours:
             enabled: true
+            attribute: false
             user_editable: false
         profile_picture:
             enabled: true
+            attribute: false
             user_editable: true
         # Not that commenting this will hide all functions.
         functions:
             enabled: true
+            attribute: false
             user_editable: false
 
     # This basically says itself - Maybe false should be default, but at least

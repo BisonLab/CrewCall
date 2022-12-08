@@ -90,6 +90,11 @@ services:
         public: true
         arguments: ['%locale%','%addressing%']
 
+    crewcall.attributeformer:
+        class: App\Service\AttributeFormer
+        public: true
+        arguments: ['@form.factory']
+
     crewcall.statechangelistener:
         class: App\EventListener\StateChangeListener
         arguments: ["@crewcall.statehandler"]

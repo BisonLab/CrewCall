@@ -344,6 +344,7 @@ class PersonController extends CommonController
         $addressing_config = $this->container->getParameter('addressing');
         $personfields = $this->container->getParameter('personfields');
         $addressing = $this->container->get('crewcall.addressing');
+        $attributeFormer = $this->container->get('crewcall.attributeformer');
         $address_elements = $addressing->getFormElementList($person);
         $editForm = $this->createForm(PersonType::class,
             $person, [
@@ -360,21 +361,24 @@ class PersonController extends CommonController
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->updateContextForms($request,'App:Person', "App\Entity\\PersonContext", $person);
+            $attributeFormer->updateForms($person, $request);
 
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('person_show', array('id' => $person->getId()));
         }
+        $attribute_forms = $attributeFormer->getEditForms($person);
 
         return $this->render('person/edit.html.twig', array(
             'person' => $person,
             'edit_form' => $editForm->createView(),
             'context_forms' => $context_forms,
+            'attribute_forms' => $attribute_forms,
         ));
     }
 
     /**
-     * Deletes a person entity.
+     * Deletes a person.
      *
      * @Route("/{id}", name="person_delete", methods={"DELETE"})
      */
@@ -519,7 +523,7 @@ class PersonController extends CommonController
     }
 
     /**
-     * Creates a form to delete a person entity.
+     * Creates a form to delete a person.
      *
      * @param Person $person The person entity
      *

@@ -72,12 +72,6 @@
                 <td>{% if person.dateofbirth %}{{ person.dateofbirth|date('Y-m-d') }}{% endif %}</td>
             </tr>
 {% endif %}
-{% if personfields.nationality.enabled %}
-            <tr>
-                <th>Nationality</th>
-                <td>{{ person.nationalitycountry }}</td>
-            </tr>
-{% endif %}
             <tr>
                 <th>E-Mail</th>
                 <td>{{ person.email }}</td>
@@ -124,6 +118,22 @@
                 <td>{{ person.emergencycontact | replace({'\n': "<br>"}) | raw }}</td>
             </tr>
 {% endif %}
+{% if personfields.nationality.enabled %}
+            <tr>
+                <th>Nationality</th>
+                <td>{{ person.nationalitycountry }}</td>
+            </tr>
+{% endif %}
+{% if person.attributes | length > 0 %}
+    {% for key, val in person.attributes %}
+        {% if personfields[key] is defined and personfields[key].enabled %}
+            <tr>
+                <th>{{ personfields[key]['label'] }}</th>
+                <td>{{ val }}</td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+{% endif %}
 {% if person.contexts | length > 0 %}
             <tr>
                 <th>External pointers</th>
@@ -158,12 +168,6 @@
                 {% endfor %}
                 </td>
             </tr>
-{% if person.attributes is not empty %}
-            <tr>
-                <th>Attributes</th>
-                <td>{{ person.attributes | prettyprint }}</td>
-            </tr>
-{% endif %}
             <tr>
                 <th>
                     <a tabindex="0" href="#" title="Logs" id="popLogSummary_person_{{ person.id }}" onClick="return popLogSummary('person', {{ person.id }});" class="btn-sm btn-dark">Changelog</a>
