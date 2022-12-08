@@ -805,7 +805,7 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
     public function getStateLabel($state_or_date = null)
     {
         // Pretty simple check, but should just be enough. 
-        if ($state_or_date instanceof \DateTime || ($state_or_die && preg_match('/^\d/', $state_or_date))) {
+        if ($state_or_date instanceof \DateTime || ($state_or_date && preg_match('/^\d/', $state_or_date))) {
             $state = (string)$this->getStateOnDate($state_or_date);
         } else {
             $state = $state_or_date ?: $this->getState();
