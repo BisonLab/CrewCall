@@ -164,10 +164,12 @@ parameters:
     # job_overlap_hours: 4
     job_overlap_hours: 0
 
-    bisonlab_reports.report_classes:
-        - App\Lib\Reports\Reports
-    # For generated reports, usuaslly uuseful to be able to grab from the web.
-    bisonlab_reports.default_filestore: '%kernel.project_dir%/public/reports'
+    bisonlab_reports:
+        report_classes:
+            - App\Lib\Reports\Reports
+        # For generated reports, usuaslly uuseful to be able to grab from the
+        # web.
+        default_filestore: '%kernel.project_dir%/public/reports'
 
     crewcall.system_roles:
             ROLE_USER:

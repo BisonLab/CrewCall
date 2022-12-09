@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 use BisonLab\ReportsBundle\Lib\Reports\ReportsInterface;
 use BisonLab\ReportsBundle\Lib\Reports\CommonReportFunctions;
+use App\Entity\Event;
 
 /*
  * I know, this is old school and everything should be listeners and event
@@ -55,7 +56,7 @@ class Reports extends CommonReportFunctions implements ReportsInterface
 
         $form
             ->add('event', EntityType::class,
-                array('class' => 'App:Event',
+                array('class' => Event::class,
                     'required' => false,
                     'placeholder' => 'Choose an event if you need one',
                     'query_builder' => function(EntityRepository $er) {
