@@ -32,13 +32,13 @@ $("#img_{{sfile.id}}").ezPlus({
         <td>{{ sfile.createdat|date('Y-m-d H:i:s') }}</td>
         <td>{{ sfile.createdby }}</td>
 {% endif %}
-        <td>
+        <td style="padding: 0; margin: 0;">
             <a href="{{ path('file_download', { 'file_id': sfile.fileid }) }}"><button class="btn btn-link fas fa-file-download"></button></a>
         </td>
-        <td>
+        <td style="padding: 0; margin: 0;">
             <a href="#" onClick="return grabEditSakonninFileForm('{{ sfile.fileid }}');"><button class="btn btn-link edit_glyph"></button></a>
         </td>
-        <td>
+        <td style="padding: 0; margin: 0;">
             {% set delete_form = sakonnin_files.getdeleteform(sfile, {'create_view': true}) %}
             {{ form_start(delete_form)}}
             {{ form_rest(delete_form)}}
