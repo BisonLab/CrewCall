@@ -27,12 +27,12 @@ class JobLogs
          * Right now I'll just return the summary and all joblogs there is.
          */
         $summary = array(
-            'week'      => ['minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
-            'l7days'    => ['minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
-            'month'     => ['minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
-            'year'      => ['minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
-            'last_year' => ['minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
-            'total'     => ['minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
+            'week'      => ['jobs' => 0, 'minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
+            'l7days'    => ['jobs' => 0, 'minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
+            'month'     => ['jobs' => 0, 'minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
+            'year'      => ['jobs' => 0, 'minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
+            'last_year' => ['jobs' => 0, 'minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
+            'total'     => ['jobs' => 0, 'minutes' => 0, 'hours' => 0,'full' => 0,'half' => 0],
         );
 
         $full_day_minutes = $this->params->get('full_day_minutes');
@@ -55,6 +55,7 @@ class JobLogs
         $joblogs = new \Doctrine\Common\Collections\ArrayCollection();
         $joblog_array = [];
         foreach ($person->getJobs() as $job) {
+            $counted_job = false;
             foreach ($job->getJobLogs() as $jl) {
                 // TODO: Check state. I guess "COMPLETED" is the one to use.
                 $joblogs->add($jl);
@@ -71,6 +72,8 @@ class JobLogs
 
                 if ($out < $first_of_year && $out > $first_of_last_year) {
                     $summary['last_year']['minutes'] += $minutes;
+                    if (!$counted_job)
+                        $summary['last_year']['jobs']++;
                     if ($minutes > $half_day_minutes)
                         $summary['last_year']['full']++;
                     elseif ($minutes > 0
@@ -79,6 +82,8 @@ class JobLogs
                 }
                 if ($out > $first_of_week) {
                     $summary['week']['minutes'] += $minutes;
+                    if (!$counted_job)
+                        $summary['week']['jobs']++;
                     if ($minutes > $half_day_minutes)
                         $summary['week']['full']++;
                     elseif ($minutes > 0
@@ -86,6 +91,8 @@ class JobLogs
                         $summary['week']['half']++;
                 }
                 if ($out > $l7days) {
+                    if (!$counted_job)
+                        $summary['l7days']['jobs']++;
                     $summary['l7days']['minutes'] += $minutes;
                     if ($minutes > $half_day_minutes)
                         $summary['l7days']['full']++;
@@ -94,6 +101,8 @@ class JobLogs
                         $summary['l7days']['half']++;
                 }
                 if ($out > $first_of_month) {
+                    if (!$counted_job)
+                        $summary['month']['jobs']++;
                     $summary['month']['minutes'] += $minutes;
                     if ($minutes > $half_day_minutes)
                         $summary['month']['full']++;
@@ -102,6 +111,8 @@ class JobLogs
                         $summary['month']['half']++;
                 }
                 if ($out > $first_of_year) {
+                    if (!$counted_job)
+                        $summary['year']['jobs']++;
                     $summary['year']['minutes'] += $minutes;
                     if ($minutes > $half_day_minutes)
                         $summary['year']['full']++;
@@ -109,6 +120,8 @@ class JobLogs
                             && $minutes <= $half_day_minutes)
                         $summary['year']['half']++;
                 }
+                if ($minutes > 0)
+                    $counted_job = true;
             }
         }
         $summary['week']['hours']      = $this->mToHm($summary['week']['minutes']);
