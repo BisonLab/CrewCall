@@ -22,22 +22,19 @@ class WorkLog extends CommonReportFunctions
     // All fixed reports shall be hydrated as arrays.
     public function runFixedReport($config = null)
     {
+        if (!$event = $config['event'] ?? null)
+            throw new \InvalidArgumentException("You need to pick an event.");
+
         $em = $this->getManager();
         $jobservice = $this->container->get('crewcall.jobs');
         $jobloghandler = $this->container->get('crewcall.joblogs');
 
-        $where_added = false;
         $qb = $em->createQueryBuilder();
         $qb->select('e')
-           ->from('App\Entity\Event', 'e');
-
-        // These does not really work any more..
-        // Need fixing somehow.
-        if (isset($config['event']) && $config['event']) {
-                $qb->where('e.id = :event');
-            $qb->setParameter('event', $config['event']);
-            $where_added = true;
-        }
+           ->from('App\Entity\Event', 'e')
+           ->where('e.id = :event')
+           ->setParameter('event', $config['event'])
+        ;
 
         $header = [
             'Event name',

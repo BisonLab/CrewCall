@@ -5,6 +5,7 @@ namespace App\Lib\Reports;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 use BisonLab\ReportsBundle\Lib\Reports\ReportsInterface;
 use BisonLab\ReportsBundle\Lib\Reports\CommonReportFunctions;
@@ -65,6 +66,9 @@ class Reports extends CommonReportFunctions implements ReportsInterface
                         ->orderBy('e.name', 'ASC');
                     },
                 ))
+            ->add('active_crew_only', CheckboxType::class,
+                array('label' => 'Active crew only')
+                )
         ;
     }
 }
