@@ -248,12 +248,10 @@
        </li>
  #}
         {# This is the replacement for the code above #}
-        {% if not event.open and event.shifts | length > 0 %}
-       <li>
-        <a href="#" onClick="return submitEventStateForm({{ event.id}}, 'CONFIRMED');">
-            Confirm and open event for registration
-        </a>
-       </li>
+        {% if not event.open and ( event.shifts | length > 0 or event.children | length > 0 ) %}
+        <li>
+            <a href="#" onClick="return submitEventStateForm({{ event.id}}, 'CONFIRMED');">Confirm and open event for registration</a>
+        </li>
         {% endif %}
         {% if event.end < date() %}
         <li>
