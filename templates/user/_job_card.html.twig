@@ -21,7 +21,7 @@
   </div><!-- end row -->
   <div class="card-custom-content p-2 row">
     <div class="col-10 col-lg-11">
-      <span class="d-block">{{ job.event.location.name }} - {{ job.event.organization.name }}</span>
+      <span class="d-block">{{ job.event.location.name }}</span>
       <h4 class="text-uppercase font-weight-bold">{{ job.event.name }}</h4>
       <h4 class="text-uppercase font-weight-bold">{{ job.shift.function }}</h4>
     </div>
@@ -34,27 +34,39 @@
   <div id="hidden_{{ job.id }}" class="row collapse">
     <div class="col-12">
       <div class="mb-2 slider closed"><!---->
-        <p>{{ job.event.description }}</p>
-        <div>
-          <span class="font-weight-bold">Client: </span>
-          <span >{{ job.event.organization.name }}</span>
-        </div>
-        <div>
-          <span class="font-weight-bold">Place: </span>
-          <span>{{ job.event.location.name }}, {{ job.event.location.address_flat.addressLine1 }}
-{% if job.event.location.address_flat.addressLine2 is not empty %},{{ job.event.location.address_flat.addressLine2 }}{% endif %}
-{% if job.event.location.address_flat.postalCode is not empty %},{{ job.event.location.address_flat.postalCode }}{% endif %}
-{% if job.event.location.address_flat.postalName is not empty %},{{ job.event.location.address_flat.postalName }}{% endif %}
-            </span>
-        </div>
-        {% if job.event.contact_info | length > 0 %}
-            {% for ci in job.event.contact_info %}
-            <div>
-              <span class="font-weight-bold">Contact: </span>
-              <pre >{{ ci.body }}</pre>
-            </div>
-            {% endfor %}
+       <!-- Mix in the good old table -->
+        <table>
+        {% if job.event.description is not empty %}
+        <tr>
+            <td colspan="2">
+                <p>{{ job.event.description }}</p>
+            </td> 
+        </tr> 
         {% endif %}
+        <tr>
+            <th>Client:</th>
+            <td>{{ job.event.organization.name }}</td> 
+        </tr> 
+        <tr>
+            <th valign="top">Place:</th>
+            <td>{{ job.event.location.name }}<br>
+                {{ job.event.location.address_flat.addressLine1 }}{% if job.event.location.address_flat.addressLine2 is not empty %}, {{ job.event.location.address_flat.addressLine2 }}{% endif %}{% if job.event.location.address_flat.postalCode is not empty %}, {{ job.event.location.address_flat.postalCode }}{% endif %}{% if job.event.location.address_flat.postalName is not empty %} {{ job.event.location.address_flat.postalName }}{% endif %}
+            {% if job.event.location.description is not empty %}
+            <br><i>{{ job.event.location.description }}</i>
+        {% endif %}
+            </td>
+        </tr> 
+        {% if job.event.contact_info | length > 0 %}
+        <tr>
+            <th valign="top">Contacts:</th>
+            <td>
+            {% for ci in job.event.contact_info %}
+              {{ ci.body|replace({'\n': '<br>'}) }}</br>
+            {% endfor %}
+            </td>
+        </tr>
+        {% endif %}
+       </table>
       </div>
     </div>
   </div><!-- end collapsed row -->

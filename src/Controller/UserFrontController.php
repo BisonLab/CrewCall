@@ -925,13 +925,17 @@ class UserFrontController extends CommonController
                 }
             }
 
+            if ((!$event_description = $event->getDescription()) && $event->getParent())
+                $event_description = $event->getParent()->getDescription();
+
             $eventarr = [
                 'name' => (string)$event,
                 'id' => $event->getId(),
                 'parent_id' => $event->getParent() ? $event->getParent()->getId() : null,
-                'description' => $event->getDescription(),
+                'description' => $event_description,
                 'location' => [
                     'name' => $location->getName(),
+                    'description' => $location->getDescription(),
                 ],
                 'organization' => [
                     'name' => $organization->getName(),
