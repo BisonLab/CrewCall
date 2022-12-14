@@ -97,6 +97,13 @@
         </tbody>
     </table>
   </div>
+{% set filecontext = {
+        'system': 'crewcall',
+        'object_name': 'event',
+        'external_id': event.id,
+        'short': true
+    }
+%}
 {% set lscontext = {
             'system': 'crewcall',
             'object_name': 'event',
@@ -105,20 +112,22 @@
     }
 %}
 {% set listsentnotes = sakonnin_messages.MessagesForContext(lscontext) %}
+{% set adminnotes = event.notesbytype("AdminNote") %}
+{% set files = sakonnin_files.getFilesForContext(filecontext) %}
   <div class="col-5 tabbable"> 
       <ul class="nav nav-tabs">
           <li class="nav-item">
-          <a class="nav-link active" href="#crewnotestab_{{ event.id }}" data-toggle="tab">Crew Notes</a>
+          <a class="nav-link active" style="padding-right: 0.3rem; padding-left: 0.3rem;" href="#crewnotestab_{{ event.id }}" data-toggle="tab">Crew Notes</a>
           </li>
           <li class="nav-item">
-          <a class="nav-link" href="#adminnotestab_{{ event.id }}" data-toggle="tab">Admin Notes</a>
+          <a class="nav-link" style="padding-right: 0.3rem; padding-left: 0.3rem;" href="#adminnotestab_{{ event.id }}" data-toggle="tab">Admin Notes{% if adminnotes|length > 0 %} ({{ adminnotes|length }}){% endif %}</a>
           </li>
           <li class="nav-item">
-          <a class="nav-link" href="#filestab_{{ event.id }}" data-toggle="tab">Files</a>
+          <a class="nav-link" style="padding-right: 0.3rem; padding-left: 0.3rem;" href="#filestab_{{ event.id }}" data-toggle="tab">Files{% if files|length > 0 %} ({{ files|length }}){% endif %}</a>
           </li>
 {% if listsentnotes | length > 0 %}
           <li class="nav-item">
-          <a class="nav-link" href="#lsnotestab_{{ event.id }}" data-toggle="tab">Lists sent</a>
+          <a class="nav-link" style="padding-right: 0.3rem; padding-left: 0.3rem;" href="#lsnotestab_{{ event.id }}" data-toggle="tab">Lists sent{% if listsentnotes|length > 0 %} ({{ listsentnotes|length }}){% endif %}</a>
           </li>
 {% endif %}
 {% include '@Custom/event/_custom_navtabs.html.twig' ignore missing %}
@@ -155,7 +164,7 @@
 
       <div class="tab-pane" id="adminnotestab_{{ event.id }}">
         <br>
-        {% for note in event.notesbytype("AdminNote") %}
+        {% for note in adminnotes %}
             {% include 'event/_note.html.twig' %}
         {% endfor %}
        {% include 'event/_add_note.html.twig' with {'event': event, 'type': 'AdminNote' } %}
@@ -180,12 +189,6 @@
         <p>
           <a href="#" onClick="return uploadSakonninFile('eventfiles_{{ event.id }}');">Add a file</a><br />
         </p>
-        {% set filecontext = {
-                    'system': 'crewcall',
-                    'object_name': 'event',
-                    'external_id': event.id
-            }
-        %}
         {% include '_files.html.twig' with filecontext %}
       </div>
 {% if listsentnotes | length > 0 %}
@@ -278,10 +281,9 @@
             <a href="{{ path('event_clone', {'event': event.id}) }}">Create a copy with new start</a>
         </li>
     {% endif %}
-{% include '@Custom/event/_custom_menuitems.html.twig' ignore missing %}
+    {% include '@Custom/event/_custom_menuitems.html.twig' ignore missing %}
     </ul>
-
-   </div> <!-- col-2 -->
+   </div> <!-- col-3 -->
 </div> <!-- / row -->
 
 {% if event.shifts | length > 0 %}

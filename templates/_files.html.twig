@@ -4,8 +4,11 @@
        <tr>
            <th>Name</th>
            <th>Description</th>
+{% if short is not defined or not short %}
            <th>Uploaded At</th>
            <th>Uploaded By</th>
+{% endif %}
+           <th>&nbsp;</th>
            <th>&nbsp;</th>
            <th>&nbsp;</th>
        </tr>
@@ -25,13 +28,17 @@ $("#img_{{sfile.id}}").ezPlus({
         {{ sfile.name }}
         </td>
         <td>{{ sfile.description | default("A file to view") }}</td>
+{% if short is not defined or not short %}
         <td>{{ sfile.createdat|date('Y-m-d H:i:s') }}</td>
         <td>{{ sfile.createdby }}</td>
-        <td>
+{% endif %}
+        <td style="padding: 0; margin: 0;">
             <a href="{{ path('file_download', { 'file_id': sfile.fileid }) }}"><button class="btn btn-link fas fa-file-download"></button></a>
+        </td>
+        <td style="padding: 0; margin: 0;">
             <a href="#" onClick="return grabEditSakonninFileForm('{{ sfile.fileid }}');"><button class="btn btn-link edit_glyph"></button></a>
         </td>
-        <td>
+        <td style="padding: 0; margin: 0;">
             {% set delete_form = sakonnin_files.getdeleteform(sfile, {'create_view': true}) %}
             {{ form_start(delete_form)}}
             {{ form_rest(delete_form)}}
