@@ -67,8 +67,9 @@ class Reports extends CommonReportFunctions implements ReportsInterface
                     },
                 ))
             ->add('active_crew_only', CheckboxType::class,
-                array('label' => 'Active crew only')
-                )
+                array('label' => 'Active crew only',
+                    'required' => false,
+                ))
         ;
     }
 }
