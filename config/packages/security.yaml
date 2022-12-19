@@ -53,4 +53,4 @@ security:
         - { path: ^/user, roles: ROLE_USER }
         # but require authentication for all other admin routes
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/bisonlab_reports, roles: ROLE_ADMIN }
+        - { path: bisonlab_reports, roles: ROLE_ADMIN }
