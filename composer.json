@@ -28,7 +28,7 @@
         "doctrine/orm": "^2.10",
         "eluceo/ical": "^0.13.0",
         "fortawesome/font-awesome": "^5.15",
-        "fullcalendar/fullcalendar": "^3.10",
+        "moment/moment": "^2.20.1",
         "jms/serializer-bundle": "^4.2",
         "knplabs/knp-menu-bundle": "^3.0",
         "oomphinc/composer-installers-extender": "dev-master",
@@ -90,8 +90,8 @@
             "symfony/runtime": true,
             "composer/installers": true,
             "oomphinc/composer-installers-extender": true,
-            "wikimedia/composer-merge-plugin": true,
-            "robloach/component-installer": true
+            "robloach/component-installer": true,
+            "wikimedia/composer-merge-plugin": true
         },
         "optimize-autoloader": true,
         "preferred-install": {

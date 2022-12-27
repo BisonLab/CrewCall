@@ -1,10 +1,10 @@
 <script src="{{ asset('components/moment/min/moment.min.js') }}"></script>
-<script src="{{ asset('components/fullcalendar/dist/fullcalendar.js') }}"></script>
-<script src="{{ asset('components/fullcalendar/dist/gcal.js') }}"></script>
+<script src="{{ asset('fullcalendar/dist/fullcalendar.js') }}"></script>
+<script src="{{ asset('fullcalendar/dist/gcal.js') }}"></script>
 {% if fullcalendar_locale == "all" %}
-<script src="{{ asset('components/fullcalendar/dist/locale-all.js') }}"></script>
+<script src="{{ asset('fullcalendar/dist/locale-all.js') }}"></script>
 {% else %}
-<script src="{{ asset('components/fullcalendar/dist/locale/' ~ fullcalendar_locale ~ '.js') }}"></script>
+<script src="{{ asset('fullcalendar/dist/locale/' ~ fullcalendar_locale ~ '.js') }}"></script>
 {% endif %}
 
 <script>
