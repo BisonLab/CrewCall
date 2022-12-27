@@ -15,11 +15,17 @@ class Person
     {
         $summary = array();
 
-        $summary[] = array(
+        $parr = array(
             'name' => 'name',
             'value' => (string)$person,
             'label' => 'Name'
             );
+        if ($access)
+            $parr['url'] = $this->router->generate('person_show',
+                array('access' => $access,
+                'id' => $person->getId()
+                ));
+        $summary[] = $parr;
 
         $summary[] = array(
             'name' => 'userame',

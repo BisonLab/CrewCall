@@ -15,11 +15,17 @@ class Organization
     {
         $summary = array();
 
-        $summary[] = array(
+        $oarr = array(
             'name' => 'name',
             'value' => (string)$organization,
             'label' => 'Name'
             );
+        if ($access)
+            $oarr['url'] = $this->router->generate('organization_show',
+                array('access' => $access,
+                'id' => $organization->getId()
+                ));
+        $summary[] = $oarr;
 
         return $summary;
     }

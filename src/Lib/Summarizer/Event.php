@@ -15,11 +15,17 @@ class Event
     {
         $summary = array();
 
-        $summary[] = array(
+        $evarr = array(
             'name' => 'name',
             'value' => (string)$event,
             'label' => 'Name'
             );
+        if ($access)
+            $evarr['url'] = $this->router->generate('event_show',
+                array('access' => $access,
+                'id' => $event->getId()
+                ));
+        $summary[] = $evarr;
 
         $summary[] = array(
             'name' => 'location',
