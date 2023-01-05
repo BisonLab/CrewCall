@@ -66,6 +66,12 @@
                     No
                 {%endif%}</td>
             </tr>
+{% if person.lastlogin is not empty %}
+            <tr>
+                <th>Last Login</th>
+                <td>{{ person.lastlogin|date('Y-m-d')}}</td>
+            </tr>
+{% endif %}
 {% if personfields.date_of_birth.enabled %}
             <tr>
                 <th>Date of birth</th>
