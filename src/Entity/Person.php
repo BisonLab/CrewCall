@@ -1463,7 +1463,7 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getLastLogin(): \Datetime
+    public function getLastLogin(): ?\Datetime
     {
         return $this->last_login;
     }
