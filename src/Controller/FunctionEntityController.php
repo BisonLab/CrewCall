@@ -130,7 +130,7 @@ class FunctionEntityController extends CommonController
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($functionEntity);
-            $em->flush($functionEntity);
+            $em->flush();
 
             return $this->redirectToRoute('function_show', array('id' => $functionEntity->getId()));
         }
