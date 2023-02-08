@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Intl\Countries;
+use Doctrine\ORM\EntityManagerInterface;
 use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 
 use App\Entity\Event;
@@ -20,9 +21,12 @@ class DefaultController extends CommonController
     /**
      * @Route("/", name="index")
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, EntityManagerInterface $entityManager)
     {
+        // Pracitally only used by auth.
         if ($user = $this->getUser()) {
+            $user->setLastLogin(new \DateTime());
+            $entityManager->flush();
             if ($user->isAdmin())
                 return $this->redirectToRoute('dashboard');
             else

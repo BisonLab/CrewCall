@@ -13,6 +13,7 @@ use App\Lib\ExternalEntityConfig;
 use App\Entity\FunctionEntity;
 use App\Entity\PersonFunction;
 use App\Entity\Person;
+use App\Form\FunctionEntityType;
 
 /**
  * Functionentity controller.
@@ -122,14 +123,14 @@ class FunctionEntityController extends CommonController
      */
     public function newAction(Request $request)
     {
-        $functionEntity = new Functionentity();
-        $form = $this->createForm('App\Form\FunctionEntityType', $functionEntity);
+        $functionEntity = new FunctionEntity();
+        $form = $this->createForm(FunctionEntityType::class, $functionEntity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($functionEntity);
-            $em->flush($functionEntity);
+            $em->flush();
 
             return $this->redirectToRoute('function_show', array('id' => $functionEntity->getId()));
         }
@@ -143,7 +144,7 @@ class FunctionEntityController extends CommonController
     /**
      * Finds and displays a functionEntity entity.
      *
-     * @Route("/{id}", name="function_show", methods={"GET"})
+     * @Route("/{id}/show", name="function_show", methods={"GET"})
      */
     public function showAction(FunctionEntity $functionEntity)
     {
@@ -166,7 +167,7 @@ class FunctionEntityController extends CommonController
     {
         $deleteForm = $this->createDeleteForm($functionEntity);
         $removePeopleForm = $this->createRemovePeopleForm($functionEntity);
-        $editForm = $this->createForm('App\Form\FunctionEntityType', $functionEntity);
+        $editForm = $this->createForm(FunctionEntityType::class, $functionEntity);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {

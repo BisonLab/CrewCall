@@ -356,7 +356,11 @@ em {
 }
 
 ul {
-    list-style-type: none
+    list-style-type: none;
+}
+
+form ul li {
+    margin-bottom: 20px;
 }
 
 pre {

@@ -101,18 +101,16 @@ $(document).ready(function() {
 
         var rows_selected = selectable_table.column('.selectcol').checkboxes.selected();
 
-      // Iterate over all selected checkboxes
-      $.each(rows_selected, function(index, rowId){
-         // Create a hidden element
-         $(form).append(
-             $('<input class="peoplefunctions_list">')
-                .attr('type', 'hidden')
-                .attr('name', 'personfunctions[]')
-                .val(rowId)
-         );
-      });
-    });
-
+        // Iterate over all selected checkboxes
+        $.each(rows_selected, function(index, rowId){
+           // Create a hidden element
+           $(form).append(
+               $('<input class="peoplefunctions_list">')
+                  .attr('type', 'hidden')
+                  .attr('name', 'personfunctions[]')
+                  .val(rowId)
+           );
+        });
         postdata = $(form).serialize();
         $.ajax({
             type: "POST",
@@ -124,6 +122,7 @@ $(document).ready(function() {
             }
         });
         eventObj.preventDefault();
+    });
 });
 
 </script>

@@ -56,6 +56,10 @@ class Reports extends CommonReportFunctions implements ReportsInterface
         $em = $this->getManager();
 
         $form
+            ->add('active_crew_only', CheckboxType::class,
+                array('label' => 'Active crew only',
+                    'required' => false,
+                ))
             ->add('event', EntityType::class,
                 array('class' => Event::class,
                     'required' => false,
@@ -65,10 +69,6 @@ class Reports extends CommonReportFunctions implements ReportsInterface
                         ->where('e.parent is null')
                         ->orderBy('e.name', 'ASC');
                     },
-                ))
-            ->add('active_crew_only', CheckboxType::class,
-                array('label' => 'Active crew only',
-                    'required' => false,
                 ))
         ;
     }
