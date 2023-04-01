@@ -18,7 +18,7 @@
         "bisonlab/context-bundle": "dev-main",
         "bisonlab/noorm-bundle": "3.1.*",
         "bisonlab/reports-bundle": "dev-master",
-        "bisonlab/sakonnin-bundle": "dev-new-context",
+        "bisonlab/sakonnin-bundle": "5.4.*",
         "components/jquery": "^3.4",
         "components/jqueryui": "^1.12",
         "composer/package-versions-deprecated": "1.11.99.4",
