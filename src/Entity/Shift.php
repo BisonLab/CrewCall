@@ -499,4 +499,9 @@ class Shift
                 ->addViolation();
         }
     }
+
+    public function getLocation()
+    {
+        return $this->getEvent()->getLocation();
+    }
 }

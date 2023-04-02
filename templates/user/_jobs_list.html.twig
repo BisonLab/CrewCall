@@ -1,0 +1,67 @@
+<h4 class="text-uppercase font-weight-bold mt-4">Sign up for jobs</h4>
+<div class="row">
+    <div class="col-sm-4 col-xs-6 p-3">
+      <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'opportunities'}) }}', 'myJobsLink');">Sign up (<span id="opportunities_count">{{ opportunities | length }}</span>)</a>
+      <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'interested'}) }}', 'myJobsLink');">Signed Up (<span id="interested_count">{{ interested | length }}</span>)</a>
+      <a class="btn badge badge-secondary" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'jobs_list'}) }}', 'myJobsLink');">As list</a>
+    </div>
+    {% include '/user/_choose_month.html.twig' %}
+</div><!-- end row -->
+<table id="jobs_list" class="table table-striped  table-sm">
+    <thead class="thead-inverse">
+        <tr>
+            <th>Event</th>
+            <th>Where</th>
+            <th>Start</th>
+            <th class="no-sort">End</th>
+            <th>What</th>
+            <th class="no-sort">&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+    {# Better make this a service function or something, for listing opportunities with already registerted interest filtered out #}
+    {% for job in opportunities %}
+        <tr id=item-{{ job.id }}>
+            <td>{{ job.event.name }}</td>
+            <td>{{ job.event.location.name }}</td>
+            <td data-order="{{ job.shift.starttimestamp }}" >{{ job.shift.starttimedate }}</td>
+            <td>{{ job.shift.end_string }}</td>
+            <td>{{ job.shift.function }}</td>
+            <td>
+                {% include '/user/_signup_form.html.twig' %}
+            </td>
+        </tr>
+    {% endfor %}
+    {% for job in interested %}
+        <tr id=item-{{ job.id }}>
+            <td>{{ job.event.name }}</td>
+            <td>{{ job.event.location.name }}</td>
+            <td data-order="{{ job.shift.starttimestamp }}" >{{ job.shift.starttimedate }}</td>
+            <td>{{ job.shift.end_string }}</td>
+            <td>{{ job.shift.function }}</td>
+            <td>
+                <form id="delete_interest_form_{{ job.id }}" action="#" onSubmit="return submitDeleteInterest({{ job.id }});">
+                <input type="hidden" value="{{ delete_interest._csrf_token }}" name="_csrf_token">
+                <button class="btn btn-dark ml-3"><i class="fas fa-times mr-1 text-danger"></i>Remove</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<script>
+jQuery(document).ready(function() {
+    $( "#jobs_list" ).dataTable({
+        "order": [[ 2, "asc" ]],
+        "paging": false,
+        "info": false,
+        "columnDefs": [{
+            "targets": 'no-sort',
+            "orderable": false,
+        }],
+        "searching": false
+        });
+    return false;
+});
+</script>

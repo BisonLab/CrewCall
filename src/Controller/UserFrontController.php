@@ -297,9 +297,8 @@ class UserFrontController extends CommonController
         $ccjobs = $this->container->get('crewcall.jobs');
         // Create a csrf token for use in the next step
         $csrfman = $this->get('security.csrf.token_manager');
-
-        $view  = $request->get('view') ?? null;
-        if ($view && !in_array($view, ['opportunities', 'interested', 'assigned', 'confirmed']))
+        $view = $request->get('view') ?? null;
+        if ($view && !in_array($view, ['past', 'jobs_list', 'opportunities', 'interested', 'assigned', 'confirmed']))
             throw new \InvalidArgumentException("Funnily enough, I do not acceept your view.");
 
         $today = new \DateTime();
@@ -352,6 +351,13 @@ class UserFrontController extends CommonController
             'confirmed' => null,
             'confirmed_count' => 0
             ];
+
+        if ($view == "past") {
+            $retarr['past'] = $this->jobsForPersonAsArray($user, [
+                'past' => true]);
+            $retarr['past_count'] = count($retarr['past']);
+            return $this->render('user/_' . $view . '.html.twig', $retarr);
+        }
 
         $signuptoken = $csrfman->getToken('signup-shift')->getValue();
         $retarr['signup_shift'] = [
@@ -843,6 +849,7 @@ class UserFrontController extends CommonController
             $starttime = $shift->getStart()->getTimestamp();
             $startdaynum = $shift->getStart()->format('j');
             $startstring = $shift->getStart()->format('D H:i');
+            $starttimedate = $shift->getStart()->format('D d M H:i');
             $enddaynum = $shift->getEnd()->format('j');
             $month = $shift->getStart()->format("F");
 
@@ -861,6 +868,7 @@ class UserFrontController extends CommonController
                     'startdaynum' => $startdaynum,
                     'start_date' => $shift->getStart()->format("Y-m-d H:i"),
                     'start_string' => $startstring,
+                    'starttimedate' => $starttimedate,
                     'month' => $month,
                     'end_date' => $shift->getEnd()->format("Y-m-d H:i"),
                     'end_string' => $endstring,

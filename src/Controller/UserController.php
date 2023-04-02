@@ -43,21 +43,6 @@ class UserController extends CommonController
     /**
      * Lists all Jobs for a user.
      *
-     * @Route("/home", name="user_home", methods={"GET"})
-     */
-    public function homeAction(Request $request, $access)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $user = $this->getUser();
-
-        return $this->render('user/_home.html.twig', array(
-            'user' => $user
-        ));
-    }
-
-    /**
-     * Lists all Jobs for a user.
-     *
      * @Route("/me", name="user_me", methods={"GET"})
      */
     public function meAction(Request $request, $access)
