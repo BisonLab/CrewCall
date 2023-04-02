@@ -74,12 +74,24 @@ parameters:
     # attribute: true and you then need label: "Foo Bar"
     # 
     personfields:
+        email:
+            enabled: true
+            attribute: false
+            user_editable: true
+        first_name:
+            enabled: true
+            attribute: false
+            user_editable: true
+        last_name:
+            enabled: true
+            attribute: false
+            user_editable: true
         date_of_birth:
             enabled: false
             attribute: false
             user_editable: true
         diets:
-            enabled: false
+            enabled: true
             attribute: false
             user_editable: true
         workload_percentage:
@@ -92,10 +104,6 @@ parameters:
             user_editable: true
         emergency_contact:
             enabled: false
-            attribute: false
-            user_editable: true
-        email:
-            enabled: true
             attribute: false
             user_editable: true
         mobile_phone_number:

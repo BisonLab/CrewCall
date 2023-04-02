@@ -15,7 +15,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-12 col-lg-6 mt-4">
+    <div class="col-12 col-lg-8 mt-4">
 {% if user.email is not empty %}
       <div>E-mail:
         <span class="font-weight-bold">{{ user.email }}</span>
@@ -31,6 +31,11 @@
         <span class="font-weight-bold">{{ user.homephonenumber }}</span>
       </div>
 {% endif %}
+{% if user.address is not empty %}
+      <div>Address
+        <span class="font-weight-bold">{{ cc_addressing.compose(user.address, 'html') | raw }}</span>
+      </div>
+{% endif %}
 {% if user.dateofbirth is not empty %}
       <div>Date of birth:
         <span class="font-weight-bold">{% if user.dateofbirth %}{{ user.dateofbirth|date('Y-m-d') }}{% endif %}</span>
@@ -43,10 +48,9 @@
 {% endif %}
 {% if user.diets is not empty %}
       <div>Diets:
-        <span class="font-weight-bold">{{ user.diets | join(", ") }}</span>
+        <span class="font-weight-bold">{{ user.dietslabels | join(", ") }}</span>
       </div>
 {% endif %}
-  </div>
 {% if user.emergencycontact is not empty %}
     <div class="col-2 col-lg-2 mt-4">
         <div>Emergency Contact:</div>
@@ -62,13 +66,5 @@
         <span class="font-weight-bold d-block">Skills:</span>
         {{ functions | join(", ") }}
     </div>
-    <div class="col-12 mt-4">
-{% set from_date = "now"|date_modify('first day of this month')|date_modify('first day of this week')|date("Y-m-d") %}
-{% set to_date = "now"|date_modify('last day of this month')|date_modify('last day of this week')|date("Y-m-d") %}
-        <a class="btn btn-light p-4 border border-secondary col-12 col-lg-2 mb-2 mr-2" href="#" onClick="return getCContent('{{ path('uf_me_joblog', { 'from_date': from_date, 'to_date': to_date }) }}');">MY HOURS</a>
-        <a class="btn btn-light p-4 border border-secondary col-12 col-lg-2 mb-2 mr-2" href="#" onClick="return getCContent('{{ path('uf_me_absence', { 'from_date': from_date, 'to_date': to_date }) }}');">MY ABSENCE</a>
-        <a class="btn btn-light p-4 border border-secondary col-12 col-lg-2 mb-2 mr-2" href="#" onClick="return getCContent('{{ path('uf_me_files') }}');">FILES</a>
-        <a class="btn btn-light p-4 border border-secondary col-12 col-lg-2 mb-2" href="#" onClick="return getCContent('{{ path('uf_me_change_password') }}');">PASSWORD</a>
-    </div>
   </div>
-</div>
+{% include "/user/_profile_foot.html.twig" %}

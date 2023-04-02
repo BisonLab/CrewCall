@@ -19,6 +19,7 @@ use App\Entity\Shift;
 use App\Entity\Job;
 use App\Form\ChangePasswordFosType;
 use App\Form\ChangePasswordFormType;
+use App\Form\EditMyselfType;
 use App\Model\FullCalendarEvent;
 
 /**
@@ -697,6 +698,41 @@ class UserFrontController extends CommonController
     }
 
     /**
+     * Edit myself.
+     *
+     * @Route("/edit_myself", name="uf_me_edit_myself", methods={"GET", "POST"})
+     */
+    public function meEditMyselfAction(Request $request)
+    {
+        $user = $this->getUser();
+
+        $addressing = $this->container->get('crewcall.addressing');
+        $addressing_config = $this->container->getParameter('addressing');
+        $address_elements = $addressing->getFormElementList($user);
+        $personfields = $this->container->getParameter('personfields');
+
+        $form = $this->createForm(EditMyselfType::class, $user, [
+               'addressing_config' => $addressing_config,
+               'address_elements' => $address_elements,
+               'personfields' => $personfields,
+            ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush();
+
+            return $this->redirectToRoute('uf_me_profile');
+        } else {
+            return $this->render('/user/_edit.html.twig', [
+                'user' => $user,
+                'form' => $form->createView(),
+            ]);
+        }
+    }
+
+    /**
      * Change password on self.
      *
      * @Route("/change_password", name="uf_me_change_password", methods={"GET", "POST"})
@@ -721,7 +757,7 @@ class UserFrontController extends CommonController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->flush();
 
-            return $this->render('user/_profile.html.twig', $retarr);
+            return $this->redirectToRoute('uf_me_profile');
         } else {
             return $this->render('/user/_password.html.twig', [
                 'user' => $user,
