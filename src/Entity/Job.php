@@ -309,7 +309,7 @@ class Job
 
     public function getLocation()
     {
-        return $this->getEvent()->getLocation();
+        return $this->getShift()->getLocation();
     }
 
     public function getStart()
