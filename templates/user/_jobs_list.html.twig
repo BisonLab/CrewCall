@@ -23,7 +23,7 @@
     {% for job in opportunities %}
         <tr id=item-{{ job.id }}>
             <td>{{ job.event.name }}</td>
-            <td>{{ job.event.location.name }}</td>
+            <td>{{ job.location.name }}</td>
             <td data-order="{{ job.shift.starttimestamp }}" >{{ job.shift.starttimedate }}</td>
             <td>{{ job.shift.end_string }}</td>
             <td>{{ job.shift.function }}</td>
@@ -35,7 +35,7 @@
     {% for job in interested %}
         <tr id=item-{{ job.id }}>
             <td>{{ job.event.name }}</td>
-            <td>{{ job.event.location.name }}</td>
+            <td>{{ job.location.name }}</td>
             <td data-order="{{ job.shift.starttimestamp }}" >{{ job.shift.starttimedate }}</td>
             <td>{{ job.shift.end_string }}</td>
             <td>{{ job.shift.function }}</td>

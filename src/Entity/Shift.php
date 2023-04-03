@@ -75,6 +75,12 @@ class Shift
     private $amount;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Location", inversedBy="shifts")
+     * @ORM\JoinColumn(name="location_id", referencedColumnName="id")
+     */
+    private $location;
+
+    /**
      * @ORM\OneToMany(targetEntity="Job", mappedBy="shift", cascade={"persist","remove"})
      */
     private $jobs;
@@ -274,6 +280,37 @@ class Shift
     public function getAmount()
     {
         return $this->amount;
+    }
+
+    /**
+     * Set location
+     *
+     * @param \App\Entity\Location $location
+     *
+     * @return Event
+     */
+    public function setLocation(\App\Entity\Location $location = null)
+    {
+        // I want null if same as Event.
+        if ($location && $this->getEvent()?->getLocation() == $location)
+            $this->location = null;
+        else
+            $this->location = $location;
+
+        return $this;
+    }
+
+    /**
+     * Get location
+     *
+     * @return \App\Entity\Location
+     */
+    public function getLocation()
+    {
+        if ($this->location)
+            return $this->location;
+        else
+            return $this->getEvent()?->getLocation();
     }
 
     /**
@@ -498,10 +535,5 @@ class Shift
                 ->atPath('start')
                 ->addViolation();
         }
-    }
-
-    public function getLocation()
-    {
-        return $this->getEvent()->getLocation();
     }
 }

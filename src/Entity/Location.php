@@ -97,6 +97,11 @@ class Location
     private $events;
 
     /**
+     * @ORM\OneToMany(targetEntity="Shift", mappedBy="location")
+     */
+    private $shifts;
+
+    /**
      * @ORM\OneToMany(targetEntity="PersonRoleLocation", mappedBy="location", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     private $person_role_locations;
@@ -111,6 +116,7 @@ class Location
         $this->children = new ArrayCollection();
         $this->address = new EmbeddableAddress();
         $this->events  = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->shifts  = new \Doctrine\Common\Collections\ArrayCollection();
         $this->person_role_locations = new ArrayCollection();
         $this->contexts = new ArrayCollection();
     }
@@ -329,6 +335,16 @@ class Location
      */
     public function getAddress()
     {
+        /*
+         * There is always an embeddable address here, alas if it's basically
+         * empty we'd better use the parents address.
+         */
+        if (!$this->getParent())
+            // Just do it.
+            return $this->address;
+        // Then check it.
+        if ($this->address->isEmpty())
+            return $this->getParent()->getAddress();
         return $this->address;
     }
 
@@ -441,6 +457,33 @@ class Location
 
     public function __toString()
     {
+        if ($this->getParent())
+            return (string)$this->getParent() . " -> " . $this->getName();
+
         return $this->getName();
+    }
+
+    /*
+     * "Location tree" stuff.
+     */
+    public function getMainLocation()
+    {
+        if ($this->getParent())
+            return $this->getParent()->getMainLocation();
+        return $this;
+    }
+
+    /*
+     * You better as the MainLocation if you want'em all.
+     * But this will go down the tree, not just the children.
+     */
+    public function getSubLocations()
+    {
+        $sublocations = $this->getChildren()->toArray();
+        foreach ($this->getChildren() as $child) {
+            $sublocations = array_merge($sublocations, $child->getSubLocations()->toArray());
+        }
+
+        return new ArrayCollection($sublocations);
     }
 }

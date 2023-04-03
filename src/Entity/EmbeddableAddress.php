@@ -379,4 +379,18 @@ class EmbeddableAddress
     {
         return $this->addressLine1 . ", " . $this->postalName;
     }
+
+    /*
+     * Hate me for this, I agree.
+     */
+    public function isEmpty()
+    {
+        return empty($this->countryCode)
+            && empty($this->addressLine1)
+            && empty($this->postalName)
+            && empty($this->locale)
+            && empty($this->postalName)
+            && empty($this->postalName)
+            ;
+    }
 }

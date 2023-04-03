@@ -67,7 +67,7 @@
 <thead>
   <tr class="shifthead">
     <td colspan="4">
-    <h4>{{ shift.function.name }} {{ shift.start | date("Y-m-d H.i") }} -> {{ shift.end | date("H.i") }}</h4>
+    <h4>{{ shift.function.name }} {% if shift.location != event.location %}at {{ shift.location.name }}  {% endif %}{{ shift.start | date("Y-m-d H.i") }} -> {{ shift.end | date("H.i") }}</h4>
     </td>
   </tr>
 {% if all or Numbers is defined %}

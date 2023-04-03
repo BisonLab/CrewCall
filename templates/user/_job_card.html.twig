@@ -10,8 +10,8 @@
       </div>
     </div>
     <div class="col-2 p-0 mt-1">
-    {% if job.event.location.address_string is defined and job.event.location.address_string is not empty %}
-      <a target="_blank" href="http://maps.google.com/?q={{ job.event.location.address_string }}">
+    {% if job.location.address_string is defined and job.location.address_string is not empty %}
+      <a target="_blank" href="http://maps.google.com/?q={{ job.location.address_string }}">
           <img class="rounded mx-auto" src="{{ asset('images/google_maps.png') }}" width="40px">
       </a>
     {% else %}
@@ -21,7 +21,7 @@
   </div><!-- end row -->
   <div class="card-custom-content p-2 row">
     <div class="col-10 col-lg-11">
-      <span class="d-block">{{ job.event.location.name }}</span>
+      <span class="d-block">{{ job.location.name }}</span>
       <h4 class="text-uppercase font-weight-bold">{{ job.event.name }}</h4>
       <h4 class="text-uppercase font-weight-bold">{{ job.shift.function }}</h4>
     </div>
@@ -49,10 +49,10 @@
         </tr> 
         <tr>
             <th valign="top">Place:</th>
-            <td>{{ job.event.location.name }}<br>
-                {{ job.event.location.address_flat.addressLine1 }}{% if job.event.location.address_flat.addressLine2 is not empty %}, {{ job.event.location.address_flat.addressLine2 }}{% endif %}{% if job.event.location.address_flat.postalCode is not empty %}, {{ job.event.location.address_flat.postalCode }}{% endif %}{% if job.event.location.address_flat.postalName is not empty %} {{ job.event.location.address_flat.postalName }}{% endif %}
-            {% if job.event.location.description is not empty %}
-            <br><i>{{ job.event.location.description }}</i>
+            <td>{{ job.location.name }}<br>
+                {{ job.location.address_flat.addressLine1 }}{% if job.location.address_flat.addressLine2 is not empty %}, {{ job.location.address_flat.addressLine2 }}{% endif %}{% if job.location.address_flat.postalCode is not empty %}, {{ job.location.address_flat.postalCode }}{% endif %}{% if job.location.address_flat.postalName is not empty %} {{ job.location.address_flat.postalName }}{% endif %}
+            {% if job.location.description is not empty %}
+            <br><i>{{ job.location.description }}</i>
         {% endif %}
             </td>
         </tr> 

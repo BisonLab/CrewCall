@@ -836,7 +836,7 @@ class UserFrontController extends CommonController
         if (!isset($this->shiftcache[$shift->getId()])) {
             $event = $shift->getEvent();
             $eventparent = $event->getParent();
-            $location = $event->getLocation();
+            $location = $shift->getLocation();
             $organization = $event->getOrganization();
             $inform_notes = [];
             $checks = [];
@@ -896,6 +896,10 @@ class UserFrontController extends CommonController
 
             $shiftarr = [
                 'event' => $eventarr,
+                'location' => [
+                    'name' => (string)$location,
+                    'description' => $location->getDescription(),
+                ],
                 'shift' => [
                     'name' => (string)$shift,
                     'id' => $shift->getId(),
@@ -912,6 +916,12 @@ class UserFrontController extends CommonController
                 'checks' => $checks,
                 'inform_notes' => $inform_notes
             ];
+            if ($address = $location->getAddress()) {
+                $addressing = $this->container->get('crewcall.addressing');
+                $shiftarr['location']['address'] = $addressing->compose($address);
+                $shiftarr['location']['address_flat'] = $addressing->compose($address, 'flat');
+                $shiftarr['location']['address_string'] = $addressing->compose($address, 'string');
+            }
             $this->shiftcache[$shift->getId()] = $shiftarr;
         }
         return $this->shiftcache[$shift->getId()];
@@ -977,10 +987,6 @@ class UserFrontController extends CommonController
                 'id' => $event->getId(),
                 'parent_id' => $event->getParent() ? $event->getParent()->getId() : null,
                 'description' => $event_description,
-                'location' => [
-                    'name' => $location->getName(),
-                    'description' => $location->getDescription(),
-                ],
                 'organization' => [
                     'name' => $organization->getName(),
                 ],
@@ -989,12 +995,6 @@ class UserFrontController extends CommonController
                 'contact_info' => $contact_info,
                 'inform_notes' => $inform_notes
             ];
-            if ($address = $location->getAddress()) {
-                $addressing = $this->container->get('crewcall.addressing');
-                $eventarr['location']['address'] = $addressing->compose($address);
-                $eventarr['location']['address_flat'] = $addressing->compose($address, 'flat');
-                $eventarr['location']['address_string'] = $addressing->compose($address, 'string');
-            }
             $this->eventcache[$event->getId()] = $eventarr;
         }
         return $this->eventcache[$event->getId()];

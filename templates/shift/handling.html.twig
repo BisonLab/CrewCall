@@ -10,7 +10,7 @@ $(document).ready(function() {
 });
 
 function grabShiftList(event_id) {
-    url = "{{ path('shift_index', {'access': 'ajax', 'id': 'XXX' }) }}";
+    url = "{{ path('shift_index', {'access': 'ajax', 'event': 'XXX' }) }}";
     url = url.replace('XXX', event_id);
     $.get(url, function( data ) {
         $( "#shiftList_" + event_id).html(data);
@@ -23,12 +23,14 @@ function grabShiftList(event_id) {
 }
 
 function submitNewShiftForm(event_id) {
+    url = "{{ path('shift_new', { 'access': 'ajax' }) }}";
+    url = url + "?event=" + event_id;
     $.ajax({
         beforeSend: function(req) {
           req.setRequestHeader("Accept", "application/json");
         },
+        url: url,
         type: "POST",
-        url: "{{ path('shift_new', { 'access': 'ajax' }) }}",
         data: $( "#newShiftForm" ).serialize(),
         dataType: "text",
         async: true,
@@ -62,19 +64,6 @@ function grabNewShiftForm(event_id = false, from_shift_id = false) {
         $( "#shiftModalBody" ).html(data);
         $( "#shiftModalTitle" ).html("Add Shift");
         $( "#shiftModal" ).modal();
-        /*
-         * My JS-fu is bad. I'm quite sure I should be able to set the
-         * submitNewShiftForm function directly, but then it woule be called
-         * immediately.  Aka, I have to read up on this..
-         */
-        $( "#shift_event").prev().hide();
-        $( "#shift_event").hide();
-        /* This is tempting for reducing the form elements, but it may create
-         * an issue even if I do add one day when time is below start time.
-         * (Which will not validate as the validation is set up right now.)
-        $( "#shift_end_date").prev().hide();
-        $( "#shift_end_date").hide();
-         */
         $( "#newShiftForm" ).submit(function( event ) {
             event.preventDefault();
             submitNewShiftForm(event_id);
