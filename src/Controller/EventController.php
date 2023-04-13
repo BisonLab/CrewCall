@@ -339,7 +339,7 @@ class EventController extends CommonController
                  ->setParameter('to', $to, \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE);
             $events = $qb->getQuery()->getResult();
             
-            $calitems = $calendar->toFullCalendarArray($events, $this->getUser());
+            $calitems = $calendar->toFullCalendarArray($events, ['person' => $this->getUser()]);
             // Not liked by OWASP since we just return an array.
             return new JsonResponse($calitems, Response::HTTP_OK);
         }

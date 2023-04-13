@@ -540,7 +540,29 @@ class UserFrontController extends CommonController
         $options = [ 'from' => $from, 'to' => $to ];
         if ($state = $request->get('state'))
             $options['state'] = $state;
-        $jobs = $jobservice->jobsForPerson($user, $options);
+        /*
+         * I want to have the jobs here sorted by state so that confirmed,
+         * assigned and interested come in that order per day.
+         * Usually it's by start_date which is corrent, but the calendar does
+         * that for us.
+         */
+        $confirmed = [];
+        $assigned = [];
+        $interested = [];
+        foreach ($jobservice->jobsForPerson($user, $options) as $job) {
+            if ($job->getState() == 'CONFIRMED')
+                $confirmed[] = $job;
+            if ($job->getState() == 'ASSIGNED')
+                $assigned[] = $job;
+            if ($job->getState() == 'INTERESTED')
+                $interested[] = $job;
+        }
+        /*
+         * It's useless, since FullCalendar sorts by time,
+         * But in case I find a cool solution to this I'll just keep it.
+         */
+        $jobs = array_merge($confirmed, $assigned, $interested);
+
         $states = $user->getStates();
 
         // If the date difference exeeds a week, we want to just send the
@@ -548,18 +570,20 @@ class UserFrontController extends CommonController
         $from_t = strtotime($from);
         $to_t   = strtotime($to);
         $no_summary = $request->get('no_summary');
+/*
         // 20 days and above? Summary it is.        
         if (!$no_summary && (($to_t - $from_t) > 1728000)) {
             $calitems = array_merge(
-                $calendar->toFullCalendarSummary($jobs, $user),
-                $calendar->toFullCalendarSummary($states, $user)
+                $calendar->toFullCalendarSummary($jobs, ['person' => $user, 'event_url' => false]),
+                $calendar->toFullCalendarSummary($states, ['person' => $user, 'event_url' => false])
             );
         } else {
+ */
             $calitems = array_merge(
-                $calendar->toFullCalendarArray($jobs, $user),
-                $calendar->toFullCalendarArray($states, $user)
+                $calendar->toFullCalendarArray($jobs, ['person' => $user, 'event_url' => false, 'ical_add_url' => true, 'with_times' => true, 'count_interested' => true]),
+                $calendar->toFullCalendarArray($states, ['person' => $user, 'event_url' => false, 'ical_add_url' => true, 'with_times' => true, 'count_interested' => true])
             );
-        }
+  //      }
         return new JsonResponse($calitems, Response::HTTP_OK);
     }
 

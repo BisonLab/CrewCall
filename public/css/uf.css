@@ -102,9 +102,10 @@ img {
 }
 
 /*
- * Fullcalendar css
+ * FullCalendar v3.6.1 Stylesheet
+ * Docs & License: https://fullcalendar.io/
+ * (c) 2017 Adam Shaw
  */
-
 .calendar-content {
     background-color: #ffff;
     padding: 1em;
@@ -133,12 +134,14 @@ img {
 .fc-month-view .fc-time {
  display:none
 }
+/*
 .fc-month-view .fc-day-grid-event {
  height:3px;
  width:1px;
  border-radius:50%!important;
  margin:1px auto!important
 }
+*/
 .fc-month-view .fc-day-top {
  text-align:center!important
 }
@@ -179,18 +182,16 @@ img {
 .fc-scroller {
  min-height:320px
 }
+/*
 @media (min-width:576px) {
  .fc-month-view .fc-day-grid-event {
   height:5px;
   width:3px
  }
 }
+ */
 
-/*!
- * FullCalendar v3.6.1 Stylesheet
- * Docs & License: https://fullcalendar.io/
- * (c) 2017 Adam Shaw
- */.fc {
+.fc {
  direction:ltr;
  text-align:left
 }

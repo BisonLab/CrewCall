@@ -29,6 +29,7 @@ function loadCalendar() {
         defaultView: 'month',
 /*
  * No popovers, yet. If I can do it on dayview only, I'll add it again.
+ */
         eventRender: function(event, element) {
             $(element).attr('tabindex', '0');
             $(element).attr('role', 'button');
@@ -46,7 +47,6 @@ function loadCalendar() {
                 $(this).popover('hide');
             });
         },
-*/
         eventSources: [
             {
                 url: '{{ path('uf_me_calendar') }}',

@@ -18,7 +18,11 @@ class Calendar
 {
     private $router;
     private $summarizer;
-    private $person;
+
+    /*
+     *
+     */
+    private $options = [];
 
     public function __construct($router, $summarizer)
     {
@@ -26,16 +30,17 @@ class Calendar
         $this->summarizer = $summarizer;
     }
 
-    public function toIcal($frog)
+    public function toIcal($frog, $options = [])
     {
+        $this->options = $options;
         if ($frog instanceof Event) {
-            $cal = $this->eventToCal($frog);
+            $cal = $this->_eventToCal($frog);
         } elseif ($frog instanceof Shift) {
-            $cal = $this->shiftToCal($frog);
+            $cal = $this->_shiftToCal($frog);
         } elseif ($frog instanceof Job) {
-            $cal = $this->jobToCal($frog);
+            $cal = $this->_jobToCal($frog);
         } elseif ($frog instanceof PersonState) {
-            $cal = $this->personStateToCal($frog);
+            $cal = $this->_personStateToCal($frog);
         } else {
             throw new \InvalidArgumentException("Could not do anything useful with "
                 . get_class($frog));
@@ -53,13 +58,13 @@ class Calendar
         return $vCalendar->render();
     }
 
-    public function toFullCalendarSummary($frogs, $person = null)
+    public function toFullCalendarSummary($frogs, $options = [])
     {
-        $this->person = $person;
+        $this->options = $options;
         $arr = array();
         $summary_arr = [];
         foreach ($frogs as $frog) {
-            if ($cal = $this->calToFullCal($frog)) {
+            if ($cal = $this->_calToFullCal($frog)) {
                 $start = preg_replace("/([0-9-]+).*/", '$1', $cal['start']);
                 $sd = new \DateTime($start);
                 $end = preg_replace("/([0-9-]+).*/", '$1', $cal['end']);
@@ -114,12 +119,12 @@ class Calendar
         return $arr;
     }
 
-    public function toFullCalendarArray($frogs, $person = null)
+    public function toFullCalendarArray($frogs, $options = [])
     {
-        $this->person = $person;
+        $this->options = $options;
         $arr = array();
         foreach ($frogs as $frog) {
-            if ($cal = $this->calToFullCal($frog))
+            if ($cal = $this->_calToFullCal($frog))
                 $arr[] = $cal;
         }
         return $arr;
@@ -136,17 +141,16 @@ class Calendar
      *    of'em. iCal and to the event/shift(function) itself.
      *
      */
-   
-    public function calToFullCal($frog)
+    private function _calToFullCal($frog)
     {
         if ($frog instanceof Event) {
-            $cal = $this->eventToCal($frog);
+            $cal = $this->_eventToCal($frog);
         } elseif ($frog instanceof Shift) {
-            $cal = $this->shiftToCal($frog);
+            $cal = $this->_shiftToCal($frog);
         } elseif ($frog instanceof Job) {
-            $cal = $this->jobToCal($frog);
+            $cal = $this->_jobToCal($frog);
         } elseif ($frog instanceof PersonState) {
-            $cal = $this->personStateToCal($frog);
+            $cal = $this->_personStateToCal($frog);
         } else {
             throw new \InvalidArgumentException("Could not do anything useful with "
                 . get_class($frog));
@@ -168,8 +172,6 @@ class Calendar
         $fc['constraint'] = $cal[''];
         $fc['source'] = $cal[''];
         */
-        if (isset($cal['url']))
-            $fc['url'] = $cal['url'];
         if (isset($cal['color']))
             $fc['color'] = $cal['color'];
         if (isset($cal['backgroundColor']))
@@ -185,10 +187,13 @@ class Calendar
         $fc['startEditable'] = false;
         $fc['durationEditable'] = false;
         $fc['resourceEditable'] = false;
+
+        if (($this->options['event_url'] ?? true) && isset($cal['url']))
+            $fc['url'] = $cal['url'];
         return $fc;
     }
 
-    public function eventToCal(Event $event)
+    private function _eventToCal(Event $event)
     {
         // Pretty complex, but it does use the ID to make sure we use the same
         // colour on the same (sub) event.
@@ -199,7 +204,7 @@ class Calendar
         $id = $id * 3.14;
         $n = $id * $phi - floor($id * $phi);
         $hue = floor($n * 256);
-        $col = $this->hslToRgb( $hue, 0.5, 0.7 );
+        $col = $this->_hslToRgb( $hue, 0.5, 0.7 );
 
         $c = array();
         $c['id'] = $event->getId();
@@ -214,22 +219,30 @@ class Calendar
             . 'When: ' . $event->getStart()->format('H:i') 
                 . " -> " . $event->getEnd()->format('H:i') . "\n";
 
-        $url =  $this->router->generate('event_show', 
-            array('id' => $event->getId()));
         $c['popup_title'] = (string)$event;
 
-        // Should I do summary maybe?
         $c['popup_content'] = preg_replace("/\n/", "<br />"
-            , $c['content']) . '<br><a href="'
-            . $url  . '">Go to event</a>';
+            , $c['content']);
+
+        if ($this->options['event_url'] ?? true) {
+            $url =  $this->router->generate('event_show',
+                array('id' => $event->getId()));
+            $c['popup_content'] .= '<br><a href="'
+                . $url  . '">Go to event</a>';
+        }
 
         return $c;
     }
 
-    public function jobToCal(Job $job)
+    private function _jobToCal(Job $job)
     {
-        $c = $this->shiftToCal($job->getShift());
-        $c['title'] = (string)$job->getShift();
+        $c = $this->_shiftToCal($job->getShift());
+        if ($this->options['with_times'] ?? false) {
+            $c['title'] = $job->getStart()->format('H:i') ." "
+                . (string)$job->getShift();
+        } else {
+            $c['title'] = (string)$job->getShift();
+        }
         if ($job->getState() == "CONFIRMED") {
             $c['color'] = "green";
             $c['textColor'] = "white";
@@ -240,45 +253,37 @@ class Calendar
             $c['color'] = "red";
             $c['textColor'] = "white";
         }
-        // For the text in the ical calendar thingie.
-                // What is in the title 
-                // 'What: ' . (string)$job->getEvent() . "\n"
+
         $c['content'] = 
-            'Where: ' . (string)$job->getLocation() . "\n"
+            'Event: ' . (string)$job->getEvent() . "\n"
+            . 'Where: ' . (string)$job->getLocation() . "\n"
             . 'When: ' . $job->getStart()->format('H:i') 
                 . " -> " . $job->getEnd()->format('H:i') . "\n"
             . 'Work: ' . (string)$job->getFunction() . "\n"
         ;
 
-        $url =  $this->router->generate('event_show', 
-            array('id' => $job->getEvent()->getId()));
+        $c['popup_title'] = (string)$job->getEvent();
         $c['popup_content'] = preg_replace("/\n/", "<br />"
             , $c['content']);
-        $c['popup_content'] .= '<br><a href="'
-            . $url  . '">Go to event</a>';
+
+        if ($this->options['ical_add_url'] ?? false) {
+            $iadd_url = $this->router->generate('uf_job_calendar_item', 
+                        array('id' => $job->getId()));
+            $c['popup_content'] .= '<br><a href="'
+                . $iadd_url  . '">Add to calendar</a>';
+        }
+
+        if ($this->options['event_url'] ?? true) {
+            $url =  $this->router->generate('event_show',
+                array('id' => $job->getEvent()->getId()));
+            $c['popup_content'] .= '<br><a href="'
+                . $url  . '">Go to event</a>';
+        }
+
         return $c;
-
-        /*
-         * This should do the trick if the person we do this for the the
-         * current user, but
-         *  1) We do not have the current usere here right now
-         *  2) The fullcalendar in the User View does not to popovers.
-
-        $url =  $this->router->generate('user_job_calendar_item', 
-            array('id' => $job->getId()));
-        $c['ical_url'] = $url;
-        // For a popover in the internal calendar.
-        $c['popup_title'] = (string)$job->getFunction() . " at "
-            . (string)$job->getLocation();
-        $c['popup_content'] = preg_replace("/\n/", "<br />"
-            , $c['content']) . '<br><a href="'
-            . $url  . '">Put in my calendar</a>';
-        return $c;
-
-         */
     }
 
-    public function shiftToCal(Shift $shift)
+    private function _shiftToCal(Shift $shift)
     {
         $c = array();
         $c['id'] = $shift->getId();
@@ -288,7 +293,7 @@ class Calendar
         return $c;
     }
 
-    public function personStateToCal(PersonState $ps)
+    private function _personStateToCal(PersonState $ps)
     {
         if ($ps->getState() == "ACTIVE") return null;
         $c = array();
@@ -308,7 +313,7 @@ class Calendar
     }
 
     // Nicked from https://gist.github.com/brandonheyer/5254516
-    public function hslToRgb( $h, $s, $l )
+    private function _hslToRgb( $h, $s, $l )
     {
         $r; 
         $g; 

@@ -89,13 +89,13 @@ class UserController extends CommonController
             // No idea why someone would want it, but useful for testing.
             if ($request->get('summary')) {
                 $calitems = array_merge(
-                    $calendar->toFullCalendarSummary($jobs, $this->getUser()),
-                    $calendar->toFullCalendarSummary($states, $this->getUser())
+                    $calendar->toFullCalendarSummary($jobs, ['person' => $this->getUser()]),
+                    $calendar->toFullCalendarSummary($states, ['person' => $this->getUser()])
                 );
             } else {
                 $calitems = array_merge(
-                    $calendar->toFullCalendarArray($jobs, $this->getUser()),
-                    $calendar->toFullCalendarArray($states, $this->getUser())
+                    $calendar->toFullCalendarArray($jobs, ['person' => $this->getUser()]),
+                    $calendar->toFullCalendarArray($states, ['person' => $this->getUser()])
                 );
             }
             // Not liked by OWASP since we just return an array.
