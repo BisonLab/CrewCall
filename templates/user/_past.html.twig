@@ -25,7 +25,7 @@
             {% set shift = job.shift %}
             <tr>
                 <td>{{ shift.event }}</td>
-                <td>{{ shift.event.location }}</td>
+                <td>{{ shift.location }}</td>
                 <td data-order="{{ shift.start | date('U')}}" >{% if shift.start %}{{ shift.start|date('d M H:i') }}{% endif %}</td>
                 <td data-order="{{ shift.end | date('U')}}" >{% if shift.end %}{{ shift.end|date('d M H:i') }}{% endif %}</td>
                 <td>{{ shift.function }}</td>

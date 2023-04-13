@@ -2,7 +2,11 @@
 
 {% block title %}New Location{% endblock %}
 {% block body %}
-    <h1>Location creation</h1>
+    {% if location.parent %}
+        <h1>Add sublocation to {{ location.parent }}</h1>
+    {% else %}
+        <h1>Location creation</h1>
+    {% endif %}
 
     {{ form_start(form) }}
         {{ form_widget(form) }}

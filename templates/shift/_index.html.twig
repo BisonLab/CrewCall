@@ -44,7 +44,7 @@
         </a>
 {% endif %}
         <a tabindex="0" href="#" id="popSummary_event_{{ shift.event.id }}{{ shift.id }}" onClick="return popSummary('event', {{ shift.event.id }}, {{ shift.id }});"><span style="font-size: 15px" class="fas fa-info-circle"></span></a>
-        {{ shift.function }}
+        {{ shift.function }}{% if shift.location != event.location %} at {{ shift.location.name }}{% endif%}
         </td>
         <td align="right">
         <label class="ccSwitch">

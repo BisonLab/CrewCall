@@ -24,7 +24,7 @@ class ShiftController extends CommonController
     /**
      * Lists all shift entities in an event.
      *
-     * @Route("/", name="shift_index", methods={"GET"})
+     * @Route("/{event}/index", name="shift_index", methods={"GET"})
      */
     public function indexAction(Request $request, $access, Event $event)
     {
@@ -72,6 +72,22 @@ class ShiftController extends CommonController
     {
         $shift = new Shift();
         $em = $this->getDoctrine()->getManager();
+
+        // If this has a event set here, it's not an invalid create attempt.
+        $event = null;
+        if ($event_id = $request->get('event')) {
+            $event = $em->getRepository(Event::class)->find($event_id);
+        }
+        if ($from_shift = $request->get('from_shift')) {
+            $from_shift = $em->getRepository(Shift::class)->find($from_shift);
+            $event = $from_shift->getEvent();
+        }
+
+        // Want an Event, always.
+        if (!$event)
+            throw $this->createNotFoundException();
+        $shift->setEvent($event);
+
         $form = $this->createForm('App\Form\ShiftType', $shift);
         $form->handleRequest($request);
 
@@ -97,25 +113,16 @@ class ShiftController extends CommonController
             }
         }
 
-        // If this has a event set here, it's not an invalid create attempt.
-        if ($event_id = $request->get('event')) {
-            if ($event = $em->getRepository(Event::class)->find($event_id)) {
-                $shift->setEvent($event);
-                // Better have something to start with.
-                $shift->setStart(clone($event->getStart()));
-                // And end.
-                $shift->setEnd($event->getEnd());
-                $form->setData($shift);
-            }
-        }
-        if ($from_shift = $request->get('from_shift')) {
-            if ($fshift = $em->getRepository(Shift::class)->find($from_shift)) {
-                $shift->setEvent($fshift->getEvent());
-                // We have something to start with
-                $shift->setStart($fshift->getStart());
-                $shift->setEnd($fshift->getEnd());
-                $form->setData($shift);
-            }
+        // We either start with a shift to copy from, or event. Preferrably
+        // shift.
+        if ($from_shift) {
+            $shift->setStart($from_shift->getStart());
+            $shift->setEnd($from_shift->getEnd());
+            $form->setData($shift);
+        } else {
+            $shift->setStart(clone($event->getStart()));
+            $shift->setEnd($event->getEnd());
+            $form->setData($shift);
         }
 
         /*

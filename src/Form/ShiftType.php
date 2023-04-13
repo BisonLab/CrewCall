@@ -16,6 +16,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 use App\Lib\ExternalEntityConfig;
 use App\Entity\Shift;
+use App\Entity\Location;
 use App\Entity\FunctionEntity;
 
 class ShiftType extends AbstractType
@@ -25,6 +26,7 @@ class ShiftType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $shift = $options['data'];
         $builder
            ->add('start', DateTimeType::class, array(
                 'required' => true,
@@ -49,8 +51,20 @@ class ShiftType extends AbstractType
                              ->setParameter('active_states',  ExternalEntityConfig::getActiveStatesFor('FunctionEntity'));
                         },
                ))
-            ->add('event')
-           ;
+            ;
+        // No location to build a small location list from and we're not adding
+        // it. If an event is around, we can make a list from children
+        // locations. If no Location children, drop it.
+        $mainloc = $shift->getLocation()->getMainLocation();
+        $sublocations = $mainloc->getSubLocations();
+        if ($sublocations->count() > 0) {
+            // Create a (sub)location list.
+            $builder->add('location', EntityType::class, [
+                'class' => Location::class,
+                'placeholder' => (string)$mainloc,
+                'choices' => $sublocations
+               ]);
+        }
     }
     
     /**
