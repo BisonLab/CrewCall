@@ -17,6 +17,7 @@ use App\Entity\Person;
 use App\Entity\Event;
 use App\Entity\Shift;
 use App\Entity\Job;
+use App\Entity\JobLog;
 use App\Form\ChangePasswordFosType;
 use App\Form\ChangePasswordFormType;
 use App\Form\EditMyselfType;
@@ -354,8 +355,9 @@ class UserFrontController extends CommonController
             ];
 
         if ($view == "past") {
-            $retarr['past'] = $this->jobsForPersonAsArray($user, [
-                'past' => true]);
+            $em = $this->getDoctrine()->getManager();
+            $retarr['past'] = $em->getRepository(Job::class)
+                ->findJobsForPerson($user, ['booked' => true, 'past' => true]);
             $retarr['past_count'] = count($retarr['past']);
             return $this->render('user/_' . $view . '.html.twig', $retarr);
         }
@@ -634,6 +636,67 @@ class UserFrontController extends CommonController
     }
 
     /**
+     * The edit yourself job log / in/out.
+     *
+     * @Route("/{job}/me_add_joblog", name="uf_me_add_joblog", methods={"POST"})
+     */
+    public function addJobLogAction(Request $request, Job $job)
+    {
+        $user = $this->getUser();
+        if ($user !== $job->getPerson()) {
+            return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
+        }
+        if (!$token = $request->request->get('_csrf_token')) {
+            $json_data = json_decode($request->getContent(), true);
+            $token = $json_data['_csrf_token'];
+        }
+        if (!$this->isCsrfTokenValid('addjoblog' . $job->getId(), $token)) {
+            return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
+        }
+        $em = $this->getDoctrine()->getManager();
+        $joblog = new JobLog();
+        $joblog->setJob($job);
+        $joblog->setState("SELF-ENTERED");
+        $joblog->setInTime($request->request->get('in'));
+        $joblog->setOutTime($request->request->get('out'));
+        $joblog->setBreakMinutes($request->request->get('break') ?? 0);
+        $em->persist($joblog);
+        $em->flush();
+
+        $retarr['past'] = $em->getRepository(Job::class)
+            ->findJobsForPerson($user, ['booked' => true, 'past' => true]);
+        $retarr['past_count'] = count($retarr['past']);
+        return $this->render('user/_past.html.twig', $retarr);
+    }
+
+    /**
+     * The delete yourself job log / in/out.
+     *
+     * @Route("/{joblog}/me_delete_joblog", name="uf_me_delete_joblog", methods={"POST"})
+     */
+    public function deleteJobLogAction(Request $request, JobLog $joblog)
+    {
+        $user = $this->getUser();
+        if (!$token = $request->request->get('_csrf_token')) {
+            $json_data = json_decode($request->getContent(), true);
+            $token = $json_data['_csrf_token'];
+        }
+        if ($joblog->getState() != "SELF-ENTERED"
+            || $user !== $joblog->getJob()->getPerson()
+            || !$this->isCsrfTokenValid('deletejoblog' . $joblog->getId(), $token)) {
+            return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
+        }
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($joblog);
+        $em->flush();
+
+        $retarr['past'] = $em->getRepository(Job::class)
+            ->findJobsForPerson($user, ['booked' => true, 'past' => true]);
+        $retarr['past_count'] = count($retarr['past']);
+        return $this->render('user/_past.html.twig', $retarr);
+    }
+
+    /**
      * The absence log
      *
      * @Route("/me_absence", name="uf_me_absence", methods={"GET"})
@@ -794,7 +857,6 @@ class UserFrontController extends CommonController
     /**
      * Helpers
      */
-
     public function jobsForPersonAsArray(Person $person, $options = array())
     {
         $em = $this->getDoctrine()->getManager();

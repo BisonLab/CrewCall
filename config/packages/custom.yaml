@@ -136,6 +136,11 @@ parameters:
             enabled: true
             attribute: false
             user_editable: false
+        # Viewing and adding/removing ALL files.
+        files:
+            enabled: false
+            attribute: false
+            user_editable: false
 
     # This basically says itself - Maybe false should be default, but at least
     # it'll show that registration is possible.

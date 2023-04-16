@@ -133,7 +133,7 @@ class JobLogController extends CommonController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $request->request->get($form->getName());
-            // We have a loblog, but is it a cheat or not?
+            // We have a joblog, but is it a cheat or not?
             // First, check cheat, aka "All in the shift".
             if ($shift) {
                 $in = new \DateTime($data['in']['date'] . " " . $data['in']['time']);

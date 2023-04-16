@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
+use DateTime;
 
 use App\Lib\ExternalEntityConfig;
 
@@ -28,7 +29,7 @@ class JobLog
     private $id;
 
     /**
-     * @var string or DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="intime", type="datetime", nullable=false)
      * @Gedmo\Versioned
@@ -36,7 +37,7 @@ class JobLog
     private $in;
 
     /**
-     * @var string or DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="outtime", type="datetime", nullable=true)
      * @Gedmo\Versioned
@@ -172,7 +173,7 @@ class JobLog
      *
      * @return \DateTime
      */
-    public function getIn()
+    public function getIn(): ?\DateTime
     {
         return $this->in;
     }
@@ -184,8 +185,37 @@ class JobLog
      *
      * @return joblog
      */
-    public function setIn($in)
+    public function setIn(?\DateTime $in)
     {
+        $this->in = $in;
+
+        return $this;
+    }
+
+    /*
+     * This is the "string" version, with hours and minutes.
+     * What this does not is remove a day if your shift starts a 01:00
+     * but you started working 23:00 - I have to find a smart'ish algorithm for
+     * it.
+     */
+    public function setInTime(string $inTime)
+    {
+        // Gives us a correct date.
+        $in = clone($this->getJob()->getStart());
+        if (preg_match("/\D/", $inTime)) {
+            list($ih, $im) = preg_split("/\D/", $inTime);
+        } else {
+            $ih = $times['inn1'];
+            $im = 0;
+        }
+        $in->setTime($ih, $im);
+         
+        // I'll try, I am certain this may fail in some cases.
+        // (Yes, if you work > 24 hours aswell.)
+        $jobout = $this->getJob()->getEnd();
+        if ($in > $jobout)
+            $in->modify("-1 day");
+
         $this->in = $in;
 
         return $this;
@@ -196,17 +226,8 @@ class JobLog
      *
      * @return \DateTime
      */
-    public function getOut()
+    public function getOut(): ?\DateTime
     {
-        // Presume they ended their shift when it's ended.
-        // TODO: Consider setting this so there is always something in the
-        // table.
-        /*
-         * But this must go. "isWorking" relies on no out set, and also real
-         * time check in and out.
-        if (!$this->out && $this->getShift())
-            return $this->getShift()->getEnd();
-         */
         return $this->out;
     }
 
@@ -217,8 +238,32 @@ class JobLog
      *
      * @return joblog
      */
-    public function setOut($out)
+    public function setOut(?\DateTime $out)
     {
+        $this->out = $out;
+
+        return $this;
+    }
+
+    /*
+     * Better set In before this!
+     * And as with setIn, but the opposite, add a day if out time is before in
+     * time.
+     * It *will* break if a shift or job is beyond 24 hours, probably less.
+     */
+    public function setOutTime(string $outTime):self
+    {
+        $out = clone($this->getJob()->getStart());
+        if (preg_match("/\D/", $outTime)) {
+            list($uh, $um) = preg_split("/\D/", $outTime);
+        } else {
+            $uh = $outTime;
+            $um = 0;
+        }
+        $out->setTime($uh, $um);
+        if ($this->getIn() > $out)
+            $out->modify("+1 day");
+
         $this->out = $out;
 
         return $this;

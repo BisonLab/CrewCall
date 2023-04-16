@@ -156,11 +156,14 @@ parameters:
                     ENTERED:
                         default: true
                         label: "Entered"
+                    SELF-ENTERED:
+                        default: false
+                        label: "Self Entered"
                     # Neither this, but this is "Invoiced and person eventually
                     # paid."
-                    COMPLETED:
+                    LOCKED:
                         default: false
-                        label: "Completed"
+                        label: "Locked"
             # This is the "Job" for the connection between a shift and
             # organization. This is for sub contractors or external
             # orrganizations that is supposd to come with X amount of people.

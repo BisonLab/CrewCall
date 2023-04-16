@@ -1,51 +1,108 @@
-<h4 class="text-uppercase font-weight-bold mt-4">Sign up for jobs</h4>
+<h4 class="text-uppercase font-weight-bold mt-4">Past Jobs</h4>
 <div class="row">
     <div class="col-sm-4 col-xs-6 p-3">
-      <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'opportunities'}) }}', 'myJobsLink');">Sign up (<span id="opportunities_count">{{ opportunities | length }}</span>)</a>
-      <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'interested'}) }}', 'myJobsLink');">Signed Up (<span id="interested_count">{{ interested | length }}</span>)</a>
-      <a class="btn badge badge-secondary" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'jobs_list'}) }}', 'myJobsLink');">As list</a>
+      <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'confirmed'}) }}', 'myJobsLink');">Confirmed</a>
+      <a class="btn badge badge-secondary" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'past'}) }}', 'myJobsLink');">Past jobs</a>
     </div>
-    {% include '/user/_choose_month.html.twig' %}
 </div><!-- end row -->
 {% if past|length > 0 %}
-    <h2>Jobs you have done</h2>
-        <table class="table table-striped  table-sm">
+    <table class="table table-striped  table-sm">
         <thead class="thead-inverse">
             <tr>
                 <th>What</th>
-                <th>Where</th>
                 <th>Start</th>
-                <th>End</th>
-                <th>What</th>
                 <th>Clocked</th>
             </tr>
         </thead>
         <tbody>
         {% for job in past %}
+         {# On a few occations ASSIGNED is a booked state, just drop it here. #}
+         {% if job.state != 'ASSIGNED' %}
             {% set shift = job.shift %}
             <tr>
-                <td>{{ shift.event }}</td>
-                <td>{{ shift.location }}</td>
-                <td data-order="{{ shift.start | date('U')}}" >{% if shift.start %}{{ shift.start|date('d M H:i') }}{% endif %}</td>
-                <td data-order="{{ shift.end | date('U')}}" >{% if shift.end %}{{ shift.end|date('d M H:i') }}{% endif %}</td>
-                <td>{{ shift.function }}</td>
+                <td>{{ shift }}</td>
+                <td data-order="{{ shift.start | date('U')}}" >{% if shift.start %}{{ shift.start|date('d M Y H:i') }}{% endif %}</td>
                 <td>
-                    <table class="table  table-sm">
-                    <th>What</th><th>In</th><th>Out</th>
-                    {% for elem in job.joblogs %}
-                    <tr>
-                    <td>{{ elem.shift }}</td>
-                    <td>{{ elem.in | date("Y-m-d H:i") }}</td>
-                    <td>{{ elem.out | date("Y-m-d H:i") }}</td>
-                    </tr>
+                    <table class="table table-sm">
+                    <tr><th>In</th><th>Out</th><th>Break</th><th>&nbsp;</th></tr>
+                    {% set locked = false %}
+                    {% for joblog in job.joblogs %}
+                      {% if joblog.state == "COMPLETED" %}
+                        {% set locked = true %}
+                      {% endif %}
+                      <tr>
+                      <td>{{ joblog.in | date("H:i") }}</td>
+                      <td>{{ joblog.out | date("H:i") }}</td>
+                      <td>{{ joblog.breakminutes }}min</td>
+                      <td>
+                       {% if joblog.state == "SELF-ENTERED" %}
+                      <form id="deletejoblog_{{ joblog.id }}" action="{{ path('uf_me_delete_joblog', {'joblog': joblog.id}) }}" method="POST" onSubmit="return submitDeleteJoblogForm({{ joblog.id }});">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('deletejoblog' ~ joblog.id) }}">
+                        <button class="btn remove_glyph" type="submit"></button>
+                       </form>
+                        {% else %}
+                            &nbsp;
+                        {% endif %}
+                      </td>
+                      </tr>
                     {% endfor %}
+                    {% if personfields.hours.user_editable and not locked %}
+                        <tr>
+                        <td colspan="4">
+                          {# It should not even be here, but html. #}
+                          <form id="addjoblog_{{ job.id }}" action="{{ path('uf_me_add_joblog', {'job': job.id}) }}" method="POST" onSubmit="return submitAddHoursForm({{ job.id }});">
+                          <input type="hidden" name="_csrf_token" value="{{ csrf_token('addjoblog' ~ job.id) }}">
+                          <label for="in{{ job.id }}">In:</label><input id="in{{ job.id }}" type="time" name="in">
+                          <label for="out{{ job.id }}">Out:</label><input id="out{{ job.id }}" type="time" name="out">
+                          <label for="break{{ job.id }}">Break:</label><input id="break{{ job.id }}" type="number" value=0 name="break" size="3">
+                          <input type="submit" value="Add">
+                          </form>
+                        </td>
+                        </tr>
+                    {% endif %}
                     </table>
                 </td>
             </tr>
+          {% endif %}
         {% endfor %}
         </tbody>
     </table>
   {% else %}
      <p>You've done naught.</p>
   {% endif %}
-{% endif %}
+<script>
+function submitAddHoursForm(job_id) {
+    formdata = $( "#addjoblog_" + job_id).serialize();
+    url = $( "#addjoblog_" + job_id).attr('action');
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "text/html");
+        },
+        url: url,
+        type: "POST",
+        data: formdata,
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+          $( "#ccContentBody" ).html(cont);
+    });
+    return false;
+}
+function submitDeleteJoblogForm(joblog_id) {
+    formdata = $( "#deletejoblog_" + joblog_id).serialize();
+    url = $( "#deletejoblog_" + joblog_id).attr('action');
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "text/html");
+        },
+        url: url,
+        type: "POST",
+        data: formdata,
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+          $( "#ccContentBody" ).html(cont);
+    });
+    return false;
+}
+</script>
