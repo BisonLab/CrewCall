@@ -1,8 +1,10 @@
     <div class="col-12 mt-4">
 {% set from_date = "now"|date_modify('first day of this month')|date_modify('first day of this week')|date("Y-m-d") %}
 {% set to_date = "now"|date_modify('last day of this month')|date_modify('last day of this week')|date("Y-m-d") %}
+{# I do not think I need this any more.
         <a class="btn btn-light p-4 border border-secondary col-2 col-lg-2 mb-2 mr-2" href="#" onClick="return getCContent('{{ path('uf_me_joblog', { 'from_date': from_date, 'to_date': to_date }) }}');">MY HOURS</a>
-        <a class="btn btn-light p-4 border border-secondary col-2 col-lg-2 mb-2 mr-2" href="#" onClick="return getCContent('{{ path('uf_me_absence', { 'from_date': from_date, 'to_date': to_date }) }}');">MY ABSENCE</a>
+ #}
+        <a class="btn btn-light p-4 border border-secondary col-2 col-lg-2 mb-2 mr-2" href="#" onClick="return getCContent('{{ path('uf_me_absence', { 'from_date': from_date, 'to_date': to_date }) }}');">ABSENCE</a>
         <a class="btn btn-light p-4 border border-secondary col-2 col-lg-2 mb-2 mr-2" href="#" onClick="return getCContent('{{ path('uf_me_files') }}');">FILES</a>
         <a class="btn btn-light p-4 border border-secondary col-2 col-lg-2 mb-2 mr-2" href="#" onClick="return getCContent('{{ path('uf_me_edit_myself') }}');">EDIT</a>
         <a class="btn btn-light p-4 border border-secondary col-2 col-lg-2 mb-2" href="#" onClick="return getCContent('{{ path('uf_me_change_password') }}');">PASSWORD</a>
