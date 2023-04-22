@@ -52,19 +52,11 @@
       </div>
 {% endif %}
 {% if user.emergencycontact is not empty %}
-    <div class="col-2 col-lg-2 mt-4">
-        <div>Emergency Contact:</div>
-    </div>
-    <div class="col-7 col-lg-6 mt-4">
-       <span class="font-weight-bold d-block">
-       {{ user.emergencycontact | replace({'\n': "<br>"}) | raw }}
-       </span>
-    </div>
+      <div>Emergency Contact:
+        <span class="font-weight-bold">{{  user.emergencycontact | replace({"\r": "", "\n": ", "}) }}</span>
+      </div>
 {% endif %}
+    <div>Skills:
+        <span class="font-weight-bold">{{ functions | join(", ") }}</span>
     </div>
-    <div class="col-12 col-lg-8 mt-4">
-        <span class="font-weight-bold d-block">Skills:</span>
-        {{ functions | join(", ") }}
-    </div>
-  </div>
 {% include "/user/_profile_foot.html.twig" %}

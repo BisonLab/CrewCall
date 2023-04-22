@@ -134,6 +134,8 @@ class Builder
             $usermenu->addChild('Change Password', array('route' => 'self_change_password'));
         }
 
+        // I need to know where this is buildt. It won't work in admin view,
+        // only in "User View".
         $profilem = $usermenu->addChild('Profile', array('uri' => '#'));
         $profilem_uri = $this->router->generate('uf_me_profile');
         $profilem->setLinkAttribute('onClick',
