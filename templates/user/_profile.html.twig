@@ -8,33 +8,31 @@
         <img class="image-circle" src="{{ profile_picture_url }}"></img>
         {% endif %}
         {% if personfields.profile_picture.user_editable %}
-    {% set ppcontext = {
-                'file_type': 'ProfilePicture',
-                'system': 'crewcall',
-                'object_name': 'person',
-                'external_id': app.user.id
-        }
-    %}
-{% set sfconf = {'sfconfig': {
-        'file_type': 'ProfilePicture',
-        'description': 'ProfilePicture',
-        'title': 'Add Profile Picture',
-        'formname': 'profile_upload',
-        'reload_after_post': false,
-        'tags': false,
-        'context': {
-            'system': 'crewcall',
-            'object_name': 'person',
-            'external_id': app.user.id
-            }
-        }
-    }
-%}
-{% include '@BisonLabSakonnin/SakonninFile/_create_popup.html.twig' with sfconf %}
+                {% set ppcontext = {
+                        'file_type': 'ProfilePicture',
+                        'system': 'crewcall',
+                        'object_name': 'person',
+                        'external_id': app.user.id
+                    } %}
+                {% set sfconf = {'sfconfig': {
+                        'file_type': 'ProfilePicture',
+                        'description': 'ProfilePicture',
+                        'title': 'Add Profile Picture',
+                        'formname': 'profile_upload',
+                        'reload_after_post': true,
+                        'tags': false,
+                        'context': {
+                            'system': 'crewcall',
+                            'object_name': 'person',
+                            'external_id': app.user.id
+                            }
+                        }
+                    } %}
+                {% include '@BisonLabSakonnin/SakonninFile/_create_popup.html.twig' with sfconf %}
             {% if profile_picture_url is not null %}
-                <br><a href="#" onClick="uploadSakonninFile('profile_upload'); alert('fooo'); return getCContent('{{ path('uf_me_profile') }}');">Replace</a>
+                <br><a href="#" onClick="return uploadProfilePicture();">Replace</a>
             {% else %}
-                <br><a href="#" onClick="uploadSakonninFile('profile_upload'); return getCContent('{{ path('uf_me_profile') }}');">Add profile picture</a>
+                <br><a href="#" onClick="return uploadProfilePicture();">Add profile picture</a>
             {% endif %}
         {% endif %}
     </div>
@@ -104,3 +102,10 @@
    </div>
   </div>
 {% include "/user/_profile_foot.html.twig" %}
+<script>
+function uploadProfilePicture() {
+    uploadSakonninFile('profile_upload');
+    /* getCContent('{{ path('uf_me_profile') }}'); */
+    return false;
+}
+</script>
