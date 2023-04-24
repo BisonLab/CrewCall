@@ -2,12 +2,43 @@
 <p>Please make sure your contact information is up to date at all times</p>
 
 <div class="mb-4">
-{% if profile_picture_url is not null %}
   <div class="row">
     <div class="col-5 col-lg-2">
+        {% if profile_picture_url is not null %}
         <img class="image-circle" src="{{ profile_picture_url }}"></img>
+        {% endif %}
+        {% if personfields.profile_picture.user_editable %}
+    {% set ppcontext = {
+                'file_type': 'ProfilePicture',
+                'system': 'crewcall',
+                'object_name': 'person',
+                'external_id': app.user.id
+        }
+    %}
+{% set sfconf = {'sfconfig': {
+        'file_type': 'ProfilePicture',
+        'description': 'ProfilePicture',
+        'title': 'Add Profile Picture',
+        'formname': 'profile_upload',
+        'reload_after_post': false,
+        'tags': false,
+        'context': {
+            'system': 'crewcall',
+            'object_name': 'person',
+            'external_id': app.user.id
+            }
+        }
+    }
+%}
+{% include '@BisonLabSakonnin/SakonninFile/_create_popup.html.twig' with sfconf %}
+            {% if profile_picture_url is not null %}
+                <br><a href="#" onClick="uploadSakonninFile('profile_upload'); alert('fooo'); return getCContent('{{ path('uf_me_profile') }}');">Replace</a>
+            {% else %}
+                <br><a href="#" onClick="uploadSakonninFile('profile_upload'); return getCContent('{{ path('uf_me_profile') }}');">Add profile picture</a>
+            {% endif %}
+        {% endif %}
     </div>
-{% endif %}
+
     <div class="col-7 col-lg-10">
         {% for role in roles %}
         {{ role.description }}</br>
@@ -16,47 +47,60 @@
   </div>
   <div class="row">
     <div class="col-12 col-lg-8 mt-4">
+    <table>
 {% if user.email is not empty %}
-      <div>E-mail:
-        <span class="font-weight-bold">{{ user.email }}</span>
-      </div>
+    <tr>
+      <th valign="top">E-mail:</th>
+      <td>{{ user.email }}</td>
+    </tr>
 {% endif %}
 {% if user.mobilephonenumber is not empty %}
-      <div>Mobile:
-        <span class="font-weight-bold">{{ user.mobilephonenumber }}</span>
-      </div>
+    <tr>
+      <th>Mobile:</th>
+      <td>{{ user.mobilephonenumber  }}</td>
+    </tr>
 {% endif %}
 {% if user.homephonenumber is not empty %}
-      <div>Home phone number:
-        <span class="font-weight-bold">{{ user.homephonenumber }}</span>
-      </div>
+    <tr>
+      <th valign="top">Home phone number:</th>
+      <td>{{ user.homephonenumber }}</td>
+    </tr>
 {% endif %}
 {% if user.address is not empty %}
-      <div>Address
-        <span class="font-weight-bold">{{ cc_addressing.compose(user.address, 'html') | raw }}</span>
-      </div>
+    <tr>
+      <th valign="top">Address</th>
+      <td>{{ cc_addressing.compose(user.address, 'html') | raw }}</td>
+    </tr>
 {% endif %}
 {% if user.dateofbirth is not empty %}
-      <div>Date of birth:
-        <span class="font-weight-bold">{% if user.dateofbirth %}{{ user.dateofbirth|date('Y-m-d') }}{% endif %}</span>
-      </div>
+    <tr>
+      <th valign="top">Date of birth:</th>
+      <td>{% if user.dateofbirth %}{{ user.dateofbirth|date('Y-m-d') }}{% endif %}</td>
+    </tr>
 {% endif %}
 {% if user.nationality is not empty %}
-      <div>Nationality:
-        <span class="font-weight-bold">{{ user.nationalitycountry }}</span>
-      </div>
+    <tr>
+      <th valign="top">Nationality:</th>
+      <td>{{ user.nationalitycountry }}</td>
+    </tr>
 {% endif %}
 {% if user.diets is not empty %}
-      <div>Diets:
-        <span class="font-weight-bold">{{ user.dietslabels | join(", ") }}</span>
-      </div>
+    <tr>
+      <th valign="top">Diets:</th>
+      <td>{{ user.dietslabels | join(", ") }}</td>
+    </tr>
 {% endif %}
 {% if user.emergencycontact is not empty %}
-      <div>Emergency Contact:
-        <span class="font-weight-bold">{{  user.emergencycontact | replace({"\r": "", "\n": ", "}) }}</span>
-      </div>
+    <tr>
+      <th valign="top">Emergency Contact:</th>
+      <td>{{ user.emergencycontact | replace({"\r": "", "\n": ", "}) }}</td>
+    </tr>
 {% endif %}
-    <div>Skills:
-        <span class="font-weight-bold">{{ functions | join(", ") }}</span>
-    </div>
+    <tr>
+      <th valign="top">Skills:</th>
+      <td>{{ functions | join(", ") }}</td>
+    </tr>
+    </table>
+   </div>
+  </div>
 {% include "/user/_profile_foot.html.twig" %}
