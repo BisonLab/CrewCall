@@ -6,8 +6,8 @@
     <td>{{ elem.breakminutes }}</td>
     <td>{{ elem.workedtime }}</td>
     <td>
-    <a href="#!" id="editJobLog_{{ elem.id }}" data-html="true" onClick="return grabEditJobLogForm({{ elem.id }}, {{ elem.job.shift.id }});"><span class="fas fa-hourglass"></span></a>
-    <a href="#!" id="deleteJobLog_{{ elem.id }}" data-html="true" onClick="return deleteJobLog({{ elem.id }}, {{ elem.job.shift.id }});"><span class="remove_glyph"></span></a>
+    <a href="#!" id="editJobLog_{{ elem.id }}" data-html="true" onClick="return grabEditJobLogForm({{ elem.id }}, {{ elem.job.shift.id }}, '{{ csrf_token('deletejoblog' ~ elem.id) }}');"><span class="fas fa-hourglass"></span></a>
+    <a href="#!" id="deleteJobLog_{{ elem.id }}" data-html="true" onClick="return deleteJobLog({{ elem.id }}, {{ elem.job.shift.id }}, '{{ csrf_token('deletejoblog' ~ elem.id) }}');"><span class="remove_glyph"></span></a>
     </td>
     </tr>
     {% endfor %}

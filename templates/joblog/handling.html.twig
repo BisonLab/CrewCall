@@ -126,8 +126,7 @@ function submitEditJobLogForm(joblog_id, shift_id) {
     return false;
 }
 
-function deleteJobLog(joblog_id, shift_id) {
-    newJobLogFormData = $( "#newJobLogForm" ).serialize();
+function deleteJobLog(joblog_id, shift_id, token) {
     url = "{{ path('joblog_delete', { 'access': 'ajax', 'id': 'XXX' }) }}";
     url = url.replace('XXX', joblog_id);
     $.ajax({
@@ -136,7 +135,7 @@ function deleteJobLog(joblog_id, shift_id) {
         },
         type: "DELETE",
         url: url,
-        data: '',
+        data: { "_token": token },
         dataType: "text",
         async: true,
       }).done( function( cont, textStatus, xhr ) {

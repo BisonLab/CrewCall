@@ -241,8 +241,13 @@ class JobLogController extends CommonController
      */
     public function deleteAction(Request $request, $access, JobLog $joblog)
     {
-        // Bloody good question here, because CSRF.
-        // This should add some sort of protection.
+        if (!$token = $request->request->get('_token')) {
+            $json_data = json_decode($request->getContent(), true);
+            $token = $json_data['_token'];
+        }
+        if (!$this->isCsrfTokenValid('deletejoblog'.$joblog->getId(), $token)) {
+            return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
+        }
         if ($this->isRest($access)) {
             $em = $this->getDoctrine()->getManager();
             $em->remove($joblog);
