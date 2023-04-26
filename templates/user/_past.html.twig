@@ -27,7 +27,7 @@
                     <tr><th>In</th><th>Out</th><th>Break</th><th>&nbsp;</th></tr>
                     {% set locked = false %}
                     {% for joblog in job.joblogs %}
-                      {% if joblog.state == "COMPLETED" %}
+                      {% if joblog.state == "LOCKED" %}
                         {% set locked = true %}
                       {% endif %}
                       <tr>
