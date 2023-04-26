@@ -646,10 +646,8 @@ class UserFrontController extends CommonController
         if ($user !== $job->getPerson()) {
             return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
         }
-        if (!$token = $request->request->get('_csrf_token')) {
-            $json_data = json_decode($request->getContent(), true);
-            $token = $json_data['_csrf_token'];
-        }
+        if (!$token = $request->request->get('_csrf_token'))
+            return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
         if (!$this->isCsrfTokenValid('addjoblog' . $job->getId(), $token)) {
             return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
         }
@@ -661,6 +659,14 @@ class UserFrontController extends CommonController
         $joblog->setOutTime($request->request->get('out'));
         $joblog->setBreakMinutes($request->request->get('break') ?? 0);
         $em->persist($joblog);
+
+        if ($comment = $request->request->get('joblogcomment')) {
+            $job->addNote([
+                'body' => $comment,
+                'type' => 'JobComment',
+            ]);
+        }
+
         $em->flush();
 
         $retarr['past'] = $em->getRepository(Job::class)
