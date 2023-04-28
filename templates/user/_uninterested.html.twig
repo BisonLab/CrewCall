@@ -1,19 +1,19 @@
-<h4 class="text-uppercase font-weight-bold mt-4">Sign up for jobs</h4>
+<h4 class="text-uppercase font-weight-bold mt-4">I don't want these</h4>
 <div class="row">
     <div class="col-sm-4 col-xs-6 p-3">
       <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'opportunities'}) }}', 'myJobsLink');">Sign up (<span id="opportunities_count">{{ opportunities | length }}</span>)</a>
-      <a class="btn badge badge-secondary" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'interested'}) }}', 'myJobsLink');">Signed Up (<span id="interested_count">{{ interested | length }}</span>)</a>
+      <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'interested'}) }}', 'myJobsLink');">Signed Up (<span id="interested_count">{{ interested | length }}</span>)</a>
       <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'jobs_list'}) }}', 'myJobsLink');">As list</a>
-      <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'uninterested'}) }}', 'myJobsLink');">Uninterested</a>
+      <a class="btn badge badge-secondary" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'uninterested'}) }}', 'myJobsLink');">Uninterested</a>
     </div>
     {% include '/user/_choose_month.html.twig' %}
 </div><!-- end row -->
-{% if interested | length == 0 %}
+{% if uninterested | length == 0 %}
 <div class="alert alert-warning mt-5">No jobs here!</div>
 {% endif %}
 {% set month = ''%}
 <div class="row p-3">
-{% for job in interested %}
+{% for job in uninterested %}
 {% if month != job.shift.month %}
 <h5 class="col-12 p-0 mt-2 font-weight-bold">{{ job.shift.month }}</h5>
 {% set month = job.shift.month %}
@@ -21,31 +21,34 @@
     {% include '/user/_job_card.html.twig' %}
 {% endfor %}
 </div>
+{# This should be somewhere else #}
 <script>
-function submitDeleteInterest(job_id) {
-    orgurl = "{{ delete_interest.url }}";
-    url = orgurl.replace("ID", job_id);
+function submitInterest(job_id, uninterested = false) {
+    orgurl = "{{ signup_shift.url }}";
+    if (uninterested)
+         orgurl = "{{ set_uninterested.url }}";
+    var url = orgurl.replace("ID", job_id);
     $.ajax({
         beforeSend: function(req) {
           req.setRequestHeader("Accept", "application/json");
         },
         type: "POST",
         url: url,
-        data: $( "#delete_interest_form_" + job_id ).serialize(),
+        data: $( "#interest_form_" + job_id ).serialize(),
         dataType: "text",
         async: true,
       }).done( function( cont, textStatus, xhr ) {
         $( "#item-" + job_id ).hide();
         icount = $( "#interested_count" ).text();
         ocount = $( "#opportunities_count" ).text();
-        icount--;
-        ocount++;
+        ocount--;
+        if (!uninterested)
+            icount++;
         $( "#interested_count" ).text(icount);
         $( "#opportunities_count" ).text(ocount);
         $( "#signupCount" ).text(ocount);
-
       }).fail(function(xhr, status, error) {
-            errmsg = "Failed removing your interest.\n";
+            errmsg = "Failed signing you up.\n";
             alert(errmsg);
     });
     return false;

@@ -4,6 +4,7 @@
       <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'opportunities'}) }}', 'myJobsLink');">Sign up (<span id="opportunities_count">{{ opportunities | length }}</span>)</a>
       <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'interested'}) }}', 'myJobsLink');">Signed Up (<span id="interested_count">{{ interested | length }}</span>)</a>
       <a class="btn badge badge-secondary" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'jobs_list'}) }}', 'myJobsLink');">As list</a>
+      <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'uninterested'}) }}', 'myJobsLink');">Uninterested</a>
     </div>
     {% include '/user/_choose_month.html.twig' %}
 </div><!-- end row -->
@@ -28,7 +29,10 @@
             <td>{{ job.shift.end_string }}</td>
             <td>{{ job.shift.function }}</td>
             <td>
-                {% include '/user/_signup_form.html.twig' %}
+                {% set no_buttontext = true %}
+                <div class="signup-list">
+                    {% include '/user/_signup_form.html.twig' %}
+                </div>
             </td>
         </tr>
     {% endfor %}
@@ -40,10 +44,12 @@
             <td>{{ job.shift.end_string }}</td>
             <td>{{ job.shift.function }}</td>
             <td>
+              <div class="signup-list">
                 <form id="delete_interest_form_{{ job.id }}" action="#" onSubmit="return submitDeleteInterest({{ job.id }});">
                 <input type="hidden" value="{{ delete_interest._csrf_token }}" name="_csrf_token">
-                <button class="btn btn-dark ml-3"><i class="fas fa-times mr-1 text-danger"></i>Remove</button>
+                <button class="btn btn-dark ml-3"><i class="fas fa-times mr-1 text-danger"></i></button>
                 </form>
+              </div>
             </td>
         </tr>
     {% endfor %}

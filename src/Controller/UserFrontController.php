@@ -88,19 +88,6 @@ class UserFrontController extends CommonController
             ];
             return new JsonResponse($retarr, 200);
         }
-/*
-        $from = new \DateTime();
-        $to = new \DateTime('+1 year');
-        $retarr = [
-            'notes' => $this->meNotes($request, true),
-            'messages' => $this->meMessages($request, true),
-            'user' => $user
-        ];
-        $retarr['confirmed'] = $this->jobsForPersonAsArray($user, [
-            'from' => $from, 'to' => $to,
-            'state' => 'CONFIRMED']);
-        $retarr['confirmed_count'] = count($retarr['confirmed']);
- */
         $retarr = $this->meJobs($request, true);
         $retarr['notes'] = $this->meNotes($request, true);
         $retarr['messages'] = $this->meMessages($request, true);
@@ -296,11 +283,12 @@ class UserFrontController extends CommonController
      */
     public function meJobs(Request $request, $as_array = false)
     {
+        $em = $this->getDoctrine()->getManager();
         $ccjobs = $this->container->get('crewcall.jobs');
         // Create a csrf token for use in the next step
         $csrfman = $this->get('security.csrf.token_manager');
         $view = $request->get('view') ?? null;
-        if ($view && !in_array($view, ['past', 'jobs_list', 'opportunities', 'interested', 'assigned', 'confirmed']))
+        if ($view && !in_array($view, ['past', 'jobs_list', 'opportunities', 'interested', 'uninterested', 'assigned', 'confirmed']))
             throw new \InvalidArgumentException("Funnily enough, I do not acceept your view.");
 
         $today = new \DateTime();
@@ -348,6 +336,8 @@ class UserFrontController extends CommonController
             'opportunities_count' => 0,
             'interested' => null,
             'interested_count' => 0,
+            'uninterested' => null,
+            'uninterested_count' => 0,
             'assigned' => null,
             'assigned_count' => 0,
             'confirmed' => null,
@@ -355,7 +345,6 @@ class UserFrontController extends CommonController
             ];
 
         if ($view == "past") {
-            $em = $this->getDoctrine()->getManager();
             $retarr['past'] = $em->getRepository(Job::class)
                 ->findJobsForPerson($user, ['booked' => true, 'past' => true]);
             $retarr['past_count'] = count($retarr['past']);
@@ -372,6 +361,11 @@ class UserFrontController extends CommonController
             [ 'from' => $from, 'to' => $to, 'no_shift_data' => $as_array ]
             );
         $retarr['opportunities_count'] = count($retarr['opportunities']);
+
+        $retarr['set_uninterested'] = [
+            '_csrf_token' => $signuptoken,
+            'url' => $this->generateUrl('uf_uninterested', ['id' => 'ID'], UrlGeneratorInterface::ABSOLUTE_URL)
+        ];
             
         $ditoken = $csrfman->getToken('delete-interest')->getValue();
         $retarr['delete_interest'] = [
@@ -388,6 +382,11 @@ class UserFrontController extends CommonController
             'from' => $from, 'to' => $to,
             'state' => 'INTERESTED']);
         $retarr['interested_count'] = count($retarr['interested']);
+
+        $retarr['uninterested'] = $this->jobsForPersonAsArray($user, [
+            'to' => $to,
+            'state' => 'UNINTERESTED']);
+        $retarr['uninterested_count'] = count($retarr['uninterested']);
 
         $retarr['assigned'] = $this->jobsForPersonAsArray($user, [
             'from' => $from, 'to' => $to,
@@ -482,6 +481,33 @@ class UserFrontController extends CommonController
                 'state' => 'CHECKED'
             ]);
         }
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($job);
+        $em->flush($job);
+        return new JsonResponse(["OK" => "Well done"], Response::HTTP_OK);
+    }
+
+    /**
+     *
+     * @Route("/uninterested/{id}", name="uf_uninterested", methods={"POST"})
+     */
+    public function uninterestedAction(Request $request, Shift $shift)
+    {
+        $json_data = json_decode($request->getContent(), true);
+        if (!$token = $request->request->get('_csrf_token')) {
+            $token = $json_data['_csrf_token'];
+        }
+
+        // Using the same as above.
+        if (!$this->isCsrfTokenValid('signup-shift', $token)) {
+            return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
+        }
+
+        $user = $this->getUser();
+        $job = new Job();
+        $job->setShift($shift);
+        $job->setPerson($user);
+        $job->setState('UNINTERESTED');
         $em = $this->getDoctrine()->getManager();
         $em->persist($job);
         $em->flush($job);
@@ -871,11 +897,24 @@ class UserFrontController extends CommonController
         $jobs = $em->getRepository(Job::class)
             ->findJobsForPerson($person, $options);
 
+        /*
+         * OK; this looks stupid, but I gotta do this somehow.
+         * I have no need at all for old UNINTERESTED jobs.
+         * Alas, I'll just delete them.
+         */
+        $now = new \DateTime();
         // Just walk through it once, alas overlap check here aswell.
         $lastjob = null;
         $lastarr = null;
         $checked = new \Doctrine\Common\Collections\ArrayCollection();
         foreach ($jobs as $job) {
+            // As I said, just get rid.
+            if ($job->getStart() == "UNINTERESTED"
+                && $job->getStart() < $now) {
+                $em->remove($job);
+                continue;
+            }
+
             $arr = [
                 'name' => (string)$job,
                 'state' => $job->getState(),
@@ -893,6 +932,8 @@ class UserFrontController extends CommonController
             $checked->add($arr);
             $lastjob = $job;
         }
+        // And make them go.
+        $em->flush();
         return $checked->toArray();
     }
 

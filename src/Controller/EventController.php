@@ -555,6 +555,9 @@ class EventController extends CommonController
 
         if ($function_id = $request->request->get('function_id'))
             $filter['function_ids'] = [$function_id];
+
+        // I do not want these.
+        $filter['ignore_states'] = ['UNINTERESTED', 'DENIED'];
         
         $people = new ArrayCollection();
         foreach ($event->getJobs($filter) as $j) {

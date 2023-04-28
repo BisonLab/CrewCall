@@ -63,9 +63,9 @@
   <a id="homeLink" class="footerlink navbar-footer-item-active flex-fill" href="#" onClick="return getCContent('{{ path('uf_me') }}','homeLink');">
    <i class="fas fa-home"></i>
   </a>
-  <a id="confirmedLink" class="footerlink navbar-footer-item flex-fill" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'confirmed'}) }}', 'confirmedLink');">
-    My Jobs
-    <span id="confirmedCount" class="badge badge-success">0</span>
+  <a id="confirmedLink" class="footerlink navbar-footer-item flex-fill" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'past'}) }}', 'confirmedLink');">
+    My Hours
+    <span id="confirmedCount" class="d-none badge badge-success">0</span>
   </a>
   <a id="assignedLink" class="footerlink navbar-footer-item flex-fill" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'assigned'}) }}', 'assignedLink');">
     Confirm
