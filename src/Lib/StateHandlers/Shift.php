@@ -18,7 +18,7 @@ class Shift
     public function handle(\App\Entity\Shift $shift, $from, $to)
     {
         if ($to == "COMPLETED") {
-            foreach ($shift->getJobs() as $job) {
+            foreach ($shift->getJobs(['booked' => true]) as $job) {
                 $job->setState("COMPLETED");
                 if ($from === false)
                     continue;

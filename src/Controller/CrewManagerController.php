@@ -75,11 +75,7 @@ class CrewManagerController extends CommonController
         $deletejoblogtoken = $csrfman->getToken('delete-joblog')->getValue();
         foreach ($events as $event) {
             foreach ($event->getShifts() as $shift) {
-                $jobs = [];
-                foreach ($shift->getJobs() as $job) {
-                    if ($job->isBooked())
-                        $jobs[] = $job;
-                }
+                $jobs = $shift->getJobs(['booked' => true]);
                 if (count($jobs) > 0)
                     $shifts[] = ['shift' => $shift, 'jobs' => $jobs];
             }

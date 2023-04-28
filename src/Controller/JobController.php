@@ -49,7 +49,7 @@ class JobController extends CommonController
         $shiftamounts['booked']  = $shift->getBookedAmount();
         $shiftamounts['needing'] = $shift->getAmount() - $shift->getBookedAmount();
 
-        $jobs = $shift->getJobs(['sort_by' => 'last_name']);
+        $jobs = $shift->getJobs(['sort_by' => 'last_name', 'ignore_states' => ['UNINTERESTED', 'DENIED']]);
         $sos = $shift->getShiftOrganizations();
         if ($this->isRest($access)) {
             return $this->render('job/_index.html.twig', array(

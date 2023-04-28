@@ -968,8 +968,8 @@ input:checked + .ccSlider:before {
     /* background-color: #f8f8f8; */
 }
 
-.card-custom .fa-comment {
-    font-size: 39px;
+.fa-comment {
+    font-size: 15px;
 }
 
 .delete-btn {

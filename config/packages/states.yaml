@@ -127,26 +127,30 @@ parameters:
                 active_states: ['VISIBLE']
             Job:
                 states:
+                    # I just do not want the job!
+                    UNINTERESTED:
+                        label: "Uninterested"
+                        order: 1
                     # I want the job!
                     INTERESTED:
                         label: "Interested"
-                        order: 1
+                        order: 2
                     # Sorry, won't give you. Not very much used I hope.
                     DENIED:
                         label: "Denied"
-                        order: 2
+                        order: 3
                     # You can have it if you confirm
                     ASSIGNED:
                         label: "Assigned"
-                        order: 3
+                        order: 4
                     # OK, I confirm!
                     CONFIRMED:
                         label: "Confirmed"
-                        order: 4
+                        order: 5
                     # Job done, hours (if you care) reported. Case closed.
                     COMPLETED:
                         label: "Completed"
-                        order: 5
+                        order: 6
                 booked_states: ['CONFIRMED']
                 wishlist_states: ['INTERESTED', 'ASSIGNED', 'DENIED']
             JobLog:

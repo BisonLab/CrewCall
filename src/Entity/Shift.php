@@ -351,6 +351,10 @@ class Shift
     {
         $jobs = new ArrayCollection();
         foreach ($this->jobs as $job) {
+            if (isset($filter['booked']) && !$job->isBooked())
+                continue;
+            if (isset($filter['ignore_states']) && in_array($job->getState(), $filter['ignore_states']))
+                continue;
             if (isset($filter['states']) && !in_array($job->getState(), $filter['states']))
                 continue;
             $jobs->add($job);
@@ -473,10 +477,7 @@ class Shift
      */
     public function getBookedAmount()
     {
-        $booked = 0;
-        foreach ($this->getJobs() as $j) {
-            if ($j->isBooked()) $booked++;
-        }
+        $booked = $this->getJobs(['booked' => true])->count();
         foreach ($this->getShiftOrganizations() as $so) {
             // If they are mentioned, they are booked. Aka amount is by
             // definition booked.
@@ -504,7 +505,7 @@ class Shift
      */
     public function getRegisteredAmount()
     {
-        $registered = $this->getJobs()->count();
+        $registered = $this->getJobs(['ignore_states' => ['UNINTERESTED', 'DENIED']])->count();
         foreach ($this->getShiftOrganizations() as $so) {
             // This amount is the registered amount, bad name I know.
             $registered += $so->getAmount();

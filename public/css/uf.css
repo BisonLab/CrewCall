@@ -79,6 +79,10 @@ img {
     background-color: #fff;
 }
 
+.fa-comment {
+    font-size: 46px;
+}
+
 .card-custom-content .cardplusminus:after {
     font-family: 'Font Awesome 5 Free';
     content: "\f056";
@@ -96,6 +100,26 @@ img {
 .card-bottom {
     display: flex;
     align-items: flex-end;
+}
+
+.signup-list {
+    font-size: 16px;
+}
+
+.signup-list .btn {
+    margin: 1px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 21px;
+    padding-right: 21px;
+}
+
+.signup-list .fas {
+    font-size: 16px;
+}
+
+.signup-list .fa-comment {
+    font-size: 26px;
 }
 
 .date-header {

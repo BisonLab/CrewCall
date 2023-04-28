@@ -4,6 +4,7 @@
       <a class="btn badge badge-secondary" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'opportunities'}) }}', 'myJobsLink');">Sign up (<span id="opportunities_count">{{ opportunities | length }}</span>)</a>
       <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'interested'}) }}', 'myJobsLink');">Signed Up (<span id="interested_count">{{ interested | length }}</span>)</a>
       <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'jobs_list'}) }}', 'myJobsLink');">As list</a>
+      <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'uninterested'}) }}', 'myJobsLink');">Uninterested</a>
     </div>
     {% include '/user/_choose_month.html.twig' %}
 </div><!-- end row -->
@@ -21,11 +22,12 @@
     {% include '/user/_job_card.html.twig' %}
 {% endfor %}
 </div>
-
 <script>
-function submitInterest(job_id) {
+function submitInterest(job_id, uninterested = false) {
     orgurl = "{{ signup_shift.url }}";
-    url = orgurl.replace("ID", job_id);
+    if (uninterested)
+         orgurl = "{{ set_uninterested.url }}";
+    var url = orgurl.replace("ID", job_id);
     $.ajax({
         beforeSend: function(req) {
           req.setRequestHeader("Accept", "application/json");
@@ -40,7 +42,8 @@ function submitInterest(job_id) {
         icount = $( "#interested_count" ).text();
         ocount = $( "#opportunities_count" ).text();
         ocount--;
-        icount++;
+        if (!uninterested)
+            icount++;
         $( "#interested_count" ).text(icount);
         $( "#opportunities_count" ).text(ocount);
         $( "#signupCount" ).text(ocount);

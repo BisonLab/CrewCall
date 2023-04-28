@@ -138,7 +138,7 @@ class JobLogController extends CommonController
             if ($shift) {
                 $in = new \DateTime($data['in']['date'] . " " . $data['in']['time']);
                 $out = new \DateTime($data['out']['date'] . " " . $data['out']['time']);
-                foreach($shift->getJobs() as $job) {
+                foreach($shift->getJobs(['booked' => true]) as $job) {
                     $joblog = new JobLog();
                     $joblog->setIn($in);
                     $joblog->setOut($out);
