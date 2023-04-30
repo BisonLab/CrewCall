@@ -151,7 +151,7 @@ class JobLog
      *
      * @return JobLog
      */
-    public function setAttributes($attributes)
+    public function setAttributes(?array $attributes)
     {
         $this->attributes = $attributes;
 
@@ -163,7 +163,7 @@ class JobLog
      *
      * @return array
      */
-    public function getAttributes()
+    public function getAttributes(): mixed
     {
         return $this->attributes;
     }
@@ -194,27 +194,39 @@ class JobLog
 
     /*
      * This is the "string" version, with hours and minutes.
-     * What this does not is remove a day if your shift starts a 01:00
-     * but you started working 23:00 - I have to find a smart'ish algorithm for
-     * it.
+     *
+     * WHen the Out time is set we'll try to set the dates.
      */
     public function setInTime(string $inTime)
     {
         // Gives us a correct date.
         $in = clone($this->getJob()->getStart());
         if (preg_match("/\D/", $inTime)) {
-            list($ih, $im) = preg_split("/\D/", $inTime);
+            list($in_hour, $in_minutes) = preg_split("/\D/", $inTime);
         } else {
-            $ih = $times['inn1'];
-            $im = 0;
+            // I'll guess this is just the hours then. Maybe a bad idea, but
+            // I have commented it, alas documented.
+            $in_hour = $inTime;
+            $in_minutes = 0;
         }
-        $in->setTime($ih, $im);
-         
-        // I'll try, I am certain this may fail in some cases.
-        // (Yes, if you work > 24 hours aswell.)
-        $jobout = $this->getJob()->getEnd();
-        if ($in > $jobout)
-            $in->modify("-1 day");
+        if ($in_hour > 23 || $in_hour < 0)
+            throw new \InvalidArgumentException("Bad hours value.");
+        if ($in_minutes > 59 || $in_hour < 0)
+            throw new \InvalidArgumentException("Bad minutes value.");
+
+        // And
+        $in->setTime($in_hour, $in_minutes);
+
+        // Do I need to change date?
+        $shiftin_hour = $this->getJob()->getStart()->format('H');;
+
+        // Yesterday?
+        if (($in_hour - $shiftin_hour) > 12)
+            $in = $in->modify("-1 day");
+
+        // Tomorrow?
+        if (($shiftin_hour - $in_hour) > 12)
+            $in = $in->modify("+1 day");
 
         $this->in = $in;
 
@@ -247,22 +259,38 @@ class JobLog
 
     /*
      * Better set In before this!
-     * And as with setIn, but the opposite, add a day if out time is before in
-     * time.
      * It *will* break if a shift or job is beyond 24 hours, probably less.
+     *
+     * It'll try to guess the dates based on the time entered.
+     * (This is how TDD looks.)
      */
     public function setOutTime(string $outTime):self
     {
-        $out = clone($this->getJob()->getStart());
+        if (!$this->getIn())
+            throw new \InvalidArgumentException("Need to set in time before out time.");
+        $out = clone($this->getJob()->getEnd());
         if (preg_match("/\D/", $outTime)) {
-            list($uh, $um) = preg_split("/\D/", $outTime);
+            list($out_hour, $out_minutes) = preg_split("/\D/", $outTime);
         } else {
-            $uh = $outTime;
-            $um = 0;
+            $out_hour = $outTime;
+            $out_minutes = 0;
         }
-        $out->setTime($uh, $um);
-        if ($this->getIn() > $out)
-            $out->modify("+1 day");
+        if ($out_hour > 23 || $out_hour < 0)
+            throw new \InvalidArgumentException("Bad hours value.");
+        if ($out_minutes > 59 || $out_hour < 0)
+            throw new \InvalidArgumentException("Bad moututes value.");
+
+        // And date manipulation.
+        $shiftout_hour = $this->getJob()->getEnd()->format('H');
+        $out->setTime($out_hour, $out_minutes);
+
+        // Yesterday?
+        if (($out_hour - $shiftout_hour) > 12)
+            $out = $out->modify("-1 day");
+
+        // Tomorrow?
+        if (($shiftout_hour - $out_hour) > 12)
+            $out = $out->modify("+1 day");
 
         $this->out = $out;
 
@@ -274,19 +302,19 @@ class JobLog
      *
      * @return \DateTime
      */
-    public function getBreakMinutes()
+    public function getBreakMinutes(): ?int
     {
         return $this->break_minutes;
     }
 
     /**
-     * Set out
+     * Set break in minutes
      *
      * @param \datetime $out
      *
      * @return joblog
      */
-    public function setBreakMinutes($break_minutes)
+    public function setBreakMinutes(?int $break_minutes): self
     {
         $this->break_minutes = $break_minutes;
 

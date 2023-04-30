@@ -122,8 +122,8 @@ class CrewManagerController extends CommonController
         }
 
         $joblog = new JobLog();
-        $joblog->setIn(new \DateTime($time));
         $joblog->setJob($job);
+        $joblog->setInTime($time);
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($joblog);
@@ -159,12 +159,7 @@ class CrewManagerController extends CommonController
         if ($last_joblog->getOut()) {
             return new JsonResponse(["ERRROR" => "No job to sign out"], Response::HTTP_FORBIDDEN);
         }
-        $out = clone($last_joblog->getIn());
-        list($h, $m) = explode(":", $time);
-        $out->setTime($h, $m);
-        if ($out < $last_joblog->getIn())
-            $out->modify('+1 day');
-        $last_joblog->setOut($out);
+        $last_joblog->setOutTime($time);
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($last_joblog);
