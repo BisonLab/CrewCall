@@ -977,6 +977,10 @@ input:checked + .ccSlider:before {
     font-weight: 400;
 }
 
+.breakminutes {
+    width: 5em;
+}
+
 .tabbable {
     padding-left: 16px;
     padding-right: 16px;

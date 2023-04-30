@@ -344,13 +344,6 @@ class UserFrontController extends CommonController
             'confirmed_count' => 0
             ];
 
-        if ($view == "past") {
-            $retarr['past'] = $em->getRepository(Job::class)
-                ->findJobsForPerson($user, ['booked' => true, 'past' => true]);
-            $retarr['past_count'] = count($retarr['past']);
-            return $this->render('user/_' . $view . '.html.twig', $retarr);
-        }
-
         $signuptoken = $csrfman->getToken('signup-shift')->getValue();
         $retarr['signup_shift'] = [
             '_csrf_token' => $signuptoken,
@@ -397,6 +390,27 @@ class UserFrontController extends CommonController
             'from' => $from, 'to' => $to,
             'state' => 'CONFIRMED']);
         $retarr['confirmed_count'] = count($retarr['confirmed']);
+
+        /*
+         * Past and we're talking back in time, and then modify from/to
+         * with a year.
+         * Unless it's this month.
+         */
+        if ($month && $from->format('m') != date('m')) {
+            $from = $from->modify("-1 year");
+            $to = $to->modify("-1 year");
+            $retarr['period'] = [ 'from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d') ];
+        } else {
+            $from = new \DateTime('first day of last year');
+            $to = new \DateTime();
+            $retarr['period'] = [ 'from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d') ];
+        }
+        $retarr['past'] = $em->getRepository(Job::class)
+            ->findJobsForPerson($user, [
+                'from' => $from,
+                'to' => $to,
+                'booked' => true, 'past' => true]);
+        $retarr['past_count'] = count($retarr['past']);
 
         if ($as_array)
             return $retarr;
@@ -662,11 +676,27 @@ class UserFrontController extends CommonController
     }
 
     /**
+     * The edit yourself job log / in/out form.
+     *
+     * @Route("/{job}/me_new_joblog", name="uf_me_new_joblog", methods={"GET"})
+     */
+    public function newJobLogAction(Request $request, Job $job)
+    {
+        $user = $this->getUser();
+        if ($user !== $job->getPerson()) {
+            return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
+        }
+        // Looking stupid? Kinda.
+        $retarr = ['job' => $job, 'month' => $request->get('month')];
+        return $this->render('user/_new_joblog_form.html.twig', $retarr);
+    }
+
+    /**
      * The edit yourself job log / in/out.
      *
-     * @Route("/{job}/me_add_joblog", name="uf_me_add_joblog", methods={"POST"})
+     * @Route("/{job}/me_create_joblog", name="uf_me_create_joblog", methods={"POST"})
      */
-    public function addJobLogAction(Request $request, Job $job)
+    public function createJobLogAction(Request $request, Job $job)
     {
         $user = $this->getUser();
         if ($user !== $job->getPerson()) {
@@ -694,17 +724,13 @@ class UserFrontController extends CommonController
         }
 
         $em->flush();
-
-        $retarr['past'] = $em->getRepository(Job::class)
-            ->findJobsForPerson($user, ['booked' => true, 'past' => true]);
-        $retarr['past_count'] = count($retarr['past']);
-        return $this->render('user/_past.html.twig', $retarr);
+        return new Response("Added", Response::HTTP_CREATED);
     }
 
     /**
      * The delete yourself job log / in/out.
      *
-     * @Route("/{joblog}/me_delete_joblog", name="uf_me_delete_joblog", methods={"POST"})
+     * @Route("/{joblog}/me_delete_joblog", name="uf_me_delete_joblog", methods={"POST", "DELETE"})
      */
     public function deleteJobLogAction(Request $request, JobLog $joblog)
     {
@@ -721,11 +747,7 @@ class UserFrontController extends CommonController
         $em = $this->getDoctrine()->getManager();
         $em->remove($joblog);
         $em->flush();
-
-        $retarr['past'] = $em->getRepository(Job::class)
-            ->findJobsForPerson($user, ['booked' => true, 'past' => true]);
-        $retarr['past_count'] = count($retarr['past']);
-        return $this->render('user/_past.html.twig', $retarr);
+        return new Response("Deleted", Response::HTTP_OK);
     }
 
     /**

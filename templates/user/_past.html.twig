@@ -1,9 +1,12 @@
 <h4 class="text-uppercase font-weight-bold mt-4">Past Jobs</h4>
 <div class="row">
-    <div class="col-sm-4 col-xs-6 p-3">
+  <div class="col-sm d-flex justify-content-center p-2">
       <a class="btn badge" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'confirmed'}) }}', 'myJobsLink');">Confirmed</a>
       <a class="btn badge badge-secondary" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'past'}) }}', 'myJobsLink');">My Hours</a>
-    </div>
+  </div>
+</div><!-- end row -->
+<div class="row">
+    {% include '/user/_choose_month.html.twig' %}
 </div><!-- end row -->
 {% if past|length > 0 %}
     <table class="table table-striped  table-sm">
@@ -30,7 +33,7 @@
                       {% if joblog.state == "LOCKED" %}
                         {% set locked = true %}
                       {% endif %}
-                      <tr>
+                      <tr id="joblog_entry_{{ joblog.id }}">
                       <td>{{ joblog.in | date("H:i") }}</td>
                       <td>{{ joblog.out | date("H:i") }}</td>
                       <td>{{ joblog.breakminutes }}min</td>
@@ -49,22 +52,7 @@
                     {% if personfields.hours.user_editable and not locked %}
                         <tr>
                         <td colspan="4">
-<div id="add_joblog_modal_{{ job.id }}" class="d-none">
-    <form id="addjoblog_{{ job.id }}" action="{{ path('uf_me_add_joblog', {'job': job.id}) }}" method="POST">
-    <input type="hidden" name="_csrf_token" value="{{ csrf_token('addjoblog' ~ job.id) }}">
-    <label for="in{{ job.id }}">In:</label>
-    <input id="in{{ job.id }}" type="time" name="in">
-    <label for="out{{ job.id }}">Out:</label>
-    <input id="out{{ job.id }}" type="time" name="out">
-    <label for="break{{ job.id }}">Break:</label>
-    <input id="break{{ job.id }}" type="number" value=0 name="break" size="2">
-    <br>
-    <label for="comment{{ job.id }}">Comment:</label>
-        <textarea id="comment{{ job.id }}" cols="35" rows="2" name="joblogcomment"></textarea>
-    <input type="submit" value="Save" onClick="return submitAddHoursForm({{ job.id }});">
-    </form>
-</div>
-                            <button onclick="openCcModalFromDiv('add_joblog_modal_{{ job.id }}', 'Add times');">Add</button>
+                            <button onclick="return openCcModal('{{ path('uf_me_new_joblog', { 'job': job.id, 'month': month }) }}', 'Add times');">Add</button>
                         </td>
                         </tr>
                     {% endif %}
@@ -76,27 +64,9 @@
         </tbody>
     </table>
   {% else %}
-     <p>You've done naught.</p>
+     <p>You did naught.</p>
   {% endif %}
 <script>
-function submitAddHoursForm(job_id) {
-    formdata = $( "#addjoblog_" + job_id).serialize();
-    url = $( "#addjoblog_" + job_id).attr('action');
-    $.ajax({
-        beforeSend: function(req) {
-          req.setRequestHeader("Accept", "text/html");
-        },
-        url: url,
-        type: "POST",
-        data: formdata,
-        dataType: "text",
-        async: true,
-      }).done( function( cont, textStatus, xhr ) {
-        $( "#ccModal" ).modal("hide");
-        $( "#ccContentBody" ).html(cont);
-    });
-    return false;
-}
 function submitDeleteJoblogForm(joblog_id) {
     formdata = $( "#deletejoblog_" + joblog_id).serialize();
     url = $( "#deletejoblog_" + joblog_id).attr('action');
@@ -110,7 +80,7 @@ function submitDeleteJoblogForm(joblog_id) {
         dataType: "text",
         async: true,
       }).done( function( cont, textStatus, xhr ) {
-          $( "#ccContentBody" ).html(cont);
+          $( "#joblog_entry_" + joblog_id ).hide();
     });
     return false;
 }
