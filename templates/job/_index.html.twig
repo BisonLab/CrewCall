@@ -72,15 +72,19 @@
             <a href="#" title="Person Notes" onClick="return openSakonninMessageLogBox('{{ path('message_context_search', {'access': 'ajax', 'system': pncontext.system, 'object_name': pncontext.object_name, 'external_id': pncontext.external_id, 'criterias': {'message_types': ['AdminNote', 'PersonNote'] }}) }}', 'Notes about {{ job.person }}')"><span style="font-size: 15px" class="fas fa-comment"></span></a>
     {% endif %}
         {% set overjobs = cc_jobs.checkoverlapforperson(job, {'return_jobs': true }) %}
+        {% set direct_overlap = false %}
         {% if overjobs | length > 0 %}
             <div id="overlap_popover_content_{{ job.id }}" class="d-none">
             {% for ojob in overjobs %}
+                {% if (job.booked or ojob.booked) and (ojob.start <= job.end) and (ojob.end >= job.start) %}
+                    {% set direct_overlap = true %}
+                {% endif %}
             {{ ojob.shift }} ({{ ojob.statelabel }} {{ ojob.shift.start|date('d M H:i') }} -> {{ ojob.shift.end|date('H:i') }})<br>
             {% endfor %}
             </div>
             <div style="float: right;">
                 <a tabindex="0" href="#" id="overlap_popover_{{ job.id }}" onClick="return popOverlap({{ job.id }});">
-                    <span style="font-size: 15px; color: {% if job.booked %}red{% else %}orange{% endif %};" class="fas fa-exclamation-triangle"></span>
+                    <span style="font-size: 15px; color: {% if direct_overlap %}red{% else %}orange{% endif %};" class="fas fa-exclamation-triangle"></span>
                 </a>
             </div>
         {% endif %}

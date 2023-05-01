@@ -26,12 +26,16 @@
 {% if not past %}
         {% set overjobs = cc_jobs.checkoverlapforperson(job, {'return_jobs': true }) %}
         {% if overjobs | length > 0 %}
+        {% set direct_overlap = false %}
         <div id="overlap_popover_content_{{ job.id }}" class="d-none">
         {% for ojob in overjobs %}
-        {{ ojob.shift }} ({{ ojob.statelabel }} {{ ojob.shift.start|date('d M H:i') }} -> {{ ojob.shift.end|date('H:i') }})<br>
+            {% if (job.booked or ojob.booked) and (ojob.start <= job.end) and (ojob.end >= job.start) %}
+                {% set direct_overlap = true %}
+            {% endif %}
+            {{ ojob.shift }} ({{ ojob.statelabel }} {{ ojob.shift.start|date('d M H:i') }} -> {{ ojob.shift.end|date('H:i') }})<br>
         {% endfor %}
         </div>
-            <a tabindex="0" href="#" title="Overlapping Jobs" id="overlap_popover_{{ job.id }}" onClick="return popOverlap({{ job.id }});"><span style="font-size: 15px; color: {% if job.booked %}red{% else %}orange{% endif %};" class="fas fa-exclamation-triangle"></span></a>
+            <a tabindex="0" href="#" title="Overlapping Jobs" id="overlap_popover_{{ job.id }}" onClick="return popOverlap({{ job.id }});"><span style="font-size: 15px; color: {% if direct_overlap %}red{% else %}orange{% endif %};" class="fas fa-exclamation-triangle"></span></a>
         {% endif %}
 {% endif %}
 
