@@ -282,6 +282,11 @@ class JobController extends CommonController
      */
     public function moveJobsAction(Request $request)
     {
+        $user = $this->getUser();
+        if (!$this->isCsrfTokenValid('jobs_move' . $user->getId(), $request->request->get('_jobs_move_token'))) {
+            return new JsonResponse(["ERROR" => "No luck"], Response::HTTP_FORBIDDEN);
+        }
+
         $moves = $request->get('moves');
 
         $em = $this->getDoctrine()->getManager();
