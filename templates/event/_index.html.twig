@@ -136,6 +136,18 @@ $(document).ready(function() {
     }
     $(".event_child").hide();
     $(".collapse_subs").hide();
+    $(".custom-select").each(function(index, select) {
+        $(select).on("change", function(event) { 
+            $(".event_child").hide();
+            $(".collapse_subs").hide();
+        } );
+    });
+    $(".paginate_button").each(function(index, butt) {
+        $(butt).on("click", function(event) { 
+            $(".event_child").hide();
+            $(".collapse_subs").hide();
+        } );
+    });
 });
 </script>
 
