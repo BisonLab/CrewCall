@@ -28,8 +28,9 @@ use App\Model\FullCalendarEvent;
  * This is the controller for the front end par of the application.
  * 
  * It's the only one for now, and may be pushed onto it's own bundle in case
- * someone means we need different front ends. Which might be true, as this
- * starts very simple as I just need it for testing functionality.
+ * someone means we need different front ends.
+ *
+ * Like an App for some odd reason.
  *
  * @Route("/uf")
  */
@@ -278,7 +279,15 @@ class UserFrontController extends CommonController
     }
 
     /**
-     * Jobs part
+     * Jobs part, and how!
+     *
+     * This is big, huge and does a lot.
+     *
+     * But I need to send quite a few numbers at the same time since we have a
+     * few bubbles needing updates.
+     * I'll try to filter out the cases when it's not like that to speed it all
+     * up a bit.
+     *
      * @Route("/me_jobs", name="uf_me_jobs", methods={"GET"})
      */
     public function meJobs(Request $request, $as_array = false)
@@ -291,6 +300,7 @@ class UserFrontController extends CommonController
         if ($view && !in_array($view, ['past', 'jobs_list', 'opportunities', 'interested', 'uninterested', 'assigned', 'confirmed']))
             throw new \InvalidArgumentException("Funnily enough, I do not acceept your view.");
 
+        $user = $this->getUser();
         $today = new \DateTime();
         $from = new \DateTime($request->get('from') ?? null);
         $to = new \DateTime($request->get('to') ?? '+1 year');
@@ -300,13 +310,6 @@ class UserFrontController extends CommonController
         $recount = true;
         if ($month = $request->get('month'))
             $recount = false;
-        // This is only useful for opportunities, which can be way too much
-        // otherwise.
-        // Tro without setting a month. Default "Every single opportunity"
-        // if (!$month && $view == 'opportunities') {
-        //    $month = date("m");
-        //    $recount = false;
-        // }
 
         if ($month) {
             $year = date("Y");
@@ -323,9 +326,7 @@ class UserFrontController extends CommonController
         if ($from < $today)
             $from = $today;
 
-        $user = $this->getUser();
         // Should I add a "Limit"?
-
         $retarr = [
             'view' => $view,
             'month' => $month,
@@ -344,17 +345,16 @@ class UserFrontController extends CommonController
             'confirmed_count' => 0
             ];
 
+        /*
+         * Not that I need these all the time, but they cost nothing.
+         * I guess I can consider creating these on the fly now. but is that
+         * effective?
+         */
         $signuptoken = $csrfman->getToken('signup-shift')->getValue();
         $retarr['signup_shift'] = [
             '_csrf_token' => $signuptoken,
             'url' => $this->generateUrl('uf_signup_shift', ['id' => 'ID'], UrlGeneratorInterface::ABSOLUTE_URL)
         ];
-        $retarr['opportunities'] = $this->opportunitiesForPersonAsArray(
-            $user,
-            [ 'from' => $from, 'to' => $to, 'no_shift_data' => $as_array ]
-            );
-        $retarr['opportunities_count'] = count($retarr['opportunities']);
-
         $retarr['set_uninterested'] = [
             '_csrf_token' => $signuptoken,
             'url' => $this->generateUrl('uf_uninterested', ['id' => 'ID'], UrlGeneratorInterface::ABSOLUTE_URL)
@@ -371,46 +371,77 @@ class UserFrontController extends CommonController
             'url' => $this->generateUrl('uf_confirm_job', ['id' => 'ID'], UrlGeneratorInterface::ABSOLUTE_URL)
         ];
 
-        $retarr['interested'] = $this->jobsForPersonAsArray($user, [
-            'from' => $from, 'to' => $to,
-            'state' => 'INTERESTED']);
-        $retarr['interested_count'] = count($retarr['interested']);
+        /*
+         * The defaults.
+         */
+        if (!$view || in_array($view, ['opportunities', 'interested', 'assigned', 'confirmed'])) {
+            $retarr['opportunities'] = $this->opportunitiesForPersonAsArray(
+                $user,
+                [ 'from' => $from, 'to' => $to, 'no_shift_data' => $as_array ]
+                );
+            $retarr['opportunities_count'] = count($retarr['opportunities']);
 
-        $retarr['uninterested'] = $this->jobsForPersonAsArray($user, [
-            'to' => $to,
-            'state' => 'UNINTERESTED']);
-        $retarr['uninterested_count'] = count($retarr['uninterested']);
+            $retarr['interested'] = $this->jobsForPersonAsArray($user, [
+                'from' => $from, 'to' => $to,
+                'state' => 'INTERESTED']);
+            $retarr['interested_count'] = count($retarr['interested']);
 
-        $retarr['assigned'] = $this->jobsForPersonAsArray($user, [
-            'from' => $from, 'to' => $to,
-            'state' => 'ASSIGNED']);
-        $retarr['assigned_count'] = count($retarr['assigned']);
+            $retarr['assigned'] = $this->jobsForPersonAsArray($user, [
+                'from' => $from, 'to' => $to,
+                'state' => 'ASSIGNED']);
+            $retarr['assigned_count'] = count($retarr['assigned']);
 
-        $retarr['confirmed'] = $this->jobsForPersonAsArray($user, [
-            'from' => $from, 'to' => $to,
-            'state' => 'CONFIRMED']);
-        $retarr['confirmed_count'] = count($retarr['confirmed']);
+            $retarr['confirmed'] = $this->jobsForPersonAsArray($user, [
+                'from' => $from, 'to' => $to,
+                'state' => 'CONFIRMED']);
+            $retarr['confirmed_count'] = count($retarr['confirmed']);
+        }
+
+        if ($view && in_array($view, ['jobs_list'])) {
+            $retarr['opportunities'] = $this->opportunitiesForPersonAsArray(
+                $user,
+                [ 'from' => $from, 'to' => $to, 'no_shift_data' => $as_array ]
+                );
+            $retarr['opportunities_count'] = count($retarr['opportunities']);
+
+            $retarr['interested'] = $this->jobsForPersonAsArray($user, [
+                'from' => $from, 'to' => $to,
+                'state' => 'INTERESTED']);
+            $retarr['interested_count'] = count($retarr['interested']);
+        }
+
+        /*
+         * No need to count and check these unless it's specified.
+         */
+        if ($view && in_array($view, ['uninterested'])) {
+            $retarr['uninterested'] = $this->jobsForPersonAsArray($user, [
+                'to' => $to,
+                'state' => 'UNINTERESTED']);
+            $retarr['uninterested_count'] = count($retarr['uninterested']);
+        }
 
         /*
          * Past and we're talking back in time, and then modify from/to
          * with a year.
          * Unless it's this month.
          */
-        if ($month && $from->format('m') != date('m')) {
-            $from = $from->modify("-1 year");
-            $to = $to->modify("-1 year");
-            $retarr['period'] = [ 'from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d') ];
-        } else {
-            $from = new \DateTime('first day of last year');
-            $to = new \DateTime();
-            $retarr['period'] = [ 'from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d') ];
+        if ($view && in_array($view, ['past'])) {
+            if ($month && $from->format('m') != date('m')) {
+                $from = $from->modify("-1 year");
+                $to = $to->modify("-1 year");
+                $retarr['period'] = [ 'from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d') ];
+            } else {
+                $from = new \DateTime('first day of last year');
+                $to = new \DateTime();
+                $retarr['period'] = [ 'from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d') ];
+            }
+            $retarr['past'] = $em->getRepository(Job::class)
+                ->findJobsForPerson($user, [
+                    'from' => $from,
+                    'to' => $to,
+                    'booked' => true, 'past' => true]);
+            $retarr['past_count'] = count($retarr['past']);
         }
-        $retarr['past'] = $em->getRepository(Job::class)
-            ->findJobsForPerson($user, [
-                'from' => $from,
-                'to' => $to,
-                'booked' => true, 'past' => true]);
-        $retarr['past_count'] = count($retarr['past']);
 
         if ($as_array)
             return $retarr;
