@@ -8,7 +8,9 @@
    {% if note.subject is not empty %}
    <p><strong>{{ note.subject }}</strong></p>
    {% endif %}
-<p>{{ note.body }}</p>
+<pre wrap>
+{{ note.body }}
+</pre>
    </div>
 {% endif %}
 {% endfor %}
@@ -25,7 +27,9 @@
    {% if note.subject is not empty %}
    <p><strong>{{ note.subject }}</strong></p>
    {% endif %}
-<p>{{ note.body }}</p>
+<pre wrap>
+{{ note.body }}
+</pre>
    </div>
 {% endif %}
 {% endfor %}
