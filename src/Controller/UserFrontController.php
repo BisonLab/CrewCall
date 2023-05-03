@@ -561,6 +561,7 @@ class UserFrontController extends CommonController
 
     /**
      *
+     * Now also deleting uninterested.
      * @Route("/delete_interest/{id}", name="uf_delete_interest", methods={"DELETE", "POST"})
      */
     public function deleteInterestAction(Request $request, Job $job)
@@ -575,7 +576,7 @@ class UserFrontController extends CommonController
         // From the part this called, the previous state *shall* be ASSIGNED.
         // Just check it.
         $user = $this->getUser();
-        if ($job->getState() != 'INTERESTED')
+        if (!in_array($job->getState(), ['UNINTERESTED', 'INTERESTED']))
             return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
 
         if ($job->getPerson() !== $user)
@@ -985,11 +986,15 @@ class UserFrontController extends CommonController
             $checked->add($arr);
             $lastjob = $job;
         }
-        // And make them go.
+        // And make them no longer useful UNINTERESTED go.
         $em->flush();
         return $checked->toArray();
     }
 
+    /*
+     * This basically returns "fake jobs". There is no job created in the
+     * database, just compiled for this occation.
+     */
     public function opportunitiesForPersonAsArray(Person $person, $options = array())
     {
         $em = $this->getDoctrine()->getManager();

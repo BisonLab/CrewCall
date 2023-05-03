@@ -13,33 +13,4 @@
     {% include '/user/_job_card.html.twig' %}
 {% endfor %}
 </div>
-<script>
-function submitDeleteInterest(job_id) {
-    orgurl = "{{ delete_interest.url }}";
-    url = orgurl.replace("ID", job_id);
-    $.ajax({
-        beforeSend: function(req) {
-          req.setRequestHeader("Accept", "application/json");
-        },
-        type: "POST",
-        url: url,
-        data: $( "#delete_interest_form_" + job_id ).serialize(),
-        dataType: "text",
-        async: true,
-      }).done( function( cont, textStatus, xhr ) {
-        $( "#item-" + job_id ).hide();
-        icount = $( "#interested_count" ).text();
-        ocount = $( "#opportunities_count" ).text();
-        icount--;
-        ocount++;
-        $( "#interested_count" ).text(icount);
-        $( "#opportunities_count" ).text(ocount);
-        $( "#signupCount" ).text(ocount);
-
-      }).fail(function(xhr, status, error) {
-            errmsg = "Failed removing your interest.\n";
-            alert(errmsg);
-    });
-    return false;
-}
-</script>
+{% include '/user/_handling.html.twig' %}

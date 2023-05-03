@@ -1,0 +1,60 @@
+<script>
+function submitDeleteInterest(job_id) {
+    orgurl = "{{ delete_interest.url }}";
+    url = orgurl.replace("ID", job_id);
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        type: "POST",
+        url: url,
+        data: $( "#delete_interest_form_" + job_id ).serialize(),
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+        $( "#item-" + job_id ).hide();
+        icount = $( "#interested_count" ).text();
+        ocount = $( "#opportunities_count" ).text();
+        icount--;
+        ocount++;
+        $( "#interested_count" ).text(icount);
+        $( "#opportunities_count" ).text(ocount);
+        $( "#signupCount" ).text(ocount);
+
+      }).fail(function(xhr, status, error) {
+            errmsg = "Failed removing your interest.\n";
+            alert(errmsg);
+    });
+    return false;
+}
+function submitInterest(job_id, uninterested = false) {
+    orgurl = "{{ signup_shift.url }}";
+    if (uninterested)
+         orgurl = "{{ set_uninterested.url }}";
+    var url = orgurl.replace("ID", job_id);
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "application/json");
+        },
+        type: "POST",
+        url: url,
+        data: $( "#interest_form_" + job_id ).serialize(),
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+        $( "#item-" + job_id ).hide();
+        icount = $( "#interested_count" ).text();
+        ocount = $( "#opportunities_count" ).text();
+        ocount--;
+        if (!uninterested)
+            icount++;
+        $( "#interested_count" ).text(icount);
+        $( "#opportunities_count" ).text(ocount);
+        $( "#signupCount" ).text(ocount);
+      }).fail(function(xhr, status, error) {
+            errmsg = "Failed signing you up.\n";
+            alert(errmsg);
+    });
+    return false;
+}
+</script>

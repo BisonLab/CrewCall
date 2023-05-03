@@ -35,6 +35,7 @@ function chosenMonth(button) {
     return false;
 }
 
+{# Why is it even here?
 {% if recount %}
 $(document).ready(function() {
     $( "#assignedCount" ).text("{{ assigned_count }}");
@@ -42,4 +43,5 @@ $(document).ready(function() {
     $( "#signupCount" ).text("{{ opportunities_count }}");
 });
 {% endif %}
+ #}
 </script>

@@ -105,10 +105,20 @@
   </div><!-- end row -->
 {% endfor %}
 
-{% if view == "opportunities" or view == "uninterested" %}
-<div class="card-bottom">
-   {% include '/user/_signup_form.html.twig' %}
-</div><!--align -->
+{% if view == "opportunities" %}
+  <div class="card-bottom">
+    {% include '/user/_signup_form.html.twig' %}
+  </div><!--align -->
+{% endif %}
+{% if view == "uninterested" %}
+  <div class="row ">
+    <div class="col-12 ml-3 p-3">
+    <form id="delete_interest_form_{{ job.id }}" action="#" onSubmit="return submitDeleteInterest({{ job.id }});">
+    <input type="hidden" value="{{ delete_interest._csrf_token }}" name="_csrf_token">
+    <button class="btn btn-transparent text-uppercase p-0 mt-4 delete-btn"><i class="fas fa-times mr-1 text-danger"></i> Unhide</button>
+    </form>
+    </div>
+  </div><!-- end row -->
 {% endif %}
 {% if view == "interested" %}
   <div class="row ">
