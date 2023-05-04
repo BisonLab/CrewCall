@@ -274,6 +274,23 @@ function get_selected_persons(event_id, shift_id = null) {
     return list;
 }
 
+function get_selected_mailaddresses(event_id, shift_id = null) {
+    list = [];
+    $(".job_list_checkbox_" + event_id).each(function(index, box) {
+        if ($(box).prop('checked') == true) {
+            values = $(box).prop('checked');
+            mailaddress = $(box).attr('data-mailaddress');
+            if (shift_id) {
+                if (values[2] == shift_id)
+                    list.push(mailaddress);
+            } else {
+                list.push(mailaddress);
+            }
+        }
+    });
+    return list;
+}
+
 function openMessageToJobsModal(event_id) {
     content = $("#jobmessage_modal").html();
     $( "#jobModalTitle" ).html('Send Message');
@@ -314,6 +331,13 @@ function openMessageToJobsModal(event_id) {
         }
         event.preventDefault();
     });
+}
+
+function openClientMailer(event_id) {
+    list = get_selected_mailaddresses(event_id);
+    document.location = "mailto:{{ app.user.email }}?bcc=" + list.join(",");
+    event.preventDefault();
+    return false;
 }
 
 function popOverlap(job_id) {

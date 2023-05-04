@@ -288,12 +288,15 @@
 
 {% if event.shifts | length > 0 %}
 <div id="subEventSelect_{{ event.id }}" class="row subEventInfo">
-  <div class="col-5">
+  <div class="col-1">
     <strong>Select all:  </strong><input onClick="return select_all_jobs({{ event.id }}, this);" class="select_all_persons_checkbox" type="checkbox" name="select_all">
     {# Really undecided
     <a href="#" id="message_modal_link" class="btn-sm btn-dark" onClick="return openMessageToJobsModal({{ event.id }});">Send a message to selected</a>
     #}
-    <a href="#" id="message_modal_link" onClick="return openMessageToJobsModal({{ event.id }});">Send a message to selected</a>
+  </div> <!-- col-1 -->
+  <div class="col-5">
+    <a href="#" id="message_modal_link" onClick="return openMessageToJobsModal({{ event.id }});">Send a message to selected</a><br>
+    <a href="#" id="open_mailer_link" onClick="return openClientMailer({{ event.id }});">Open mail client with selected addresses</a>
    </div> <!-- col-5 -->
 </div> <!-- / row -->
 
