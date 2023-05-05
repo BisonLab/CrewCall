@@ -143,13 +143,17 @@ function toggleConfirmCheck(check, job_id) {
     return false;
 }
 
-{% if assigned_count is defined %}
 $(document).ready(function() {
+{% if assigned_count is defined %}
     $( "#assignedCount" ).text("{{ assigned_count }}");
-    $( "#confirmedCount" ).text("{{ confirmed_count }}");
-    $( "#signupCount" ).text("{{ opportunities_count }}");
-})
 {% endif %}
+{% if confirmed_count is defined %}
+    $( "#confirmedCount" ).text("{{ confirmed_count }}");
+{% endif %}
+{% if opportunities_count is defined %}
+    $( "#signupCount" ).text("{{ opportunities_count }}");
+{% endif %}
+})
 
 </script>
 

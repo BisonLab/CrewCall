@@ -42,7 +42,7 @@
         <span class="fas fa-comment align-bottom"></span>
       </a>
    {% if view != "uninterested" %}
-      <button id="uninterested_button_{{ job.id }}" name="uninterested" class="btn btn-dark align-right" type="submit" onClick="return submitInterest({{ job.id }}, true);"><i class="fas fa-trash text-danger"></i>{% if no_buttontext is not defined %} Not interested{% endif %}</button>
+      <button id="uninterested_button_{{ job.id }}" name="uninterested" class="btn btn-dark align-right" type="submit" onClick="return submitInterest({{ job.id }}, true);"><i class="fas fa-trash text-danger"></i>{% if no_buttontext is not defined %} Hide{% endif %}</button>
    {% endif %}
     </div>
   </div><!-- end row -->

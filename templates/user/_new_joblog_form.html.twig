@@ -1,0 +1,38 @@
+<div id="add_joblog_modal_{{ job.id }}">
+    <form id="addjoblog_{{ job.id }}" action="{{ path('uf_me_create_joblog', {'job': job.id}) }}" method="POST">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('addjoblog' ~ job.id) }}">
+    {% if month is defined %}
+    <input type="hidden" name="month" value="{{ month }}">
+    {% endif %}
+    <label for="in{{ job.id }}">In:</label>
+    <input class="form-control" id="in{{ job.id }}" value="{{ job.start|date('H:i') }}" type="time" name="in" step="5" required>
+    <label for="out{{ job.id }}">Out:</label>
+    <input class="form-control" id="out{{ job.id }}" value="{{ job.end|date('H:i') }}" type="time" name="out" step="5" required>
+    <label for="break{{ job.id }}">Break (Minutes):</label>
+    <input class="form-control breakminutes" id="break{{ job.id }}" type="number" value="0" name="break" step="5">
+    <label for="comment{{ job.id }}">Comment:</label>
+        <textarea class="form-control" id="comment{{ job.id }}" cols="20" rows="2" name="joblogcomment"></textarea>
+    <input type="button" value="Save" onClick="return submitAddHoursForm({{ job.id }});">
+    </form>
+</div>
+
+<script>
+  function submitAddHoursForm(job_id) {
+    formdata = $( "#addjoblog_" + job_id).serialize();
+    url = $( "#addjoblog_" + job_id).attr('action');
+    $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "text/html");
+        },
+        url: url,
+        type: "POST",
+        data: formdata,
+        dataType: "text",
+        async: true,
+      }).done( function( cont, textStatus, xhr ) {
+        $( "#ccModal" ).modal("hide");
+        return getCContent('{{ path('uf_me_jobs', {'view': 'past', 'month': month }) }}');
+    });
+    return false;
+  }
+</script>

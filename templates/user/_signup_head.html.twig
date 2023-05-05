@@ -1,0 +1,11 @@
+<div class="row">
+  <div class="col-sm d-flex justify-content-center">
+      <a class="btn badge{% if view == "opportunities" %} badge-secondary{% endif %}" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'opportunities'}) }}', 'myJobsLink');">Sign up (<span id="opportunities_count">{{ opportunities | length }}</span>)</a>
+      <a class="btn badge{% if view == "interested" %} badge-secondary{% endif %}" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'interested'}) }}', 'myJobsLink');">Signed Up (<span id="interested_count">{{ interested | length }}</span>)</a>
+      <a class="btn badge{% if view == "jobs_list" %} badge-secondary{% endif %}" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'jobs_list'}) }}', 'myJobsLink');">As list</a>
+      <a class="btn badge{% if view == "uninterested" %} badge-secondary{% endif %}" href="#" onClick="return getCContent('{{ path('uf_me_jobs', {'view': 'uninterested'}) }}', 'myJobsLink');">Hidden</a>
+    </div>
+</div><!-- end row -->
+<div class="row">
+    {% include '/user/_choose_month.html.twig' %}
+</div><!-- end row -->

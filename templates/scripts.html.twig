@@ -154,17 +154,6 @@ function popmeup(url)
     if (window.focus) {newwindow.focus()};
     return newwindow;
 }
-function form_post_popup(form) {
-    window.open('','form_popup','height=800,width=700,resizeable,scrollbars=yes');
-    form.target = 'form_popup';
-}
-function confirm_post_pop(form, text) {
-    if (confirm(text)) {
-        return form_post_popup(form);
-    } else {
-        return false;
-    }
-}
 
 function popSummary(entity, entity_id, uid = '') {
     url = "{{ path('summary_show_get', { 'access': 'ajax' }) }}?entity=" + entity + "&entity_id=" + entity_id;
