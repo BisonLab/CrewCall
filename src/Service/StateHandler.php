@@ -19,20 +19,20 @@ class StateHandler
         $this->em = $em;
         $this->sm = $sm;
 
-        if (class_exists('CustomBundle\Lib\StateHandlers\Job')) {
-            $this->jobhandler = new \CustomBundle\Lib\StateHandlers\Job($em, $sm);
+        if (class_exists('CustomBundle\Lib\StateHandler\Job')) {
+            $this->jobhandler = new \CustomBundle\Lib\StateHandler\Job($em, $sm);
         } else {
-            $this->jobhandler = new \App\Lib\StateHandlers\Job($em, $sm);
+            $this->jobhandler = new \App\Lib\StateHandler\Job($em, $sm);
         }
-        if (class_exists('CustomBundle\Lib\StateHandlers\Event')) {
-            $this->eventhandler = new \CustomBundle\Lib\StateHandlers\Event($em, $sm);
+        if (class_exists('CustomBundle\Lib\StateHandler\Event')) {
+            $this->eventhandler = new \CustomBundle\Lib\StateHandler\Event($em, $sm);
         } else {
-            $this->eventhandler = new \App\Lib\StateHandlers\Event($em, $sm);
+            $this->eventhandler = new \App\Lib\StateHandler\Event($em, $sm);
         }
-        if (class_exists('CustomBundle\Lib\StateHandlers\Shift')) {
-            $this->shifthandler = new \CustomBundle\Lib\StateHandlers\Shift($em, $sm);
+        if (class_exists('CustomBundle\Lib\StateHandler\Shift')) {
+            $this->shifthandler = new \CustomBundle\Lib\StateHandler\Shift($em, $sm);
         } else {
-            $this->shifthandler = new \App\Lib\StateHandlers\Shift($em, $sm);
+            $this->shifthandler = new \App\Lib\StateHandler\Shift($em, $sm);
         }
     }
 
