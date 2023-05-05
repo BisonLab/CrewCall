@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Lib\StateHandlers;
+namespace App\Lib\StateHandler;
 
 class Job
 {

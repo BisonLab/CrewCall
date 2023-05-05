@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Lib\StateHandlers;
+namespace App\Lib\StateHandler;
 
 /*
  * For now this handles the trickle down of states on the shifts based on the
