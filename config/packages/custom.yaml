@@ -161,8 +161,13 @@ parameters:
     crew_manager_functions:
         - 'Crew Manager'
 
-    # For calculating days/times worked. Default 9 hours.
-    full_day_minutes: 540
+    # For calculating days/times worked. There is soo many variants, I have to
+    # make it possible to write them all.
+    joblogs_handler:
+        # Calling it Default is not a good idea. "Standard" is well.
+        class: '\App\Lib\JobLogHandler\Standard'
+        # Default 9 hours.
+        full_day_minutes: 540
 
     # Job overlaps. A few options for it.
     

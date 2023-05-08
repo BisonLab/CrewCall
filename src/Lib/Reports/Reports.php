@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 use BisonLab\ReportsBundle\Lib\Reports\ReportsInterface;
 use BisonLab\ReportsBundle\Lib\Reports\CommonReportFunctions;
@@ -69,6 +70,20 @@ class Reports extends CommonReportFunctions implements ReportsInterface
                         ->where('e.parent is null')
                         ->orderBy('e.name', 'ASC');
                     },
+                ))
+            ->add('from_date', DateType::class,
+                array(
+                    'required' => false,
+                    'label' => 'Time period start',
+                    'format' => 'yyyy-MM-dd',
+                    'widget' => "single_text"
+                ))
+            ->add('to_date', DateType::class,
+                array(
+                    'required' => false,
+                    'label' => 'Time period end',
+                    'format' => 'yyyy-MM-dd',
+                    'widget' => "single_text"
                 ))
         ;
     }

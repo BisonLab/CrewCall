@@ -1322,12 +1322,17 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getJobs($criterias = [])
     {
+        $criteria = null;
+        if (!empty($criterias))
+            $criteria = Criteria::create();
         if ($criterias['booked'] ?? false) {
             $expr = new Comparison('state', Comparison::IN, ExternalEntityConfig::getBookedStatesFor('Job'));
-            $criteria = Criteria::create()
-                ->where($expr);
-            return $this->jobs->matching($criteria);
+            $criteria->where($expr);
+        } elseif ($criterias['state'] ?? false) {
+            $criteria->where(Criteria::expr()->eq('state', $criterias['state']));
         }
+        if ($criteria)
+            return $this->jobs->matching($criteria);
         return $this->jobs;
     }
 
