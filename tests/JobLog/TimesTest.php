@@ -60,12 +60,6 @@ class TimesTest extends TestCase
         $joblog = new JobLog();
         $joblog->setJob($this->job);
 
-
-        $joblog->setInTime('11:00');
-        $this->assertSame($joblog->getIn()->format('Y-m-d H:i'), '2020-04-01 11:00');
-        $joblog->setInTime('23:00');
-        $this->assertSame($joblog->getIn()->format('Y-m-d H:i'), '2020-03-31 23:00');
-
         // Simple and clean. Shift 07 -> 16
         $joblog->setInTime('10:00');
         $joblog->setOutTime('11:00');
@@ -77,6 +71,13 @@ class TimesTest extends TestCase
         $joblog->setOutTime('11:00');
         $this->assertSame('2020-04-01 07:00', $joblog->getIn()->format('Y-m-d H:i'));
         $this->assertSame('2020-04-01 11:00', $joblog->getOut()->format('Y-m-d H:i'));
+
+        // Stupid times. Shift 07 -> 16
+        $joblog->setInTime('11:00');
+        $this->assertSame($joblog->getIn()->format('Y-m-d H:i'), '2020-04-01 11:00');
+        // The question is, should I care?
+        $joblog->setInTime('23:00');
+        $this->assertSame($joblog->getIn()->format('Y-m-d H:i'), '2020-03-31 23:00');
 
         // Started the day before?
         $start = new \DateTime('2020-04-01 01:00');
@@ -174,5 +175,30 @@ class TimesTest extends TestCase
         $joblog->setOutTime('07:00');
         $this->assertSame('2020-04-01 23:00', $joblog->getIn()->format('Y-m-d H:i'));
         $this->assertSame('2020-04-02 07:00', $joblog->getOut()->format('Y-m-d H:i'));
+    }
+
+    public function testExtraLongDay(): void
+    {
+        $joblog = new JobLog();
+        $joblog->setJob($this->job);
+        // And not?
+        $start = new \DateTime('2020-05-09 09:00');
+        $end = new \DateTime('2020-05-10 03:00');
+        $this->shift->setStart($start);
+        $this->shift->setEnd($end);
+        $joblog->setInTime('09:00');
+        $joblog->setOutTime('13:00');
+        $this->assertSame('2020-05-09 09:00', $joblog->getIn()->format('Y-m-d H:i'));
+        $this->assertSame('2020-05-09 13:00', $joblog->getOut()->format('Y-m-d H:i'));
+
+        $joblog->setInTime('22:00');
+        $joblog->setOutTime('01:00');
+        $this->assertSame('2020-05-09 22:00', $joblog->getIn()->format('Y-m-d H:i'));
+        $this->assertSame('2020-05-10 01:00', $joblog->getOut()->format('Y-m-d H:i'));
+
+        $joblog->setInTime('01:00');
+        $joblog->setOutTime('02:00');
+        $this->assertSame('2020-05-10 01:00', $joblog->getIn()->format('Y-m-d H:i'));
+        $this->assertSame('2020-05-10 02:00', $joblog->getOut()->format('Y-m-d H:i'));
     }
 }

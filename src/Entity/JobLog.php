@@ -199,8 +199,9 @@ class JobLog
      */
     public function setInTime(string $inTime)
     {
+        $job = $this->getJob();
         // Gives us a correct date.
-        $in = clone($this->getJob()->getStart());
+        $in = clone($job->getStart());
         if (preg_match("/\D/", $inTime)) {
             list($in_hour, $in_minutes) = preg_split("/\D/", $inTime);
         } else {
@@ -214,19 +215,20 @@ class JobLog
         if ($in_minutes > 59 || $in_hour < 0)
             throw new \InvalidArgumentException("Bad minutes value.");
 
-        // And
+        // And set the base.
         $in->setTime($in_hour, $in_minutes);
 
-        // Do I need to change date?
-        $shiftin_hour = $this->getJob()->getStart()->format('H');;
+        // But we might also have an issue where both in and out is the day
+        // after the shifts start.
+        $end_tomorrow = $job->getEnd()->format('Ymd') - $job->getStart()->format('Ymd') == 1;
 
-        // Yesterday?
-        if (($in_hour - $shiftin_hour) > 12)
+        if ($end_tomorrow && $in < $job->getStart()) {
+            $shiftout_hour = $job->getEnd()->format('H');
+            if ($in->format('H') < $shiftout_hour)
+                $in = $in->modify("+1 day");
+        } elseif (!$end_tomorrow && $in > $job->getEnd()) {
             $in = $in->modify("-1 day");
-
-        // Tomorrow?
-        if (($shiftin_hour - $in_hour) > 12)
-            $in = $in->modify("+1 day");
+        }
 
         $this->in = $in;
 
@@ -266,9 +268,11 @@ class JobLog
      */
     public function setOutTime(string $outTime):self
     {
-        if (!$this->getIn())
+        $job = $this->getJob();
+        if (!$in = $this->getIn())
             throw new \InvalidArgumentException("Need to set in time before out time.");
-        $out = clone($this->getJob()->getEnd());
+        // Yes, the start of the shift.
+        $out = clone($job->getStart());
         if (preg_match("/\D/", $outTime)) {
             list($out_hour, $out_minutes) = preg_split("/\D/", $outTime);
         } else {
@@ -281,16 +285,22 @@ class JobLog
             throw new \InvalidArgumentException("Bad moututes value.");
 
         // And date manipulation.
-        $shiftout_hour = $this->getJob()->getEnd()->format('H');
         $out->setTime($out_hour, $out_minutes);
 
-        // Yesterday?
-        if (($out_hour - $shiftout_hour) > 12)
-            $out = $out->modify("-1 day");
-
-        // Tomorrow?
-        if (($shiftout_hour - $out_hour) > 12)
+        // First, if out is "before" in, it's probably the day after.
+        if ($out < $in) {
             $out = $out->modify("+1 day");
+        }
+
+        // But we might also have an issue where both in and out is the day
+        // after the shifts start.
+        $end_tomorrow = $job->getEnd()->format('Ymd') - $job->getStart()->format('Ymd') == 1;
+
+        if ($end_tomorrow && $out < $job->getStart()) {
+            $shiftout_hour = $job->getEnd()->format('H');
+            $shiftin_hour = $job->getStart()->format('H');
+            $out = $out->modify("+1 day");
+        }
 
         $this->out = $out;
 
