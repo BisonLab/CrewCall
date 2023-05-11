@@ -210,9 +210,8 @@ class JobRepository extends ServiceEntityRepository
                 else
                     $to = new \DateTime($options['to']);
                 // Gotta include the whole day since this is DateTime.
-                // I can just use "+1 day" and < from it.
-                $qb->andWhere('s.start < :to')
-                   ->setParameter('to', $to->modify("+1 day"));
+                $qb->andWhere('s.start <= :to')
+                   ->setParameter('to', $to->setTime(23,59));
             }
         }
         // Either the default or what's set above.
