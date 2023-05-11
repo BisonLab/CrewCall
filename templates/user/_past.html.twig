@@ -30,7 +30,8 @@
                     <tr><th>In</th><th>Out</th><th>Break</th><th>&nbsp;</th></tr>
                     {% set locked = false %}
                     {% for joblog in job.joblogs %}
-                      {% if joblog.state == "LOCKED" %}
+                      {# more than we'd probably need. The statehandler should complete jobs and lock hours when event is completed. #}
+                      {% if job.shift.event == "COMPLETED" or job.state == "COMPLETED" or joblog.state == "LOCKED" %}
                         {% set locked = true %}
                       {% endif %}
                       <tr id="joblog_entry_{{ joblog.id }}">

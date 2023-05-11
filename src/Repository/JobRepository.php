@@ -65,9 +65,13 @@ class JobRepository extends ServiceEntityRepository
                 ->setParameter('functions', $options['functions']);
         }
 
+        // I do not want UNINTERESTED (And i wish I never made that state)
         if (isset($options['state'])) {
             $qb->andWhere('j.state = :state')
             ->setParameter('state', $options['state']);
+        } elseif (!isset($options['states'])) {
+            $qb->andWhere('j.state != :state')
+            ->setParameter('state', 'UNINTERESTED');
         }
 
         if (isset($options['states']) && !empty($options['states'])) {
@@ -147,6 +151,9 @@ class JobRepository extends ServiceEntityRepository
         if (isset($options['state'])) {
             $qb->andWhere('j.state = :state')
             ->setParameter('state', $options['state']);
+        } elseif (!isset($options['states'])) {
+            $qb->andWhere('j.state != :state')
+            ->setParameter('state', 'UNINTERESTED');
         }
 
         if (isset($options['states'])) {

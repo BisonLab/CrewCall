@@ -7,6 +7,7 @@ use App\Entity\Job;
 use App\Entity\Person;
 use App\Entity\Shift;
 use App\Entity\Event;
+use App\Lib\ExternalEntityConfig;
 
 class Jobs
 {
@@ -50,7 +51,7 @@ class Jobs
      */
 
     /*
-     * Crew chief functions. (When we have a crew chief)
+     * Crew manager functions. (When we have a crew chief)
      */
 
     /*
@@ -74,6 +75,7 @@ class Jobs
         // Hopefully Doctrine does the job just as good, so I won't for now.
         $opportunities = new ArrayCollection();
         $jobshift = new ArrayCollection();
+        $options['states'] = array_keys(ExternalEntityConfig::getStatesFor('Job'));
         $jobs = $this->jobsForPerson($person, $options);
         foreach ($jobs as $job) {
             $jobshift->add($job->getShift());

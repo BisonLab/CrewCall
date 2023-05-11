@@ -14,7 +14,7 @@
     </thead>
     <tbody>
     {% for job in jobs %}
-      {% if past and job.state == "INTERESTED" %}
+      {% if (past and job.state == "INTERESTED") or job.state == "UNINTERESTED"%}
       {% else %}
         {% set shift = job.shift %}
         <tr>
