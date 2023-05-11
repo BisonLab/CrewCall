@@ -302,6 +302,10 @@ class JobLog
             $out = $out->modify("+1 day");
         }
 
+        // Just a (stupid?) failsafge:
+        if ($in > $out)
+            throw new \InvalidArgumentException("In time is still after out time.");
+
         $this->out = $out;
 
         return $this;
