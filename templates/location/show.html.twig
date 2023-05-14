@@ -5,13 +5,22 @@
 {% include '/location/handling.html.twig' %}
 <div class="row">
   <div class="col-3">
-    {% if location.parent %}
-        <h1>
-        <a href="{{ path('location_show', {'id': location.parent.id}) }}">{{ location.parent }}</a> -> {{ location.name }}
-        </h1>
-    {% else %}
-        <h1>{{ location.name }}</h1>
+     <h1>
+    {% if location.maplink is not empty %}
+      <a target="_blank" href="{{ location.maplink }}">
+          <img class="rounded mx-auto" src="{{ asset('images/Pin-location.png') }}" width="40px">
+      </a>
+    {% elseif address_string is defined and address_string is not empty %}
+      <a target="_blank" href="http://maps.google.com/?q={{ address_string }}">
+          <img class="rounded mx-auto" src="{{ asset('images/Pin-location.png') }}" width="40px">
+      </a>
     {% endif %}
+    {% if location.parent %}
+        <a href="{{ path('location_show', {'id': location.parent.id}) }}">{{ location.parent }}</a> -> {{ location.name }}
+    {% else %}
+        {{ location.name }}
+    {% endif %}
+        </h1>
 
     <table class="showTable">
         <tbody>

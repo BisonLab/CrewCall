@@ -10,7 +10,11 @@
       </div>
     </div>
     <div class="col-2 p-0 mt-1">
-    {% if job.location.address_string is defined and job.location.address_string is not empty %}
+    {% if job.location.maplink is not empty %}
+      <a target="_blank" href="{{ job.location.maplink }}">
+          <img class="rounded mx-auto" src="{{ asset('images/google_maps.png') }}" width="40px">
+      </a>
+    {% elseif job.location.address_string is defined and job.location.address_string is not empty %}
       <a target="_blank" href="http://maps.google.com/?q={{ job.location.address_string }}">
           <img class="rounded mx-auto" src="{{ asset('images/google_maps.png') }}" width="40px">
       </a>

@@ -71,6 +71,16 @@ class Location
      */
     private $address;
 
+    /**
+     * @var string
+     *
+     * Kinda alternative to address.
+     *
+     * @ORM\Column(name="map_link", type="text", nullable=true)
+     * @Gedmo\Versioned
+     */
+    private $map_link;
+
     /* 
      * Locations. Not to be confused with addresses since a location can be
      * "The bar in the left corner of stage 2" or "The tent at field 4".
@@ -200,6 +210,29 @@ class Location
     public function getPhoneNumber()
     {
         return $this->phone_number;
+    }
+
+    /**
+     * Set map_link
+     *
+     * @param string $map_link
+     * @return Location
+     */
+    public function setMapLink($map_link)
+    {
+        $this->map_link = $map_link;
+
+        return $this;
+    }
+
+    /**
+     * Get map_link
+     *
+     * @return string 
+     */
+    public function getMapLink()
+    {
+        return $this->map_link;
     }
 
     /**

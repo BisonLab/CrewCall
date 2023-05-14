@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 use App\Lib\ExternalEntityConfig;
 use App\Form\AddressType;
@@ -25,6 +26,7 @@ class LocationType extends AbstractType
                 'label' => 'Status',
                 'choices' => ExternalEntityConfig::getStatesAsChoicesFor('Location')))
             ->add('address', AddressType::class, ['address_elements' => $options['address_elements']])
+            ->add('map_link', TextType::class)
         ;
     }
     

@@ -81,6 +81,7 @@ class LocationController extends CommonController
         $deleteForm = $this->createDeleteForm($location);
         return $this->render('location/show.html.twig', array(
             'location' => $location,
+            'address_string' => $addressing->compose($location->getAddress(), 'string'),
             'delete_form' => $deleteForm->createView(),
         ));
     }
