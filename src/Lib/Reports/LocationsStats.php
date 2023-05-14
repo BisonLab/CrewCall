@@ -35,6 +35,7 @@ class LocationsStats extends CommonReportFunctions
             'Unique crewmembers',
         ];
 
+        $options = [];
         if ($from_date = $config['from_date'] ?? null) {
             $options['from'] = $from_date;
         }
