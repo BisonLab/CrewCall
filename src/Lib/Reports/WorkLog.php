@@ -5,7 +5,6 @@ namespace App\Lib\Reports;
 use Doctrine\ORM\EntityRepository;
 use BisonLab\ReportsBundle\Lib\Reports\ReportsInterface;
 use BisonLab\ReportsBundle\Lib\Reports\CommonReportFunctions;
-use DabaruBundle\Lib\ExternalEntityConfig;
 
 /*
  */

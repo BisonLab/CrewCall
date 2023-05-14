@@ -21,6 +21,18 @@ class Reports extends CommonReportFunctions implements ReportsInterface
     protected $container;
 
     public $reports = [
+        'LocationsStats' => array(
+            'system_role' => "ROLE_ADMIN",
+            'required_options' => array('event'),
+            'class' => 'App\Lib\Reports\LocationsStats',
+            'description' => "Summary of jobs, events and people per Location."
+            ),
+        'OrganizationsStats' => array(
+            'system_role' => "ROLE_ADMIN",
+            'required_options' => array('event'),
+            'class' => 'App\Lib\Reports\OrganizationsStats',
+            'description' => "Summary of jobs, events and people per organization."
+            ),
         'WorkLog' => array(
             'system_role' => "ROLE_ADMIN",
             'required_options' => array('event'),
