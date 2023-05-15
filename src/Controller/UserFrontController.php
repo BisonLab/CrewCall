@@ -1090,6 +1090,7 @@ class UserFrontController extends CommonController
                 'location' => [
                     'name' => (string)$location,
                     'description' => $location->getDescription(),
+                    'maplink' => $location->getMapLink(),
                 ],
                 'shift' => [
                     'name' => (string)$shift,

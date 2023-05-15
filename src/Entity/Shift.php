@@ -537,4 +537,15 @@ class Shift
                 ->addViolation();
         }
     }
+
+    public function getDuration($human_readable = false)
+    {
+        $minutes = ($this->end->format('U') - $this->start->format('U')) / 60;
+        if ($human_readable) {
+            $h = floor($minutes / 60);
+            $m = $minutes % 60;
+            return $h . ":" . str_pad($m, 2, "0", STR_PAD_LEFT);
+        }
+        return $minutes;
+    }
 }
