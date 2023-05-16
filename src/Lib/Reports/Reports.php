@@ -31,7 +31,13 @@ class Reports extends CommonReportFunctions implements ReportsInterface
             'system_role' => "ROLE_ADMIN",
             'required_options' => array('event'),
             'class' => 'App\Lib\Reports\OrganizationsStats',
-            'description' => "Summary of jobs, events and people per organization."
+            'description' => "Summary of jobs, events and people per Organization."
+            ),
+        'FunctionsStats' => array(
+            'system_role' => "ROLE_ADMIN",
+            'required_options' => array('event'),
+            'class' => 'App\Lib\Reports\FunctionsStats',
+            'description' => "Summary of jobs, events and people per Function."
             ),
         'WorkLog' => array(
             'system_role' => "ROLE_ADMIN",
