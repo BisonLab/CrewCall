@@ -60,6 +60,7 @@ class ShiftType extends AbstractType
         if ($sublocations->count() > 0) {
             // Create a (sub)location list.
             $builder->add('location', EntityType::class, [
+                'required' => false,
                 'class' => Location::class,
                 'placeholder' => (string)$mainloc,
                 'choices' => $sublocations
