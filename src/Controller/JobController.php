@@ -168,7 +168,20 @@ class JobController extends CommonController
             $person_repo = $em->getRepository(Person::class);
             if (!$person = $person_repo->find($form->get('pname')->getData()))
                 return $this->returnNotFound($request, 'No person to tie the jobs to');
-            $job->setPerson($person);
+
+            /*
+             * How stupid is this? Pretty I'd guess.
+             * There might already be an existing job because we do hide the
+             * "UNINTERESTED" state which makes the application believe it's
+             * new, not a state update.
+             */ 
+            $job_repo = $em->getRepository(Job::class);
+            if ($exists = $job_repo->findOneBy(['person' => $person, 'shift' => $job->getShift()])) {
+                $exists->setState($job->getState());
+                $job = $exists;
+            } else {
+                $job->setPerson($person);
+            }
 
             $conflicts = [];
             if ($job->isBooked() && $overlap = $em->getRepository(Job::class)->checkOverlapForPerson($job, ['return_jobs' => true])) {
