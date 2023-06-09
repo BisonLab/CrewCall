@@ -409,7 +409,7 @@ class PersonController extends CommonController
         $message_type = $request->request->get('message_type');
 
         $person_contexts = [];
-        foreach ($request->request->get('person_list') as $pid) {
+        foreach (($request->request->get('person_list') ?? []) as $pid) {
             $person_contexts[] = [
                 'system' => 'crewcall',
                 'object_name' => 'person',
