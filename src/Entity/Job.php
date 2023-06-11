@@ -373,4 +373,13 @@ class Job
         $m = $minutes % 60;
         return $h . ":" . str_pad($m, 2, "0", STR_PAD_LEFT);
     }
+
+    public function getBreakMinutes()
+    {
+        $mins = 0;
+        foreach ($this->getJobLogs() as $jl) {
+            $mins += $jl->getBreakMinutes();
+        }
+        return $mins;
+    }
 }
