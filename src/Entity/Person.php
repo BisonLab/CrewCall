@@ -961,10 +961,15 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
      * Could be simple yes/no, but can just as well be alot more.
      * Which is why I add options.
      *
-     * * date - On a specific date - Any job that day will return treue
-     * * datetime - On a specific date and time - State and job on that time will return true
-     * * TODO: from - DateTime for a timeframe 
+     * * date - On a specific date - Any job that day which starts or ends
+     *          after 06:00 or starts before 22:00 will return true
+     *
+     * * datetime - Has a job on a specific date and time.
+     *
+     * * TODO: from - DateTime for a timeframe
+     *
      * * TODO: to - DateTime for a timeframe
+     *
      * * reasons - Will return a list of all reasons for being occupied.
      */
     public function isOccupied($options = [])
@@ -1013,19 +1018,24 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         /*
-         * Check jobs. Gotta do it.
+         * Check jobs. Gotta do it. But could filter them.
          */
         foreach ($this->getJobs(['booked' => true]) as $job) {
             // The point here is to check of either start or end is between
             // from and to. It may not be what we want after all, but that is
             // another discussion.
             if (
-                  ($job->getStart() >= $from) && ($job->getStart() <= $to)
-                  || ($job->getEnd() <= $from) && ($job->getEnd() >= $to)
+                  // If from and to is datetime or very close, this wtil hit
+                  ($job->getStart() <= $from && $job->getEnd() >= $to)
+                  // If $from is within the timeframe:
+                  || ($job->getStart() <= $from && $job->getEnd() >= $from)
+                  // If $to is within the timeframe:
+                  || ($job->getStart() <= $to && $job->getEnd() >= $to)
                 ) {
                 $reason['stateobj'] = $stateobj;
                 $reason['state'] = $state;
                 $reason['statelabel'] = $stateobj->getStateLabel();
+                // Practically useless here, since this is a job reason.
                 if ($options['reason'] ?? false)
                     return $reason;
                 return true;

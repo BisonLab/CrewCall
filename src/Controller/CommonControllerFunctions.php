@@ -18,6 +18,14 @@ trait CommonControllerFunctions
         $select_grouping = $options['select_grouping'] ?? null;
         $crew_only = $options['crew_only'] ?? false;
         $on_date = $options['on_date'] ?? null;
+        if (!$on_datetime = ($options['on_datetime'] ?? null)) {
+            if ($on_date && $options['on_time']) {
+                $on_datetime = new \DateTime($on_date);
+                list($oh, $om) = preg_split("/\D/", $options['on_time']);
+                $on_datetime->setTime($oh, $om);
+                $on_datetime->setTime($oh, $om);
+            }
+        }
 
         // If all, return all.
         if (!$crew_only && $select_grouping == 'all') {
@@ -42,9 +50,16 @@ trait CommonControllerFunctions
                     $states = ["CONFIRMED"];
                     break;
             }
+            $from = new \DateTime($on_date);
+            $to = new \DateTime($on_date);
+            // Override.
+            if ($on_datetime) {
+                $from = clone($on_datetime);
+                $to = clone($on_datetime);
+            }
             $jobs = $job_repo->findJobs([
-                    'from' => $on_date,
-                    'to' => $on_date,
+                    'from' => $from,
+                    'to' => $to,
                     'states' => $states,
                     ]);
         }
@@ -82,12 +97,18 @@ trait CommonControllerFunctions
                 }
 
                 if ($select_grouping == "available") {
-                    if ($p->isOccupied(['date' => $on_date]))
+                    if ($on_datetime) {
+                        if ($p->isOccupied(['datetime' => $on_datetime]))
+                            continue;
+                    } elseif ($p->isOccupied(['date' => $on_date])) {
                         continue;
+                    }
                     if (!$filtered->contains($p))
                         $filtered->add($p);
                     continue;
                 }
+                // Any job at all? You may ask why this is here.
+                // I am not entirely certain any more.
                 foreach ($jobs as $j) {
                     if ($j->getPerson() == $p) {
                         if (!$filtered->contains($p))
