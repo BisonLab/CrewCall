@@ -5,6 +5,15 @@
 
     {{ form_start(form) }}
         {{ form_widget(form) }}
+        {% for aform in attribute_forms %}
+        {{ form_widget(aform) }}
+        {% endfor %}
+        {% if context_forms|length > 0 %}
+            <strong>External info</strong>
+            <ul>
+            {% include '@BisonLabContext/context_forms.html.twig' with { 'context_forms': context_forms } %}
+            </ul>
+        {% endif %}
         <input class="btn-sm btn-dark" type="submit" value="Create" />
     {{ form_end(form) }}
     <a href="{{ path('person_index') }}" class="btn-sm btn-dark">Cancel</a><br>

@@ -39,19 +39,20 @@ class NewPersonType extends PersonType
                              ->setParameter('active_states',  ExternalEntityConfig::getActiveStatesFor('FunctionEntity'));
                         },
                ));
-        if ($options['internal_organization_config']['allow_external_crew']) {
+        // Dotenv does not handle booleans well.
+        if ($options['internal_organization_config']['allow_external_crew'] == "true") {
             $builder->add('role', EntityType::class,
                array('class' => Role::class,
                      'required' => true,
                      'mapped' => false,
-                     'preferred_choices' => [$options['role']],
+                     'preferred_choices' => [$options['internal_organization_config']['role']],
                      'label' => "Role.",
                 ))
                 ->add('organization', EntityType::class,
                     array('class' => Organization::class,
                      'required' => true,
                      'mapped' => false,
-                     'preferred_choices' => [$options['organization']],
+                     'preferred_choices' => [$options['internal_organization_config']['organization']],
                      'label' => "Organization.",
                      ))
                 ;

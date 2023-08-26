@@ -241,6 +241,7 @@ class PersonController extends CommonController
         $addressing_config = $this->container->getParameter('addressing');
         $personfields = $this->container->getParameter('personfields');
         $addressing = $this->container->get('crewcall.addressing');
+        $attributeFormer = $this->container->get('crewcall.attributeformer');
         $address_elements = $addressing->getFormElementList($person);
         $internal_organization_config = $this->container->getParameter('internal_organization');
         $first_org = $em->getRepository(Organization::class)->getInternalOrganization();
@@ -264,7 +265,8 @@ class PersonController extends CommonController
             $pf->setFunction($form->get('function')->getData());
 
             $pro = new PersonRoleOrganization();
-            if ($internal_organization_config['allow_external_crew']) {
+            // Dotenv does not handle booleans well.
+            if ($internal_organization_config['allow_external_crew'] == "true") {
                 $pro->setPerson($person);
                 $pro->setOrganization($form->get('organization')->getData());
                 $pro->setRole($form->get('role')->getData());
@@ -283,10 +285,14 @@ class PersonController extends CommonController
 
             return $this->redirectToRoute('person_show', array('id' => $person->getId()));
         }
-
+        $attribute_forms = $attributeFormer->getEditForms($person);
+        $contexts      = $person->getContexts();
+        $context_forms = $this->createContextForms('App:Person', $contexts);
         return $this->render('person/new.html.twig', array(
             'person' => $person,
             'form' => $form->createView(),
+            'context_forms' => $context_forms,
+            'attribute_forms' => $attribute_forms,
         ));
     }
 
