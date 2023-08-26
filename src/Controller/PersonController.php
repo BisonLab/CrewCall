@@ -265,8 +265,7 @@ class PersonController extends CommonController
             $pf->setFunction($form->get('function')->getData());
 
             $pro = new PersonRoleOrganization();
-            // Dotenv does not handle booleans well.
-            if ($internal_organization_config['allow_external_crew'] == "true") {
+            if ($internal_organization_config['allow_external_crew']) {
                 $pro->setPerson($person);
                 $pro->setOrganization($form->get('organization')->getData());
                 $pro->setRole($form->get('role')->getData());
