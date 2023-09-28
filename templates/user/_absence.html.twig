@@ -1,8 +1,8 @@
 <h4 class="text-uppercase font-weight-bold mt-4"><a href="#" onClick="return getCContent('{{ path('uf_me_profile') }}');"><span class="fas fa-arrow-left"></span></a> My Absence</h4>
 <p>Please make sure your information is up to date at all times</p>
-<div  class="row mb-4">
-<div  class="col-12">
-<table class="profile-table table-sm table-striped">
+<div class="row mb-4">
+<div class="col-12">
+<table id="absenceTable" class="profile-table table-sm table-striped">
 <thead>
 <tr>
 <th>Reason</th>
@@ -13,7 +13,7 @@
 <tbody>
 {% for abs in absence %}
 <tr>
-<td>{{ abs.state }}</td>
+<td data-order="{{ abs.from_stamp}}">{{ abs.state }}</td>
 <td>{{ abs.from_date }}</td>
 <td>{{ abs.to_date }}</td>
 </tr>
@@ -22,4 +22,18 @@
 </table>
 </div>
 </div>
+<script>
+jQuery(document).ready(function() {
+    $( "#absenceTable" ).dataTable({
+        "order": [[ 0, "desc" ]],
+        "paging": false,
+        "columnDefs": [{
+            "targets": 'no-sort',
+            "orderable": false,
+        }],
+        "searching": false
+        });
+    return false;
+});
+</script>
 {% include "/user/_profile_foot.html.twig" %}
