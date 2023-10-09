@@ -341,6 +341,11 @@ class Job
         return false;
     }
 
+    public function isNoShow()
+    {
+        return in_array($this->getState(), ExternalEntityConfig::getNoShowStatesFor('Job'));
+    }
+
     public function __toString()
     {
         return (string)$this->getFunction();

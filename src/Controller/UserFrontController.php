@@ -133,21 +133,6 @@ class UserFrontController extends CommonController
             $retarr['address'] = $addressing->compose($address);
             $retarr['address_flat'] = $addressing->compose($address, 'flat');
         }
-        foreach ($user->getStates() as $ps) {
-            if ($ps->isActive()) continue;
-            $to_date = "";
-            if ($to_date = $ps->getToDate())
-                $to_date = $ps->getToDate()->format('Y-m-d');
-            $from_date = "";
-            if ($from_date = $ps->getFromDate())
-                $from_date = $ps->getFromDate()->format('Y-m-d');
-            $retarr['absence'][] = [
-                'reason' => ucfirst(strtolower($ps->getState())),
-                'state' => $ps->getStateLabel(),
-                'from_date' => $from_date,
-                'to_date' => $to_date,
-            ];
-        }
         foreach ($user->getPersonFunctions() as $pf) {
             $retarr['functions'][] = (string)$pf;
         }
@@ -790,23 +775,34 @@ class UserFrontController extends CommonController
     public function absenceAction(Request $request)
     {
         $user = $this->getUser();
-        $retarr['absence'] = [];
+        $params['absence'] = [];
         foreach ($user->getStates() as $ps) {
             // if ($ps->isActive()) continue;
-            $retarr['absence'][] = [
-                'reason' => ucfirst(strtolower($ps->getState())),
+            $from_stamp = $ps->getFromDate()->format('U');
+            $params['absence'][$from_stamp] = [
+                'type' => 'person_state',
                 'state' => $ps->getStateLabel(),
-                'from_stamp' => $ps->getFromDate()->format('U'),
+                'from_stamp' => $from_stamp,
                 'from_date' => $ps->getFromDate()->format('Y-m-d'),
                 'to_date' => $ps->getToDate()?->format('Y-m-d'),
             ];
         }
+        foreach ($user->getJobs(['noshow' => true]) as $job) {
+            $from_stamp = $ps->getFromDate()->format('U');
+            $params['absence'][$from_stamp] = [
+                'type' => 'job_state',
+                'state' => $job->getStateLabel() . " as " . (string)$job->getShift(),
+                'from_stamp' => $from_stamp,
+                'from_date' => $job->getStart()->format('Y-m-d'),
+                'to_date' => $job->getEnd()?->format('Y-m-d'),
+            ];
+        }
 
-        // Angularfrontent
+        // Angularfrontend
         if (in_array('application/json', $request->getAcceptableContentTypes()))
-            return new JsonResponse($retarr, Response::HTTP_OK);
+            return new JsonResponse($params, Response::HTTP_OK);
 
-        return $this->render('user/_absence.html.twig', $retarr);
+        return $this->render('user/_absence.html.twig', $params);
     }
 
     /**

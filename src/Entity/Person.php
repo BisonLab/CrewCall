@@ -1338,6 +1338,9 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
         if ($criterias['booked'] ?? false) {
             $expr = new Comparison('state', Comparison::IN, ExternalEntityConfig::getBookedStatesFor('Job'));
             $criteria->where($expr);
+        } elseif ($criterias['noshow'] ?? false) {
+            $expr = new Comparison('state', Comparison::IN, ExternalEntityConfig::getNoShowStatesFor('Job'));
+            $criteria->where($expr);
         } elseif ($criterias['state'] ?? false) {
             $criteria->where(Criteria::expr()->eq('state', $criterias['state']));
         }

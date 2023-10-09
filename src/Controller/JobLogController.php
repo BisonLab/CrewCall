@@ -17,6 +17,7 @@ use App\Entity\JobLog;
 use App\Entity\Shift;
 use App\Entity\Person;
 use App\Form\JobLogType;
+use App\Lib\ExternalEntityConfig;
 
 /**
  * Job controller.
@@ -149,6 +150,8 @@ class JobLogController extends CommonController
                     }
                     $em->persist($joblog);
                 }
+            } elseif (isset($data['noshow_state'])) {
+                $job->setState($data['noshow_state']);
             // And if not, this is just one persons in and out.
             } else {
                 $joblog->setJob($job);

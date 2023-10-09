@@ -115,6 +115,11 @@ class ExternalEntityConfig
         return self::$states[$thingie]['booked_states'] ?? self::$states['default']['booked_states'];
     }
 
+    public static function getNoShowStatesFor($thingie)
+    {
+        return self::$states[$thingie]['noshow_states'] ?? [];
+    }
+
     public static function getOpenStatesFor($thingie)
     {
         return self::$states[$thingie]['open_states'] ?? [];

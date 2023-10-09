@@ -147,12 +147,19 @@ parameters:
                     CONFIRMED:
                         label: "Confirmed"
                         order: 5
-                    # Job done, hours (if you care) reported. Case closed.
-                    COMPLETED:
-                        label: "Completed"
+                    # Sorry, I was sick
+                    SICK:
+                        user_chooseable: false
+                        label: "Sick"
                         order: 6
+                    # Not sorry, shame on me
+                    NOSHOW:
+                        user_chooseable: false
+                        label: "No Show"
+                        order: 7
                 booked_states: ['CONFIRMED']
                 wishlist_states: ['INTERESTED', 'ASSIGNED', 'DENIED']
+                noshow_states: ['SICK', 'NOSHOW']
             JobLog:
                 states:
                     # I just can't some up with any good name for this. It's

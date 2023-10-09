@@ -40,6 +40,23 @@ class JobLogType extends AbstractType
                 'label' => "Break in mins: ",
                 'attr' => array('size'=> 3, 'tabindex' => 2)))
            ;
+        // Anyone at all?
+        $noshow_states = ExternalEntityConfig::getNoShowStatesFor('Job');
+        if (!empty($noshow_states)) {
+            // Yep, ugly
+            $job_states = ExternalEntityConfig::getStatesFor('Job');
+            $choices = [];
+            foreach ($job_states as $state => $arr) {
+                if (in_array($state, $noshow_states))
+                    $choices[$arr['label']] = $state;
+            }
+            $builder->add('noshow_state', ChoiceType::class,array(
+                'label' => 'No show?',
+                'placeholder' => 'Did show up',
+                'choices' => $choices,
+                'mapped'  => false,
+                'multiple'  => false));
+        }
     }
     
     /**
