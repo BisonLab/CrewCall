@@ -7,6 +7,9 @@ namespace App\Service;
  * This is so the users can "edit" attributes in an easier way.
  * Plan once was jsonschema, but I'll do it simpler for now.
  *
+ * This is basically for adding custom attributes. If there are attributes
+ * every instance need it can just as well be a field in the Entity.
+ *
  * Anyway, bo going through this service the underlying way to handle it all
  * can be changed without too much hassle.
  */
@@ -46,7 +49,7 @@ class AttributeFormer
             if (isset($form[$key]))
                 $form->get($key)->setData($val);
         }
-        return $form->createview();
+        return $form->createView();
     }
 
     public function updateForms(&$frog, $request)

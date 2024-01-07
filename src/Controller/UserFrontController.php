@@ -880,6 +880,7 @@ class UserFrontController extends CommonController
         $addressing_config = $this->container->getParameter('addressing');
         $address_elements = $addressing->getFormElementList($user);
         $personfields = $this->container->getParameter('personfields');
+        $attributeFormer = $this->container->get('crewcall.attributeformer');
 
         $form = $this->createForm(EditMyselfType::class, $user, [
                'addressing_config' => $addressing_config,
@@ -890,16 +891,40 @@ class UserFrontController extends CommonController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // We can only update what we are supposed to update. I do not
+            // want any trickery.
+            $attributes_forms = $attributeFormer->getForms($user);
+            foreach ($attributes_forms as $aform) {
+                $aform->handleRequest($request);
+                $aformdata = $aform->getData();
+                foreach ($aformdata as $key => $val) {
+                    if (!isset($personfields[$key])) continue;
+                    if ($personfields[$key]['user_editable'] ?? false)
+                        $user->setAttribute($key, $val);
+                }
+            }
+
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->flush();
 
             return $this->redirectToRoute('uf_me_profile');
-        } else {
-            return $this->render('/user/_edit.html.twig', [
-                'user' => $user,
-                'form' => $form->createView(),
-            ]);
         }
+        $attributes_forms = $attributeFormer->getEditForms($user);
+        // Gotta filter out the fierlds not user editable.
+        $my_attributes_forms = [];
+        foreach ($attributes_forms as $aform) {
+            foreach ($aform as $key => $widget) {
+                if (!isset($personfields[$key])) continue;
+                if ($personfields[$key]['user_editable'] ?? false)
+                    $my_attributes_forms[] = $widget;
+            }
+        }
+dump($my_attributes_forms);
+        return $this->render('/user/_edit.html.twig', [
+            'user' => $user,
+            'my_attributes_forms' => $my_attributes_forms,
+            'form' => $form->createView(),
+        ]);
     }
 
     /**

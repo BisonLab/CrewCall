@@ -43,69 +43,86 @@ parameters:
             enabled: true
             attribute: false
             user_editable: true
+            user_profile_viewable: true
         first_name:
             enabled: true
             attribute: false
             user_editable: true
+            user_profile_viewable: true
         last_name:
             enabled: true
             attribute: false
             user_editable: true
+            user_profile_viewable: true
         date_of_birth:
             enabled: false
             attribute: false
             user_editable: true
+            user_profile_viewable: true
         diets:
             enabled: true
             attribute: false
             user_editable: true
+            user_profile_viewable: true
         workload_percentage:
             enabled: false
             attribute: false
             user_editable: false
+            user_profile_viewable: false
         nationality:
             enabled: false
             attribute: false
-            user_editable: true
+            user_editable: false
+            user_profile_viewable: false
         emergency_contact:
             enabled: false
             attribute: false
             user_editable: true
+            user_profile_viewable: true
         mobile_phone_number:
             enabled: true
             attribute: false
             user_editable: true
+            user_profile_viewable: true
         address:
             enabled: true
             attribute: false
             user_editable: true
+            user_profile_viewable: true
         home_phone_number:
             enabled: false
             attribute: false
             user_editable: false
+            user_profile_viewable: false
         postal_address:
             # And yes, you have to enable addressing_config.use_postal_address
             enabled: false
             attribute: false
             user_editable: false
+            user_profile_viewable: true
         # Not entirely personfields, but nice to configure.
         hours:
             enabled: true
             attribute: false
             user_editable: false
+            user_profile_viewable: true
         profile_picture:
             enabled: true
             attribute: false
             user_editable: true
+            user_profile_viewable: true
+        # Not that commenting this will hide all functions.
         functions:
             enabled: true
             attribute: false
             user_editable: false
+            user_profile_viewable: true
         # Viewing and adding/removing ALL files.
         files:
             enabled: false
             attribute: false
             user_editable: false
+            user_profile_viewable: true
 
     # This basically says itself - Maybe false should be default, but at least
     # it'll show that registration is possible.

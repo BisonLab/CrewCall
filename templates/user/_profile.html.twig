@@ -46,54 +46,62 @@
   <div class="row">
     <div class="col-12 col-lg-8 mt-4">
     <table>
-{% if user.email is not empty %}
+{% if personfields.email.user_profile_viewable and user.email is not empty %}
     <tr>
       <th valign="top">E-mail:</th>
       <td>{{ user.email }}</td>
     </tr>
 {% endif %}
-{% if user.mobilephonenumber is not empty %}
+{% if personfields.mobile_phone_number.user_profile_viewable and user.mobilephonenumber is not empty %}
     <tr>
       <th>Mobile:</th>
       <td>{{ user.mobilephonenumber  }}</td>
     </tr>
 {% endif %}
-{% if user.homephonenumber is not empty %}
+{% if personfields.home_phone_number.user_profile_viewable and user.homephonenumber is not empty %}
     <tr>
       <th valign="top">Home phone number:</th>
       <td>{{ user.homephonenumber }}</td>
     </tr>
 {% endif %}
-{% if user.address is not empty %}
+{% if personfields.address.user_profile_viewable and user.address is not empty %}
     <tr>
       <th valign="top">Address</th>
       <td>{{ cc_addressing.compose(user.address, 'html') | raw }}</td>
     </tr>
 {% endif %}
-{% if user.dateofbirth is not empty %}
+{% if personfields.date_of_birth.user_profile_viewable and user.dateofbirth is not empty %}
     <tr>
       <th valign="top">Date of birth:</th>
       <td>{% if user.dateofbirth %}{{ user.dateofbirth|date('Y-m-d') }}{% endif %}</td>
     </tr>
 {% endif %}
-{% if user.nationality is not empty %}
+{% if personfields.nationality.user_profile_viewable and user.nationality is not empty %}
     <tr>
       <th valign="top">Nationality:</th>
       <td>{{ user.nationalitycountry }}</td>
     </tr>
 {% endif %}
-{% if user.diets is not empty %}
+{% if personfields.diets.user_profile_viewable and user.diets is not empty %}
     <tr>
       <th valign="top">Diets:</th>
       <td>{{ user.dietslabels | join(", ") }}</td>
     </tr>
 {% endif %}
-{% if user.emergencycontact is not empty %}
+{% if personfields.emergency_contact.user_profile_viewable and user.emergencycontact is not empty %}
     <tr>
       <th valign="top">Emergency Contact:</th>
       <td>{{ user.emergencycontact | replace({"\r": "", "\n": ", "}) }}</td>
     </tr>
 {% endif %}
+{% for key, pf in personfields %}
+{% if pf.attribute and pf.user_profile_viewable %}
+    <tr>
+      <th valign="top">{{ pf.label |default(key) }}:</th>
+      <td>{{ user.getAttribute(key) }}</td>
+    </tr>
+{% endif %}
+{% endfor %}
     <tr>
       <th valign="top">Skills:</th>
       <td>{{ functions | join(", ") }}</td>

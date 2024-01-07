@@ -3,6 +3,9 @@
 <div class="col-12">
     {{ form_start(form, { 'attr': {'id': 'editMyselfForm', 'onSubmit': 'return submitEditForm();'}}) }}
     {{ form_widget(form) }}
+    {% for aform in my_attributes_forms %}
+        {{ form_label(aform) }} {{ form_widget(aform) }}
+    {% endfor %}
     <button class="btn btn-dark">Save</button>
     {{ form_end(form) }}
 </div>
