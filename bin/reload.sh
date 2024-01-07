@@ -12,7 +12,7 @@ if [ "$1" = "with-user" ]
     [ -n "$2" ] && user=$2
     [ -n "$3" ] && email=$3
     ./bin/console crewcall:user:create --role=ADMIN $user $email
-    echo Created user $user. Sending passwoerd email to $email 
+    echo Created user $user. Sending password email to $email 
     ./bin/console crewcall:user:send-passwordmail $user
 fi
 

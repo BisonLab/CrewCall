@@ -1,14 +1,8 @@
-#
-# This is a kinda "defaults" config.
-# These variables should probably be changed, but as this is in mainline git,
-# it's not very useful to edit here.
-#
-# Simplest (for now) wat to change this is through the CustomBundle, but
-# I will try to come up with a way to change values here without installing
-# the CustomBundle.
-#
-# Guess this is possible to get from .env(.local)
-#
+# This is made for your config stuff not common with CrewCall Base.
+# parameters.yml is for the instance-specific config (DB username and password
+# better not be common between dev and prod for example) , this is for the
+# application specific.
+
 parameters:
     # You may want to change these.
     # Languange - No translations yet, so this is mere sugar.
@@ -25,22 +19,6 @@ parameters:
     # where the separate files are 3K.
     fullcalendar_locale: en-gb
 
-    # New users has to be connected to something by default. If it's a crew
-    # member you want to connect it to your organization with a default role.
-    # (This is a hen and egg situation since you haven't created your
-    # organization when you set up this application. But there is a solutaion
-    # to that. The name and role you put here will be created by the
-    # once:create-base-data command.
-    #
-    # This is also what defines a crew member.
-    internal_organization:
-        name: "CrewCall"
-        default_role: "Employee"
-        # If you set this to false the organization and role above will be
-        # added to all new crew members and no option to set others will be
-        # shown. I'd guess this will not be used much.
-        allow_external_crew: true
-
     # This is for setting up the address fields. Different countries has
     # different needs, so we need somewhere for defining those needs.
     # Fields you can use is in Entity/EmbeddableAddress in the CrewCallBundle
@@ -51,9 +29,6 @@ parameters:
         # Mostly, postal address as an extra address is not used. If you want
         # it, set it to true.
         use_postal_address: false
-        # But I'll stick with Norway as there is enough US centric software out
-        # there. Choosing FR or DE would end up in a diplomatic conflict in
-        # Strasbourg.
         default_country_code: NO
         default_country_name: Norway
         format:
@@ -61,18 +36,8 @@ parameters:
             - ['addressLine2']
             - ['postalCode', 'postalName']
             # This is the country code. Which may not be very useful.
-            - ['country']
+            # - ['country']
 
-    #
-    # Which of the available fields are you interested in showing and using?
-    # The compulsory: Username, First Name, Last name
-    #
-    # This is set up for a typical volunteering situation. I presume an
-    # employee relation need a few more fields or all.
-    #
-    # It can also handle attributes, for more customization.
-    # attribute: true and you then need label: "Foo Bar"
-    # 
     personfields:
         email:
             enabled: true
@@ -119,6 +84,7 @@ parameters:
             attribute: false
             user_editable: false
         postal_address:
+            # And yes, you have to enable addressing_config.use_postal_address
             enabled: false
             attribute: false
             user_editable: false
@@ -131,7 +97,6 @@ parameters:
             enabled: true
             attribute: false
             user_editable: true
-        # Not that commenting this will hide all functions.
         functions:
             enabled: true
             attribute: false
@@ -147,44 +112,30 @@ parameters:
     # But if you want to turn this on you must also comment out the
     # registration routes in routing_custom.yml
     allow_registration: true
-
     # This also basically says itself, not really working well.
     enable_personal_messaging: false
-
     # The crew manager tab in the user frontend.
     enable_crew_manager: true
 
     # The role that will be applied.
     crew_manager_role: 'Crew Manager'
-
-    # What constitutes a crew manager?
-    crew_manager_functions:
-        - 'Crew Manager'
-
-    # For calculating days/times worked. There is soo many variants, I have to
-    # make it possible to write them all.
-    joblogs_handler:
-        # Calling it Default is not a good idea. "Standard" is well.
-        class: '\App\Lib\JobLogHandler\Standard'
-        # Default 9 hours.
-        full_day_minutes: 540
-
-    # Job overlaps. A few options for it.
     
     # What is considered overlap? Only booked jobs if you ask me.
     job_overlap_booked_only: true
 
-    # If any job the same day are to be considered overlap:
-    job_overlap_same_day: true
+    # Job overlaps. A few options for it.
+    job_overlap_same_day: false
 
+    # Any job with less than these hours is considered an overlap
     # Any job within less than these hours is considered an overlap
-    # Set 0 if only pure overlap (Default)
+    # Set 0 if pure overlap (Default)
     # job_overlap_hours: 4
-    job_overlap_hours: 0
+    job_overlap_hours: 11
 
     bisonlab_reports:
         report_classes:
             - App\Lib\Reports\Reports
+            # - CustomBundle\Lib\Reports\Reports
         # For generated reports, usuaslly uuseful to be able to grab from the
         # web.
         default_filestore: '%kernel.project_dir%/public/reports'
