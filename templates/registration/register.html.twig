@@ -17,8 +17,9 @@
         {{ form_row(registrationForm.plainPassword, {
             label: 'Password'
         }) }}
+{% include("@Custom/registration/terms.html.twig") ignore missing %}
         {{ form_row(registrationForm.agreeTerms) }}
 
-        <button type="submit" class="btn">Register</button>
+        <button type="submit" class="btn btn-dark">Register</button>
     {{ form_end(registrationForm) }}
 {% endblock %}
