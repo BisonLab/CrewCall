@@ -57,7 +57,7 @@ class RegistrationController extends CommonController
                     ->from(new Address($mailfrom, $mailname))
                     ->to($user->getEmail())
                     ->subject('Please Confirm your Email')
-                    ->htmlTemplate('registration/confirmation_email.html.twig')
+                    ->textTemplate('registration/confirmation_email.html.twig')
             );
             // do anything else you need here, like send an email
 

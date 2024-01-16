@@ -67,7 +67,7 @@ class SendPasswordEmailCommand extends Command
             ->from(new Address($this->params->get('mailfrom'), $this->params->get('mailname')))
             ->to($user->getEmail())
             ->subject('Your password reset request')
-            ->htmlTemplate('reset_password/email.html.twig')
+            ->textTemplate('reset_password/email.html.twig')
             ->context([
                 'resetToken' => $resetToken,
                 'tokenLifetime' => $this->resetPasswordHelper->getTokenLifetime(),

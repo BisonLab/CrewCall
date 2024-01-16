@@ -171,7 +171,7 @@ class ResetPasswordController extends CommonController
             ->from(new Address($mailfrom, $mailname))
             ->to($user->getEmail())
             ->subject('Your password reset request')
-            ->htmlTemplate('reset_password/email.html.twig')
+            ->textTemplate('reset_password/email.html.twig')
             ->context([
                 'resetToken' => $resetToken,
                 'tokenLifetime' => $this->resetPasswordHelper->getTokenLifetime(),
