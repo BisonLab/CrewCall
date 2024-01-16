@@ -166,8 +166,9 @@ class ResetPasswordController extends CommonController
         }
 
         $mailfrom = $this->params->get('mailfrom');
+        $mailname = $this->params->get('mailname');
         $email = (new TemplatedEmail())
-            ->from(new Address($mailfrom, 'CrewCall'))
+            ->from(new Address($mailfrom, $mailname))
             ->to($user->getEmail())
             ->subject('Your password reset request')
             ->htmlTemplate('reset_password/email.html.twig')
