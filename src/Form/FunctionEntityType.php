@@ -25,6 +25,7 @@ class FunctionEntityType extends AbstractType
                 'label' => 'Status',
                 'choices' => ExternalEntityConfig::getStatesAsChoicesFor('FunctionEntity')))
             ->add('crew_manager')
+            ->add('user_pickable')
         ;
     }
     

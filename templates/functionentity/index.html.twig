@@ -18,6 +18,8 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>Status</th>
+                <th>Is Crew Manager</th>
+                <th>Is User Pickable</th>
                 <th>People</th>
             </tr>
         </thead>
@@ -27,6 +29,8 @@
                 <td><a href="{{ path('function_show', { 'id': functionEntity.id }) }}">{{ functionEntity.name }}</a></td>
                 <td>{{ functionEntity.description }}</td>
                 <td>{{ functionEntity.statelabel }}</td>
+                <td>{{ functionEntity.crewmanager  ? "Yes" : "No" }}</td>
+                <td>{{ functionEntity.userpickable  ? "Yes" : "No" }}</td>
                 <td>
                 {% for state, amount in functionEntity.countpeople({ 'by_state': true }) %}
                 <a href="{{ path('person_function', { 'function_id': functionEntity.id }) }}">{{ state }}: {{ amount }}</a><br/>

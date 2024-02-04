@@ -70,6 +70,12 @@ class FunctionEntity
     private $crew_manager = false;
 
     /**
+     * If true, the user can pick this itself.
+     * @ORM\Column(type="boolean")
+     */
+    private $user_pickable = false;
+
+    /**
      * This is for the non-connected functions.
      * @ORM\OneToMany(targetEntity="PersonFunction", mappedBy="function",
      * cascade={"remove"})
@@ -204,6 +210,18 @@ class FunctionEntity
     public function setCrewManager(bool $crew_manager): self
     {
         $this->crew_manager = $crew_manager;
+
+        return $this;
+    }
+
+    public function getUserPickable(): bool
+    {
+        return $this->user_pickable;
+    }
+
+    public function setUserPickable(bool $user_pickable): self
+    {
+        $this->user_pickable = $user_pickable;
 
         return $this;
     }

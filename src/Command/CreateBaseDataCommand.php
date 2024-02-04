@@ -36,7 +36,8 @@ class CreateBaseDataCommand extends Command
         array(
             // This is the ability to be added as a Crew Manager.
             'name' => 'CrewManager',
-            'description' => 'Can work as Crew Managers on events'
+            'description' => 'Can work as Crew Managers on events',
+            'crewmanager' => true
         ),
     );
 
@@ -183,6 +184,7 @@ EOT
             $func->setState("VISIBLE");
             $func->setName($fd['name']);
             $func->setDescription($fd['description']);
+            $func->setCrewManager($fd['crewmanager']);
             $this->crewcall_em->persist($func);
             $this->crewcall_em->flush();
             $output->writeln('Made ' . $func->getName());

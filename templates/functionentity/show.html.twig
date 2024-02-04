@@ -24,6 +24,10 @@
                 <td>{{ functionEntity.crewmanager  ? "Yes" : "No" }}</td>
             </tr>
             <tr>
+                <th>User Pickable</th>
+                <td>{{ functionEntity.userpickable  ? "Yes" : "No" }}</td>
+            </tr>
+            <tr>
              <th>
                 <a href="{{ path('function_edit', { 'id': functionEntity.id }) }}"  class="btn-sm btn-dark">Edit</a>
 {% if functionEntity.deleteable %}
