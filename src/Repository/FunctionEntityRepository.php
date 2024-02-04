@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Common\Collections\ArrayCollection;
 use App\Lib\ExternalEntityConfig;
 
 /**
@@ -43,7 +44,7 @@ class FunctionEntityRepository extends \Doctrine\ORM\EntityRepository
             ->from($this->_entityName, 'f')
             ->where("f.user_pickable = :user_pickable")
             ->setParameter('user_pickable', true);
-        return $qb->getQuery()->getResult();
+        return new ArrayCollection($qb->getQuery()->getResult());
     }
 
     public function searchByField($field, $value)

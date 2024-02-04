@@ -6,6 +6,21 @@
     {% for aform in my_attributes_forms %}
         {{ form_label(aform) }} {{ form_widget(aform) }}
     {% endfor %}
+    {% if pickable_functions|length > 0 %}
+      <fieldset class="form-group">
+       <div class="row">
+        <legend class="col-sm-2 col-form-label required">Your self picked functions</legend>
+         <div class="col-sm-10"><div id="edit_myself_diets">
+        {% for pickable in pickable_functions %}
+          <div class="form-check">
+            <input id="functions_{{ pickable.id}}" class="form-check-input" type="checkbox" name="functions[]" value="{{ pickable.id }}" {% if user.functions.contains(pickable) %}checked{%endif%}>
+            <label class="form-check-label" for="functions_{{ pickable.id}}"> {{ pickable.name }}</label>
+          </div>
+        {% endfor %}
+        </div>
+       </div>
+      <fieldset class="form-group">
+    {% endif %}
     <button class="btn btn-dark">Save</button>
     {{ form_end(form) }}
 </div>

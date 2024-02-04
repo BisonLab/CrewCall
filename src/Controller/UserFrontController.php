@@ -14,10 +14,12 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 
 use App\Entity\Person;
+use App\Entity\PersonFunction;
 use App\Entity\Event;
 use App\Entity\Shift;
 use App\Entity\Job;
 use App\Entity\JobLog;
+use App\Entity\FunctionEntity;
 use App\Form\ChangePasswordFosType;
 use App\Form\ChangePasswordFormType;
 use App\Form\EditMyselfType;
@@ -875,6 +877,7 @@ class UserFrontController extends CommonController
     public function meEditMyselfAction(Request $request)
     {
         $user = $this->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
 
         $addressing = $this->container->get('crewcall.addressing');
         $addressing_config = $this->container->getParameter('addressing');
@@ -887,6 +890,9 @@ class UserFrontController extends CommonController
                'address_elements' => $address_elements,
                'personfields' => $personfields,
             ]);
+
+        $feRepo = $entityManager->getRepository(FunctionEntity::class);
+        $pickable_functions = $feRepo->findPickableFunctions();
 
         $form->handleRequest($request);
 
@@ -903,10 +909,30 @@ class UserFrontController extends CommonController
                         $user->setAttribute($key, $val);
                 }
             }
-
-            $entityManager = $this->getDoctrine()->getManager();
+            if (count($pickable_functions) > 0) {
+                $functions = $request->request->get('functions') ?? [];
+                $pfs = array();
+                foreach ($user->getPersonFunctions() as $pf) {
+                    // Should we care?
+                    if (!$pickable_functions->contains($pf->getFunction()))
+                        continue;
+                    if (!in_array($pf->getFunctionId(), $functions)) {
+                        $entityManager->remove($pf);
+                    }
+                    $pfs[] = $pf->getFunctionId();
+                }
+                foreach ($functions as $hf) {
+                    if (!in_array($hf, $pfs)) {
+                        $function = $entityManager->getRepository(FunctionEntity::class)->find($hf);
+                        $pf = new PersonFunction();
+                        $pf->setFunction($function);
+                        $pf->setFromDate(new \DateTime());
+                        $user->addPersonFunction($pf);
+                        $entityManager->persist($pf);
+                    }
+                }
+            }
             $entityManager->flush();
-
             return $this->redirectToRoute('uf_me_profile');
         }
         $attributes_forms = $attributeFormer->getEditForms($user);
@@ -919,9 +945,9 @@ class UserFrontController extends CommonController
                     $my_attributes_forms[] = $widget;
             }
         }
-dump($my_attributes_forms);
         return $this->render('/user/_edit.html.twig', [
             'user' => $user,
+            'pickable_functions' => $pickable_functions,
             'my_attributes_forms' => $my_attributes_forms,
             'form' => $form->createView(),
         ]);
