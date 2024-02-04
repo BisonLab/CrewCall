@@ -11,9 +11,10 @@ use App\Lib\ExternalEntityConfig;
 class FunctionEntityRepository extends \Doctrine\ORM\EntityRepository
 {
     // I wonder if this can work out as a good idea. Point is to use in the
-    // forms for returning the query buillder with the wuery from here instead
+    // forms for returning the query buillder with the query from here instead
     // of the result, which it does not like.
     private $return_qb = false;
+
     public function setReturnQb($val = true)
     {
         $this->return_qb = $val;
@@ -33,6 +34,16 @@ class FunctionEntityRepository extends \Doctrine\ORM\EntityRepository
     {
         $query = $this->_em->createQuery('SELECT fe.id, fe.name, count(pf.id) as people FROM ' . $this->_entityName . ' fe JOIN fe.person_functions pf GROUP BY fe.id');
         return $result = $query->getResult();
+    }
+
+    public function findPickableFunctions()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('f')
+            ->from($this->_entityName, 'f')
+            ->where("f.user_pickable = :user_pickable")
+            ->setParameter('user_pickable', true);
+        return $qb->getQuery()->getResult();
     }
 
     public function searchByField($field, $value)

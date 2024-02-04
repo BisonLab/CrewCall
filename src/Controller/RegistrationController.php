@@ -3,6 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Person;
+use App\Entity\PersonFunction;
+use App\Entity\PersonRoleOrganization;
+use App\Entity\FunctionEntity;
+use App\Entity\Role;
+use App\Entity\Organization;
 use App\Form\RegistrationFormType;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,6 +18,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Doctrine\ORM\EntityRepository;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
@@ -35,8 +42,23 @@ class RegistrationController extends CommonController
     {
         $user = new Person();
         $form = $this->createForm(RegistrationFormType::class, $user);
-        $form->handleRequest($request);
+        $feRepo = $entityManager->getRepository(FunctionEntity::class);
+        $pickable_functions = $feRepo->findPickableFunctions();
+        if (count($pickable_functions) > 0) {
+            $form->add('function', EntityType::class, [
+                    'label' => 'I would like to do',
+                    'class' => FunctionEntity::class,
+                    'mapped' => false,
+                    'multiple' => true,
+                    'query_builder' => function(EntityRepository $er) {
+                    return $er->createQueryBuilder('fe')
+                        ->where("fe.user_pickable = :up")
+                        ->setParameter('up', true);
+                    },
+                ]);
+        }
 
+        $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
             $user->setPassword(
@@ -46,7 +68,27 @@ class RegistrationController extends CommonController
                 )
             );
 
+            // TODO: Config option for setting the APPLICANT state for an
+            // extra registration step.
+
             $entityManager->persist($user);
+            if ($functions = $form['function']?->getData()) {
+                foreach ($functions as $function) {
+                    $pf = new PersonFunction();
+                    $pf->setPerson($user);
+                    $pf->setFunction($function);
+                    $pf->setFromDate(new \DateTime());
+                    $user->addPersonFunction($pf);
+                    $entityManager->persist($pf);
+                }
+            }
+            $first_org = $entityManager->getRepository(Organization::class)->getInternalOrganization();
+            $first_role = $entityManager->getRepository(Role::class)->getDefaultRole();
+            $pro = new PersonRoleOrganization();
+            $pro->setPerson($user);
+            $pro->setOrganization($first_org);
+            $pro->setRole($first_role);
+            $entityManager->persist($pro);
             $entityManager->flush();
 
             // generate a signed url and email it to the user
@@ -60,10 +102,9 @@ class RegistrationController extends CommonController
                     ->textTemplate('registration/confirmation_email.html.twig')
             );
             // do anything else you need here, like send an email
-
+            $this->addFlash('info', 'Thank you. Check your mailbox for verification mail');
             return $this->redirectToRoute('index');
         }
-
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
         ]);

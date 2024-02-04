@@ -17,6 +17,9 @@
         {{ form_row(registrationForm.plainPassword, {
             label: 'Password'
         }) }}
+        {% if registrationForm.function is defined %}
+        {{ form_row(registrationForm.function) }}
+        {% endif %}
 {% include("@Custom/registration/terms.html.twig") ignore missing %}
         {{ form_row(registrationForm.agreeTerms) }}
 

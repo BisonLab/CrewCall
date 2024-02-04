@@ -11,7 +11,7 @@ if [ "$1" = "with-user" ]
  then
     [ -n "$2" ] && user=$2
     [ -n "$3" ] && email=$3
-    php ./bin/console crewcall:user:create --role=ADMIN $user $email
+    php ./bin/console crewcall:user:create --system_role=ADMIN $user $email
     echo Created user $user. Sending password email to $email 
     php ./bin/console crewcall:user:send-passwordmail $user
 fi

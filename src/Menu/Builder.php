@@ -78,10 +78,6 @@ class Builder
                 $alpm->setLinkAttribute('onClick', "return openCcModal('" . $uri . "', 'Add login page message');");
             }
 
-            $adminmenu->addChild("People with Roles",
-                array('route' => 'person_role'));
-            $adminmenu->addChild("People with Functions",
-                array('route' => 'person_function'));
             if ($this->container->getParameter('allow_registration')) {
                 $adminmenu->addChild('Applicants', array('route' => 'person_applicants'));
             }

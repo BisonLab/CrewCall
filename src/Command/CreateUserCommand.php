@@ -10,6 +10,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 use App\Entity\Person;
+use App\Entity\PersonRoleOrganization;
+use App\Entity\FunctionEntity;
+use App\Entity\Role;
+use App\Entity\Organization;
 
 class CreateUserCommand extends Command
 {
@@ -23,7 +27,7 @@ class CreateUserCommand extends Command
             ->setDescription('Create a new person/user')
             ->addArgument('username', InputArgument::REQUIRED, 'Username')
             ->addArgument('email', InputArgument::REQUIRED, 'Email address')
-            ->addOption('role', null, InputOption::VALUE_REQUIRED, 'Role, default USER')
+            ->addOption('system_role', null, InputOption::VALUE_REQUIRED, 'System role, default USER')
             ->addOption('password', null, InputOption::VALUE_REQUIRED, 'Password')
         ;
     }
@@ -34,9 +38,9 @@ class CreateUserCommand extends Command
         $username = $input->getArgument('username');
         $email = $input->getArgument('email');
 
-        $role = null;
-        if ($input->getOption('role')) {
-            $role = "ROLE_" . strtoupper($input->getOption('role'));
+        $system_role = null;
+        if ($input->getOption('system_role')) {
+            $system_role = "ROLE_" . strtoupper($input->getOption('system_role'));
         }
 
         $user = new Person();
@@ -51,10 +55,18 @@ class CreateUserCommand extends Command
         }
         $user->setUsername($username);
         $user->setEmail($email);
-        if ($role)
-            $user->setRoles([$role]);
-
+        if ($system_role)
+            $user->setRoles([$system_role]);
         $this->crewcall_em->persist($user);
+
+        $first_org = $this->crewcall_em->getRepository(Organization::class)->getInternalOrganization();
+        $first_role = $this->crewcall_em->getRepository(Role::class)->getDefaultRole();
+        $pro = new PersonRoleOrganization();
+        $pro->setPerson($user);
+        $pro->setOrganization($first_org);
+        $pro->setRole($first_role);
+        $this->crewcall_em->persist($pro);
+
         $this->crewcall_em->flush();
 
         $io->success('You added the user ' . $username . '. Now send a password email with crewcall:user:send-passwordmail ' . $username);

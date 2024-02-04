@@ -150,7 +150,6 @@ class PersonController extends CommonController
     {
         $em = $this->getDoctrine()->getManager();
         $fe_repo = $em->getRepository(FunctionEntity::class);
-        $job_repo = $em->getRepository(Job::class);
 
         $fid = $request->get('function_id');
         $select_grouping = $request->get('select_grouping');
@@ -170,6 +169,7 @@ class PersonController extends CommonController
         $functions = $fe_repo->findAllActive();
         return $this->render('person/index.html.twig', array(
             'people' => $people,
+            'person_jobs' => [],
             'simplified' => false,
             'on_date' => $on_date,
             'functions' => $functions,
@@ -178,7 +178,7 @@ class PersonController extends CommonController
     }
 
     /**
-     * Lists all person entities with a Rolj
+     * Lists all person entities with a Role
      *
      * @Route("/role", name="person_role", methods={"GET"})
      */
@@ -186,7 +186,6 @@ class PersonController extends CommonController
     {
         $em = $this->getDoctrine()->getManager();
         $role_repo = $em->getRepository(Role::class);
-        $person_repo = $em->getRepository(Person::class);
 
         $on_date = $request->get('on_date');
         $role = null;
@@ -212,7 +211,6 @@ class PersonController extends CommonController
             'roles' => $role_repo->findAll(),
         ));
     }
-
     /**
      *
      * @Route("/applicants", name="person_applicants", methods={"GET"})

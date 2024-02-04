@@ -3,6 +3,8 @@
 {% block body %}
     <h1>{{ role }}</h1>
 
+<div class="row">
+  <div class="col-4">
     <table class="showTable">
         <tbody>
             <tr>
@@ -25,4 +27,47 @@
             </tr>
         </tbody>
     </table>
+</div>
+
+<div class="col-8 tabbable" id="eventRight">
+  <ul id="tabRight" class="nav nav-tabs">
+  <li class="nav-item">
+  <a class="nav-link" href="#peopletab" data-toggle="tab">People</a>
+  </li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane active" id="peopletab">
+      <table id="peoplewithrolestable" class="table table-sm">
+      <thead>
+          <tr>
+              <th>Name and Organization</th>
+              <th>Email</th>
+              <th>Phone</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for pf in role.personroleorganizations %}
+            {% set person = pf.person %}
+          <tr>
+          <td>
+              <a href="{{ path('person_show', { 'id': person.id }) }}">
+              {{ person }} at {{ pf.organization }}
+              </a>
+          </td>
+          <td>{{ person.email }}</td>
+          <td>{{ person.mobilephonenumber }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+      <tfoot>
+         <th>&nbsp;</th>
+         <th>&nbsp;</th>
+         <th>&nbsp;</th>
+      </tfoot>
+    </table>
+    </div>
+  </div>
+ </div>
+</div><!-- End Row -->
 {% endblock %}
