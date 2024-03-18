@@ -55,6 +55,12 @@ class RegistrationController extends CommonController
                         ->where("fe.user_pickable = :up")
                         ->setParameter('up', true);
                     },
+                    'attr' => [
+                        'class' => 'selectpicker',
+                        'data-live-search' => 'true',
+                        'data-width' => '40%',
+                        'data-style' => 'btn-dropdown',
+                    ]
                 ]);
         }
 
