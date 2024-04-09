@@ -972,6 +972,10 @@ input:checked + .ccSlider:before {
     font-size: 15px;
 }
 
+.loginpage-text {
+    font-size: 16px;
+}
+
 .delete-btn {
     text-decoration: underline;
     font-weight: 400;

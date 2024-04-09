@@ -24,6 +24,23 @@ class PersonRepository extends ServiceEntityRepository implements PasswordUpgrad
         parent::__construct($registry, Person::class);
     }
 
+
+    public function findOneByUsernameOrEmail(string $identifier): ?Person
+    {
+        return current($this->createQueryBuilder('p')
+            ->where('p.username = :username')
+            ->orWhere('p.email = :email')
+            ->setParameter('username', $identifier)
+            ->setParameter('email', $identifier)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult()
+            )
+            ?? null
+        ;
+        // For later use, when we have a newer Doctrine
+        //    ->getOneOrNullResult()
+    }
     public function findWithRoles()
     {
         $found = new \Doctrine\Common\Collections\ArrayCollection();

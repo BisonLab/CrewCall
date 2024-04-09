@@ -42,27 +42,6 @@ class UserFrontController extends CommonController
     private $eventcache = [];
 
     /**
-     * Login
-     *
-     * @Route("/login", name="uf_login", methods={"GET"})
-     */
-    public function loginAction(Request $request)
-    {
-        // Create a csrf token for use in the next step
-        $csrfman = $this->get('security.csrf.token_manager');
-        $csrfToken = $csrfman->getToken('authenticate')->getValue();
-
-        return new JsonResponse([
-            '_csrf_token' => $csrfToken,
-            '_username' => "",
-            "_password" => '',
-            "_remember_me" => "on",
-            "login_url" => $this->generateUrl('app_login', [], UrlGeneratorInterface::ABSOLUTE_URL)
-            ],
-            Response::HTTP_OK);
-    }
-
-    /**
      * Ping
      *
      * @Route("/ping", name="uf_ping", methods={"GET"})
@@ -936,7 +915,7 @@ class UserFrontController extends CommonController
             return $this->redirectToRoute('uf_me_profile');
         }
         $attributes_forms = $attributeFormer->getEditForms($user);
-        // Gotta filter out the fierlds not user editable.
+        // Gotta filter out the fields not user editable.
         $my_attributes_forms = [];
         foreach ($attributes_forms as $aform) {
             foreach ($aform as $key => $widget) {
