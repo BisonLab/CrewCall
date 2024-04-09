@@ -16,8 +16,11 @@ use App\Lib\ExternalEntityConfig;
 /**
  * Event
  *
- * @ORM\Entity()
- * @ORM\Table(name="crewcall_event")
+ * @ORM\Table(name="crewcall_event", indexes={
+ *      @ORM\Index(name="crewcall_event_starttime_idx", columns={"starttime"}),
+ *      @ORM\Index(name="crewcall_event_endtime_idx", columns={"endtime"}),
+ *      @ORM\Index(name="crewcall_event_starttime_endtime_idx", columns={"starttime", "endtime"})
+ * })
  * @ORM\Entity(repositoryClass="App\Repository\EventRepository")
  * @Gedmo\Loggable
  */

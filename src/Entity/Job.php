@@ -12,7 +12,10 @@ use App\Lib\ExternalEntityConfig;
 /**
  * Job
  *
- * @ORM\Table(name="crewcall_job", uniqueConstraints={@ORM\UniqueConstraint(name="person_shift_job_idx", columns={"person_id", "shift_id"})})
+ * @ORM\Table(name="crewcall_job",
+ *      uniqueConstraints={@ORM\UniqueConstraint(name="person_shift_job_idx", columns={"person_id", "shift_id"})},
+ *      indexes={@ORM\Index(name="crewcall_job_state_idx", columns={"state"})}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\JobRepository")
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\Loggable

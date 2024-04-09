@@ -13,8 +13,11 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use App\Lib\ExternalEntityConfig;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="crewcall_shift")
+ * @ORM\Table(name="crewcall_shift", indexes={
+ *      @ORM\Index(name="crewcall_shift_starttime_idx", columns={"starttime"}),
+ *      @ORM\Index(name="crewcall_shift_endtime_idx", columns={"endtime"}),
+ *      @ORM\Index(name="crewcall_shift_starttime_endtime_idx", columns={"starttime", "endtime"})
+ * })
  * @ORM\Entity(repositoryClass="App\Repository\ShiftRepository")
  * @Gedmo\Loggable
  */
