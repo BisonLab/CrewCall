@@ -23,11 +23,27 @@
       </div>    
       <div id="personmessage_modal" class="modal-body">
             <form id="person_message_form" method="POST">
-            <textarea name="body" cols="40" rows="4"></textarea><br>
-            <div class="bulkmessageradio"><input type="radio" value="BULKSMS" name="message_type" CHECKED>SMS only</input><br></div>
-            <div class="bulkmessageradio"><input type="radio" value="BULKMAIL" name="message_type">Email only</input><br></div>
-            <div class="bulkmessageradio"><input type="radio" value="BULKALL" name="message_type">SMS and Email</input><br></div>
-
+            <label for="messageSubject">E-mail subject:</label>
+            <br>
+            <input id="messageSubject" class="form-control" type="text" name="subject" size="40" placeholder="Message from CrewCall"></input>
+            <br>
+            <label for="messageBody">Content:</label>
+            <br>
+            <textarea id="messageBody" name="body" cols="50" rows="4"></textarea>
+            <br>
+            <br>
+{% if has_sms %}
+            <div class="bulkmessageradio"><input type="radio" value="BULKSMS" name="message_type" CHECKED>SMS only</input></div>
+            <br>
+            <div class="bulkmessageradio"><input type="radio" value="BULKALL" name="message_type">SMS and Email</input></div>
+            <br>
+            <div class="bulkmessageradio"><input type="radio" value="BULKMAIL" name="message_type">Email only</input></div>
+{% else %}
+            {# No need to pick when there is only one choice #}
+            <input type="hidden" value="BULKMAIL" name="message_type">
+            <br>
+{% endif %}
+            <br>
             <input class="btn-sm btn-dark" id="sendPersonMessage" type="submit" value="Send">
             </form>
       </div>

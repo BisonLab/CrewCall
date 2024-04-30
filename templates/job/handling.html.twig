@@ -430,9 +430,22 @@ function removeSelectedJobs(event_id, shift_id) {
 
 <div id="jobmessage_modal" class="d-none">
     <form id="job_list_message_form" method="POST">
-    <textarea name="body" cols="40" rows="4"></textarea><br>
+    <label for="messageSubject">E-mail subject:</label>
+    <input id="messageSubject" class="form-control" type="text" name="subject" size="40" placeholder="Message from CrewCall"></input>
+    <br>
+    <label for="messageBody">Content:</label>
+    <br>
+    <textarea id="messageBody" name="body" cols="50" rows="4"></textarea>
+    <br>
+{% if has_sms %}
     <input type="radio" value="BULKSMS" name="message_type" CHECKED>SMS only</input>
-    <input type="radio" value="BULKALL" name="message_type">SMS and  Email</input><br>
+    <input type="radio" value="BULKALL" name="message_type">SMS and Email</input><br>
+    <input type="radio" value="BULKMAIL" name="message_type">Email</input><br>
+{% else %}
+    {# No need to pick when there is only one choice #}
+    <input type="hidden" value="BULKMAIL" name="message_type">
+    <br>
+{% endif %}
     <input class="btn-sm btn-dark" id="sendmessage" type="submit" name="submit" value="Send">
     </form>
 </div>

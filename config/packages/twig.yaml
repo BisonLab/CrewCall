@@ -11,8 +11,9 @@ twig:
         cc_addressing:      "@crewcall.addressing"
         states:             "%app.states%"
         types:              "%app.types%"
-        personfields:      "%personfields%"
+        personfields:       "%personfields%"
         logo_link_path:     "%env(LOGO_LINK_PATH)%"
+        has_sms:            "%env(bool:HAS_SMS)%"
 
     form_themes:
         - 'bootstrap_4_horizontal_layout.html.twig'
