@@ -27,7 +27,7 @@ class PersonRepository extends ServiceEntityRepository implements PasswordUpgrad
 
     public function findOneByUsernameOrEmail(string $identifier): ?Person
     {
-        return current($this->createQueryBuilder('p')
+        if ($res = $this->createQueryBuilder('p')
             ->where('p.username = :username')
             ->orWhere('p.email = :email')
             ->setParameter('username', $identifier)
@@ -36,8 +36,9 @@ class PersonRepository extends ServiceEntityRepository implements PasswordUpgrad
             ->getQuery()
             ->getResult()
             )
-            ?? null
-        ;
+            return current($res);
+        else
+            return null;
         // For later use, when we have a newer Doctrine
         //    ->getOneOrNullResult()
     }
