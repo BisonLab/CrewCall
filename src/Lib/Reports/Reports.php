@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use BisonLab\ReportsBundle\Lib\Reports\ReportsInterface;
 use BisonLab\ReportsBundle\Lib\Reports\CommonReportFunctions;
 use App\Entity\Event;
+use App\Entity\Person;
 
 /*
  * I know, this is old school and everything should be listeners and event
@@ -21,6 +22,17 @@ class Reports extends CommonReportFunctions implements ReportsInterface
     protected $container;
 
     public $reports = [
+        'CrewList' => array(
+            'system_role' => "ROLE_ADMIN",
+            'class' => 'App\Lib\Reports\CrewList',
+            'description' => "Crew list"
+            ),
+        'CrewJobs' => array(
+            'system_role' => "ROLE_ADMIN",
+            'required_options' => array('people'),
+            'class' => 'App\Lib\Reports\CrewJobs',
+            'description' => "Jobs listings per picked person"
+            ),
         'LocationsStats' => array(
             'system_role' => "ROLE_ADMIN",
             'required_options' => array('event'),
@@ -104,5 +116,23 @@ class Reports extends CommonReportFunctions implements ReportsInterface
                     'widget' => "single_text"
                 ))
         ;
+        $form ->add('people', EntityType::class,
+            array(
+                'label' => 'Crew',
+                'required' => false,
+                'class' => Person::class,
+                'query_builder' => function(EntityRepository $er) {
+                return $er->createQueryBuilder('p')
+                    ->orderBy('p.first_name', 'ASC');
+                }, 
+                'multiple' => true,
+                'mapped' => false,
+                'attr' => [
+                    'class' => 'selectpicker',
+                    'data-live-search' => 'true',
+                    'data-width' => '100%',
+                    'data-style' => 'btn-dropdown',
+                ],
+            ));
     }
 }
