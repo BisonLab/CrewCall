@@ -12,6 +12,8 @@
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
+/public/favicon.ico
+/public/images/favicon.ico
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
