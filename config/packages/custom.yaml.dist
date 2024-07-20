@@ -1,7 +1,6 @@
-# This is made for your config stuff not common with CrewCall Base.
-# parameters.yml is for the instance-specific config (DB username and password
-# better not be common between dev and prod for example) , this is for the
-# application specific.
+# This is the defaults used in the CrewCall application.
+# To override this, use the CustomBundle and copy the file into it's
+# config/packages/ directory. Then edit it there.
 
 parameters:
     # You may want to change these.
@@ -18,6 +17,62 @@ parameters:
     # If you set "all" it will load the all.js file instead. It's close to 200K
     # where the separate files are 3K.
     fullcalendar_locale: en-gb
+
+    # This basically says itself - Maybe false should be default, but at least
+    # it'll show that registration is possible.
+    # But if you want to turn this on you must also comment out the
+    # registration routes in routing_custom.yml
+    allow_registration: true
+
+    # The crew manager tab in the user frontend.
+    enable_crew_manager: true
+
+    # The role that will be applied.
+    crew_manager_role: 'Crew Manager'
+
+    # This also basically says itself, not really working well, which is why
+    # it's default disabled. Not even in the user view yet.
+    enable_personal_messaging: false
+
+    # What is considered overlap? Only booked jobs if you ask me.
+    job_overlap_booked_only: true
+
+    # Job overlaps. A few options for it.
+    job_overlap_same_day: false
+
+    # Any job with less than these hours is considered an overlap
+    # Any job within less than these hours is considered an overlap
+    # Set 0 if pure overlap (Default)
+    job_overlap_hours: 4
+
+    # Job notification methods. When a job is assigned and confirmed, the user
+    # should be notified. This is by mail or sms for now. It can be either or
+    # both, which is why this is an array.
+    # Available methods: 'sms', 'mail', 'pm' - probably no use for PM
+    job_notification_methods: ['sms', 'mail', 'pm']
+
+    bisonlab_reports:
+        report_classes:
+            - App\Lib\Reports\Reports
+            # - CustomBundle\Lib\Reports\Reports
+        # For generated reports, usuaslly uuseful to be able to grab from the
+        # web.
+        default_filestore: '%kernel.project_dir%/public/reports'
+
+    crewcall.system_roles:
+            ROLE_USER:
+                label: 'Crewmember'
+                description: 'User able to log into and use this application as crew member'
+            ROLE_ADMIN:
+                label: 'Admin'
+                description: 'Admin User'
+            ROLE_PERSON:
+                label: 'Other'
+                description: 'Person with other roles, like contact for an organization. Not able to log in.'
+
+    # Stuff you can define in .env.local, if you want to.
+    mailfrom: '%env(MAIL_FROM)%'
+    mailname: '%env(MAIL_NAME)%'
 
     # This is for setting up the address fields. Different countries has
     # different needs, so we need somewhere for defining those needs.
@@ -123,51 +178,3 @@ parameters:
             attribute: false
             user_editable: false
             user_profile_viewable: true
-
-    # This basically says itself - Maybe false should be default, but at least
-    # it'll show that registration is possible.
-    # But if you want to turn this on you must also comment out the
-    # registration routes in routing_custom.yml
-    allow_registration: true
-    # This also basically says itself, not really working well.
-    enable_personal_messaging: false
-    # The crew manager tab in the user frontend.
-    enable_crew_manager: true
-
-    # The role that will be applied.
-    crew_manager_role: 'Crew Manager'
-    
-    # What is considered overlap? Only booked jobs if you ask me.
-    job_overlap_booked_only: true
-
-    # Job overlaps. A few options for it.
-    job_overlap_same_day: false
-
-    # Any job with less than these hours is considered an overlap
-    # Any job within less than these hours is considered an overlap
-    # Set 0 if pure overlap (Default)
-    # job_overlap_hours: 4
-    job_overlap_hours: 11
-
-    bisonlab_reports:
-        report_classes:
-            - App\Lib\Reports\Reports
-            # - CustomBundle\Lib\Reports\Reports
-        # For generated reports, usuaslly uuseful to be able to grab from the
-        # web.
-        default_filestore: '%kernel.project_dir%/public/reports'
-
-    crewcall.system_roles:
-            ROLE_USER:
-                label: 'Crewmember'
-                description: 'User able to log into and use this application as crew member'
-            ROLE_ADMIN:
-                label: 'Admin'
-                description: 'Admin User'
-            ROLE_PERSON:
-                label: 'Other'
-                description: 'Person with other roles, like contact for an organization. Not able to log in.'
-
-    # Stuff you can define in .env.local, if you want to.
-    mailfrom: '%env(MAIL_FROM)%'
-    mailname: '%env(MAIL_NAME)%'

@@ -2,18 +2,20 @@
 
 namespace App\EventListener;
 
+use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Events;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
+use App\Service\StateHandler;
 
+#[AsDoctrineListener('prePersist')]
+#[AsDoctrineListener('onFlush')]
 class StateChangeListener
 {
-    private $state_handler;
-
-    public function __construct($state_handler)
-    {
-        $this->state_handler = $state_handler;
+    public function __construct(
+        private StateHandler $stateHandler,
+    ) {
     }
 
     /*
@@ -26,7 +28,7 @@ class StateChangeListener
     {
         $entity = $eventArgs->getEntity();
         if (method_exists($entity, 'getState')) {
-            return $this->state_handler->handleStateChange(
+            return $this->stateHandler->handleStateChange(
                 $entity,
                 false,
                 $eventArgs->getEntity()->getState()
@@ -48,7 +50,7 @@ class StateChangeListener
             foreach ($uow->getEntityChangeSet($entity) as $field => $values) {
                 if ($field != "state")
                     continue;
-                $this->state_handler->handleStateChange(
+                $this->stateHandler->handleStateChange(
                     $entity,
                     $values[0],
                     $values[1]

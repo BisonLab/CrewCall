@@ -6,33 +6,34 @@ use App\Entity\Job;
 use App\Entity\Event;
 use App\Entity\Shift;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\DependencyInjection\ServiceLocator;
+use BisonLab\SakonninBundle\Service\Messages as SakonninMessages;
+
 class StateHandler
 {
-    private $em;
-    private $sm;
+    private $container;
     private $jobhandler;
     private $eventhandler;
     private $shifthandler;
 
-    public function __construct($em, $sm)
-    {
-        $this->em = $em;
-        $this->sm = $sm;
-
+    public function __construct($container
+    ) {
         if (class_exists('CustomBundle\Lib\StateHandler\Job')) {
-            $this->jobhandler = new \CustomBundle\Lib\StateHandler\Job($em, $sm);
+            $this->jobhandler = new \CustomBundle\Lib\StateHandler\Job($container);
         } else {
-            $this->jobhandler = new \App\Lib\StateHandler\Job($em, $sm);
+            $this->jobhandler = new \App\Lib\StateHandler\Job($container);
         }
         if (class_exists('CustomBundle\Lib\StateHandler\Event')) {
-            $this->eventhandler = new \CustomBundle\Lib\StateHandler\Event($em, $sm);
+            $this->eventhandler = new \CustomBundle\Lib\StateHandler\Event($container);
         } else {
-            $this->eventhandler = new \App\Lib\StateHandler\Event($em, $sm);
+            $this->eventhandler = new \App\Lib\StateHandler\Event($container);
         }
         if (class_exists('CustomBundle\Lib\StateHandler\Shift')) {
-            $this->shifthandler = new \CustomBundle\Lib\StateHandler\Shift($em, $sm);
+            $this->shifthandler = new \CustomBundle\Lib\StateHandler\Shift($container);
         } else {
-            $this->shifthandler = new \App\Lib\StateHandler\Shift($em, $sm);
+            $this->shifthandler = new \App\Lib\StateHandler\Shift($container);
         }
     }
 

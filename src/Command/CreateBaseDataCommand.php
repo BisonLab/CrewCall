@@ -191,7 +191,21 @@ EOT
             $this->crewcall_em->clear();
         }
 
-        // And then, add assign-sms and confirm-sms sakonnin templates
+        // Message templates for assign and confirm mails.
+        $amail = new SakonninTemplate();
+        $amail->setName('assign-mail');
+        $amail->setTemplate('Hello {{ person.firstname }}, please confirm the following job: {{ event.name }}. At: {{ event.location.name }}, {{ job.start | date("d.m.y") }} {{ job.start | date("H:i") }}, estimated finish time {{ job.end | date("d.m.y H:i") }}. Function: {{ function }}. Log into Crew Call to confirm');
+        $amail->setLangCode('en');
+
+        $cmail = new SakonninTemplate();
+        $cmail->setName('confirm-mail');
+        $cmail->setTemplate('Thank you for confirming {{ event.name }} at {{ event.location.name }}, {{ job.start | date("d.m.yH:i")}}, estimated finish time {{ job.end | date("d.m.yH:i") }}. Function: {{ function }}. Have a nice day.');
+        $cmail->setLangCode('en');
+
+        $this->sakonnin_em->persist($amail);
+        $this->sakonnin_em->persist($cmail);
+
+        // For thos having SMS service, this is the templates.
         $asms = new SakonninTemplate();
         $asms->setName('assign-sms');
         $asms->setTemplate('Hello {{ person.firstname }}, please confirm the following job: {{ event.name }}. At: {{ event.location.name }}, {{ job.start | date("d.m.y") }} {{ job.start | date("H:i") }}, estimated finish time {{ job.end | date("d.m.y H:i") }}. Function: {{ function }}. Log into Crew Call to confirm');

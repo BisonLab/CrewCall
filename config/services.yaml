@@ -31,6 +31,32 @@ services:
             - [ setContainer, ['@service_container'] ]
             - [ setParameterBag, ['@parameter_bag'] ]
 
+    App\EventListener\:
+        resource: '../src/EventListener/*'
+        autowire: true
+        autoconfigure: true
+
+    # Not yet
+    #App\Lib\StateHandler\:
+    #    resource: '../src/Lib/StateHandler/'
+    #    autowire: true
+    #    autoconfigure: true
+    #    tags:
+    #        - { name: 'app.statehandler' , index_by: 'key' }
+
+    #App\Service\StateHandler:
+    #    autowire: true
+    #    autoconfigure: true
+    #    arguments: [!tagged_locator { tag: 'app.statehandler', index_by: 'key' }]
+
+    App\Service\StateHandler:
+        arguments: ['@service_container' ]
+
+    # Darn, I hate doing this. Gotta upgrade soon.
+    crewcall.statehandler:
+        alias: App\Service\StateHandler
+        public: true
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
@@ -71,10 +97,6 @@ services:
         public: true
         arguments: ["@router", "@crewcall.summarizer"]
 
-    crewcall.statehandler:
-        class: App\Service\StateHandler
-        arguments: ["@doctrine.orm.entity_manager", "@sakonnin.messages"]
-
     crewcall.summarizer:
         class: App\Service\Summarizer
         public: true
@@ -94,10 +116,3 @@ services:
         class: App\Service\AttributeFormer
         public: true
         arguments: ['@form.factory']
-
-    crewcall.statechangelistener:
-        class: App\EventListener\StateChangeListener
-        arguments: ["@crewcall.statehandler"]
-        tags:
-            - { name: doctrine.event_listener, event: prePersist }
-            - { name: doctrine.event_listener, event: onFlush }

@@ -15,10 +15,10 @@ class Event
     private $em;
     private $sm;
 
-    public function __construct($em, $sm)
+    public function __construct($container)
     {
-        $this->em = $em;
-        $this->sm = $sm;
+        $this->em = $container->get('doctrine')->getManager();
+        $this->sm = $container->get('sakonnin.messages');
     }
 
     public function handle(\App\Entity\Event $event, $from, $to)
