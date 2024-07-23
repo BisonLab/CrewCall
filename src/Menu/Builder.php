@@ -14,6 +14,7 @@ class Builder
     use \BisonLab\CommonBundle\Menu\StylingTrait;
 
     private $user = null;
+    private $token = null;
     private $router = null;
     private $factory = null;
     private $container = null;

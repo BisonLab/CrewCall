@@ -11,6 +11,7 @@ doctrine:
     orm:
         default_entity_manager: crewcall
         auto_generate_proxy_classes: "%kernel.debug%"
+        enable_lazy_ghost_objects: true
         # No automapping when more than one entity manager.
         # auto_mapping: true
         #mappings:

@@ -18,6 +18,8 @@ class Addressing
     private $locale;
     private $addressing;
     private $format;
+    private $default_country_code;
+    private $default_country_name;
 
     public function __construct($locale, $addressing)
     {
