@@ -14,6 +14,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\RouterInterface;
 use BisonLab\SakonninBundle\Service\Messages as SakonninMessages;
@@ -53,6 +54,7 @@ class UserFrontController extends AbstractController
 
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private ManagerRegistry $managerRegistry,
         private ParameterBagInterface $parameterBag,
         private Addressing $addressing,
         private CcJobs $ccJobs,

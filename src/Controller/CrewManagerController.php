@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 use App\Entity\Job;
 use App\Entity\JobLog;
@@ -32,7 +33,6 @@ use App\Service\Jobs;
 class CrewManagerController extends AbstractController
 {
     use \BisonLab\CommonBundle\Controller\CommonControllerTrait;
-    use \BisonLab\ContextBundle\Controller\ContextTrait;
 
     /**
      * My crews jobs

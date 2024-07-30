@@ -7,6 +7,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 use App\Entity\Event;
 use App\Entity\Person;
@@ -28,6 +29,7 @@ class SummaryController extends AbstractController
 
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private ManagerRegistry $managerRegistry,
         private Summarizer $summarizer,
     ) {
     }

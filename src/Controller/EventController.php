@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,6 +36,7 @@ class EventController extends AbstractController
 
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private ManagerRegistry $managerRegistry,
         private ParameterBagInterface $parameterBag,
         private CcJobs $ccJobs,
         private CcEvents $ccEvents,

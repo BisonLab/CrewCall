@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 use App\Entity\Location;
 use App\Entity\PersonRoleLocation;
@@ -27,6 +28,7 @@ class LocationController extends AbstractController
 
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private ManagerRegistry $managerRegistry,
         private Addressing $addressing,
     ) {
     }

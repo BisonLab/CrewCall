@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use BisonLab\SakonninBundle\Service\Messages as SakonninMessages;
 
 use App\Lib\ExternalEntityConfig;
@@ -27,6 +28,7 @@ class ShiftController extends AbstractController
 
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private ManagerRegistry $managerRegistry,
     ) {
     }
 

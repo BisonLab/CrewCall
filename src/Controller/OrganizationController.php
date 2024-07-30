@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 use App\Entity\Organization;
@@ -28,6 +29,7 @@ class OrganizationController extends AbstractController
 
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private ManagerRegistry $managerRegistry,
         private ParameterBagInterface $parameterBag,
         private Addressing $addressing,
     ) {

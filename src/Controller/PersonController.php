@@ -14,10 +14,12 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use BisonLab\SakonninBundle\Service\Messages as SakonninMessages;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 use App\Entity\Person;
+use App\Entity\PersonContext;
 use App\Entity\PersonState;
 use App\Entity\PersonFunction;
 use App\Entity\PersonRoleOrganization;
@@ -47,6 +49,7 @@ class PersonController extends AbstractController
 
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private ManagerRegistry $managerRegistry,
         private ParameterBagInterface $parameterBag,
         private Addressing $addressing,
         private CcJobs $ccJobs,
@@ -355,7 +358,7 @@ class PersonController extends AbstractController
         $context_forms = $this->createContextForms('App:Person', $contexts);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->updateContextForms($request,'App:Person', "App\Entity\\PersonContext", $person);
+            $this->updateContextForms($request, Person::class, PersonContext::class, $person);
             $this->attributeFormer->updateForms($person, $request);
             $this->entityManager->flush();
 
