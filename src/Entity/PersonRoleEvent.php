@@ -4,43 +4,32 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Event;
 use App\Entity\Person;
 use App\Entity\Role;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="crewcall_person_role_event")
- * @ORM\Entity(repositoryClass="App\Repository\PersonRoleEventRepository")
- * @Gedmo\Loggable
  */
+#[ORM\Entity(repositoryClass: \App\Repository\PersonRoleEventRepository::class)]
+#[ORM\Table(name: 'crewcall_person_role_event')]
 class PersonRoleEvent
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Person", inversedBy="person_role_events")
-     * @ORM\JoinColumn(name="person_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \Person::class, inversedBy: 'person_role_events')]
+    #[ORM\JoinColumn(name: 'person_id', referencedColumnName: 'id', nullable: false)]
     private $person;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Role", inversedBy="person_role_events")
-     * @ORM\JoinColumn(name="role_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \Role::class, inversedBy: 'person_role_events')]
+    #[ORM\JoinColumn(name: 'role_id', referencedColumnName: 'id', nullable: false)]
     private $role;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Event", inversedBy="person_role_events")
-     * @ORM\JoinColumn(name="event_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \Event::class, inversedBy: 'person_role_events')]
+    #[ORM\JoinColumn(name: 'event_id', referencedColumnName: 'id', nullable: false)]
     private $event;
 
     public function getId()

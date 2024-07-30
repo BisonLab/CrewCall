@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Job;
 use App\Entity\Person;
 use App\Entity\Shift;
@@ -11,13 +12,9 @@ use App\Lib\ExternalEntityConfig;
 
 class Jobs
 {
-    private $em;
-    private $sakonnin;
-
-    public function __construct($em, $sakonnin)
-    {
-        $this->em = $em;
-        $this->sakonnin = $sakonnin;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
     }
 
     /*
@@ -60,7 +57,7 @@ class Jobs
 
     public function jobsForPerson(Person $person, $options = array())
     {
-        $jobs = $this->em->getRepository(Job::class)
+        $jobs = $this->entityManager->getRepository(Job::class)
             ->findJobsForPerson($person, $options);
 
         if ($options['no_overlap_filter'] ?? false)
@@ -88,7 +85,7 @@ class Jobs
             $functions[] = $pf->getFunction();
         }
         $options['open'] = true;
-        $shifts = $this->em->getRepository(Shift::class)
+        $shifts = $this->entityManager->getRepository(Shift::class)
             ->findUpcomingForFunctions($functions, $options);
 
         foreach ($shifts as $sf) {
@@ -145,7 +142,7 @@ class Jobs
      */
     public function checkOverlapForPerson(Job $job, $options = array())
     {
-        $job_repo = $this->em->getRepository(Job::class);
+        $job_repo = $this->entityManager->getRepository(Job::class);
         return $job_repo->checkOverlapForPerson($job, $options);
     }
 }

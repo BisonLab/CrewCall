@@ -2,15 +2,14 @@
 
 namespace App\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Person;
 
 class CrewCallRetriever
 {
-    private $em;
-
-    public function __construct($em)
-    {
-        $this->em = $em;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
     }
 
     public function getExternalDataFromContext($context)
@@ -20,7 +19,7 @@ class CrewCallRetriever
         if ('crewcall' == $context->getSystem()) {
             // There should be only one.
             if ('person' == $context->getObjectName()) {
-                return $this->em->getRepository(Person::class)->find($context->getExternalId());
+                return $this->entityManager->getRepository(Person::class)->find($context->getExternalId());
             }
         }
         return null;

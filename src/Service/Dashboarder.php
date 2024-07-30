@@ -2,9 +2,10 @@
 
 namespace App\Service;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 use App\Entity\Person;
-use App\Entity\Organization;
-use App\Entity\Event;
 
 /* 
  * This is the way to be able to program "Summaries" on entities. Both
@@ -13,19 +14,12 @@ use App\Entity\Event;
 class Dashboarder
 {
     private $config;
-    private $router;
-    private $entitymanager;
-    private $twig;
 
-    /*
-     * I may need a lot more here. Too bad I can't use the container.
-     */
-    public function __construct($config, $router, $entitymanager, $twig)
-    {
-        $this->config = $config;
-        $this->router = $router;
-        $this->entitymanager = $entitymanager;
-        $this->twig = $twig;
+    public function __construct(
+        #[AutowireLocator('app.dashies')] private ServiceLocator $locator,
+        private ParameterBagInterface $parameterBag
+    ) {
+        $this->config = $parameterBag->get('crewcall.dashboarder');
     }
 
     public function dashboards(Person $user)
@@ -41,18 +35,14 @@ class Dashboarder
 
         $dashboards = [];
         foreach ($dashes as $dash) {
-            $cust_class = '\CustomBundle\Lib\Dashboarder\\' . $dash['dashie'];
-            $crew_class = '\App\Lib\Dashboarder\\' . $dash['dashie'];
-            if (class_exists($cust_class)) {
-                $cc = new $cust_class($this->router,
-                    $this->entitymanager,
-                    $this->twig);
-                $dash['content'] = $cc->dashize($user) ?: "";
-            } elseif (class_exists($crew_class)) {
-                $cc = new $crew_class($this->router,
-                    $this->entitymanager,
-                    $this->twig);
-                $dash['content'] = $cc->dashize($user) ?: "";
+            $cust_class = 'CustomBundle\Lib\Dashboarder\\' . $dash['dashie'];
+            $dash_class = 'App\Lib\Dashboarder\\' . $dash['dashie'];
+            if (in_array($cust_class, $this->locator->getProvidedServices())) {
+                $cc = $this->locator->get($cust_class);
+                $dash['content'] = $cc->dashize($user);
+            } elseif (in_array($dash_class, $this->locator->getProvidedServices())) {
+                $cc = $this->locator->get($dash_class);
+                $dash['content'] = $cc->dashize($user);
             } else {
                 continue;
             }

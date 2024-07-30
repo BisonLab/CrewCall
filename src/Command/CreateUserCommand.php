@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Attribute\AsCommand;
 
 use App\Entity\Person;
 use App\Entity\PersonRoleOrganization;
@@ -15,16 +16,17 @@ use App\Entity\FunctionEntity;
 use App\Entity\Role;
 use App\Entity\Organization;
 
+#[AsCommand(
+    name: 'crewcall:user:create',
+    description: 'Create a new person/user'
+)]
 class CreateUserCommand extends Command
 {
     use \App\Command\CommonCommandFunctions;
 
-    protected static $defaultName = 'crewcall:user:create';
-
     protected function configure()
     {
         $this
-            ->setDescription('Create a new person/user')
             ->addArgument('username', InputArgument::REQUIRED, 'Username')
             ->addArgument('email', InputArgument::REQUIRED, 'Email address')
             ->addOption('system_role', null, InputOption::VALUE_REQUIRED, 'System role, default USER')

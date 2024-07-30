@@ -2,23 +2,18 @@
 
 namespace App\Lib\Dashboarder;
 
+use Twig\Environment as Twig;
+use Doctrine\ORM\EntityManagerInterface;
+
 class Search
 {
-    private $router;
-    private $entitymanager;
-    private $twig;
-
-    /*
-     * I may need a lot more here. Too bad I can't use the container.
-     */
-    public function __construct($router, $entitymanager, $twig)
-    {
-        $this->router = $router;
-        $this->entitymanager = $entitymanager;
-        $this->twig = $twig;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private Twig $twig
+    ) {
     }
 
-    public function dashize(\App\Entity\Person $user)
+    public function dashize($user)
     {
         return $this->twig->render('dashboarder/search.html.twig');
     }

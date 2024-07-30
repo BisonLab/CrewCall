@@ -12,8 +12,7 @@ trait CommonControllerFunctions
      */
     public function filterPeople($people, $options)
     {
-        $em = $this->getDoctrine()->getManager();
-        $job_repo = $em->getRepository(Job::class);
+        $job_repo = $this->entityManager->getRepository(Job::class);
 
         $select_grouping = $options['select_grouping'] ?? null;
         $crew_only = $options['crew_only'] ?? false;

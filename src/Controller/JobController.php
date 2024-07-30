@@ -8,7 +8,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
+use BisonLab\SakonninBundle\Service\Messages as SakonninMessages;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 use App\Entity\Job;
 use App\Entity\JobLog;
@@ -18,24 +21,28 @@ use App\Entity\Person;
 
 /**
  * Job controller.
- *
- * @Route("/admin/{access}/job", defaults={"access" = "web"}, requirements={"access": "web|rest|ajax"})
  */
-class JobController extends CommonController
+#[Route(path: '/admin/{access}/job', defaults: ['access' => 'web'], requirements: ['access' => 'web|rest|ajax'])]
+class JobController extends AbstractController
 {
+    use \BisonLab\CommonBundle\Controller\CommonControllerTrait;
+    use \BisonLab\ContextBundle\Controller\ContextTrait;
+
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private ParameterBagInterface $parameterBag,
+    ) {
+    }
+
     /**
      * Lists all job entities.
-     *
-     * @Route("/", name="job_index", methods={"GET"})
      */
+    #[Route(path: '/', name: 'job_index', methods: ['GET'])]
     public function indexAction(Request $request, $access)
     {
-        $em = $this->getDoctrine()->getManager();
-
         $shift = null;
         if ($shift_id = $request->get('shift')) {
-            $em = $this->getDoctrine()->getManager();
-            $shift = $em->getRepository(Shift::class)->find($shift_id);
+            $shift = $this->entityManager->getRepository(Shift::class)->find($shift_id);
         }
         /*
          * If you ask yourself why this is not set as a route option you are
@@ -68,19 +75,15 @@ class JobController extends CommonController
         ));
     }
 
-    /**
-     *
-     * @Route("/{id}/state/{state}", name="job_state", methods={"GET", "POST"})
-     */
+    
+    #[Route(path: '/{id}/state/{state}', name: 'job_state', methods: ['GET', 'POST'])]
     public function stateAction(Request $request, Job $job, $state, $access)
     {
         $job->setState($state);
         $force = $request->get('force');
         
-        $em = $this->getDoctrine()->getManager();
-
         $conflicts = [];
-        if ($job->isBooked() && $overlap = $em->getRepository(Job::class)->checkOverlapForPerson($job, ['return_jobs' => true])) {
+        if ($job->isBooked() && $overlap = $this->entityManager->getRepository(Job::class)->checkOverlapForPerson($job, ['return_jobs' => true])) {
             foreach ($overlap as $ojob) {
                 $overlapped = $ojob->getShift();
                 $conflicts[] = 
@@ -97,8 +100,8 @@ class JobController extends CommonController
         if (!$force && count($conflicts) > 0) {
             return new Response(implode("\n", $conflicts), Response::HTTP_CONFLICT);
         }
-        $em->persist($job);
-        $em->flush($job);
+        $this->entityManager->persist($job);
+        $this->entityManager->flush($job);
 
         if ($this->isRest($access)) {
             $shiftamounts = $job->getShift()->getJobsAmountByState();
@@ -114,17 +117,14 @@ class JobController extends CommonController
         }
     }
 
-    /**
-     *
-     * @Route("/states", name="jobs_state", methods={"POST"})
-     */
+    
+    #[Route(path: '/states', name: 'jobs_state', methods: ['POST'])]
     public function stateOnJobsAction(Request $request)
     {
         $jobs = $request->get('jobs');
         $state = $request->get('state');
 
-        $em = $this->getDoctrine()->getManager();
-        $jobrepo = $em->getRepository(Job::class);
+        $jobrepo = $this->entityManager->getRepository(Job::class);
         $conflicts = [];
         foreach ($jobs as $job_id) {
             if (!$job = $jobrepo->find($job_id))
@@ -144,7 +144,7 @@ class JobController extends CommonController
                 }
             }
         }
-        $em->flush();
+        $this->entityManager->flush();
         if (count($conflicts) > 0) {
             return new Response(implode("\n", $conflicts), Response::HTTP_CONFLICT);
         }
@@ -154,9 +154,8 @@ class JobController extends CommonController
 
     /**
      * Creates a new Job
-     *
-     * @Route("/new", name="job_new", methods={"GET", "POST"})
      */
+    #[Route(path: '/new', name: 'job_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request, $access)
     {
         $job = new Job();
@@ -164,8 +163,7 @@ class JobController extends CommonController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $person_repo = $em->getRepository(Person::class);
+            $person_repo = $this->entityManager->getRepository(Person::class);
             if (!$person = $person_repo->find($form->get('pname')->getData()))
                 return $this->returnNotFound($request, 'No person to tie the jobs to');
 
@@ -175,7 +173,7 @@ class JobController extends CommonController
              * "UNINTERESTED" state which makes the application believe it's
              * new, not a state update.
              */ 
-            $job_repo = $em->getRepository(Job::class);
+            $job_repo = $this->entityManager->getRepository(Job::class);
             if ($exists = $job_repo->findOneBy(['person' => $person, 'shift' => $job->getShift()])) {
                 $exists->setState($job->getState());
                 $job = $exists;
@@ -184,7 +182,7 @@ class JobController extends CommonController
             }
 
             $conflicts = [];
-            if ($job->isBooked() && $overlap = $em->getRepository(Job::class)->checkOverlapForPerson($job, ['return_jobs' => true])) {
+            if ($job->isBooked() && $overlap = $this->entityManager->getRepository(Job::class)->checkOverlapForPerson($job, ['return_jobs' => true])) {
                 foreach ($overlap as $ojob) {
                     $overlapped = $ojob->getShift();
                     $conflicts[] = 
@@ -211,10 +209,10 @@ class JobController extends CommonController
             if (!$force && count($conflicts) > 0) {
                 return new Response(implode("\n", $conflicts), Response::HTTP_CONFLICT);
             }
-            $em->persist($job);
+            $this->entityManager->persist($job);
 
             try {
-                $em->flush($job);
+                $this->entityManager->flush($job);
             } catch (\Exception $e) {
                 return new Response(
                     "Could not add Job. Shift possibly added to person already"
@@ -230,8 +228,7 @@ class JobController extends CommonController
 
         // If this has a shift set here, it's not an invalid create attempt.
         if ($shift_id = $request->get('shift')) {
-            $em = $this->getDoctrine()->getManager();
-            if ($shift = $em->getRepository(Shift::class)->find($shift_id)) {
+            if ($shift = $this->entityManager->getRepository(Shift::class)->find($shift_id)) {
                 $job->setShift($shift);
                 $form->setData($job);
             }
@@ -248,27 +245,22 @@ class JobController extends CommonController
         ));
     }
 
-    /**
-     *
-     * @Route("/{id}/delete", name="job_delete", methods={"DELETE", "POST"})
-     */
+    
+    #[Route(path: '/{id}/delete', name: 'job_delete', methods: ['DELETE', 'POST'])]
     public function deleteAction(Request $request, Job $job)
     {
         $token = $request->request->get('_csrf_token');
         if ($token && $this->isCsrfTokenValid('job-delete', $token)) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($job);
-            $em->flush();
+            $this->entityManager->remove($job);
+            $this->entityManager->flush();
             return new JsonResponse(array("status" => "OK"), Response::HTTP_OK);
         }
 
         return new JsonResponse(array("status" => "Failed"), Response::HTTP_FORBIDDEN);
     }
 
-    /**
-     *
-     * @Route("/release", name="jobs_release", methods={"POST"})
-     */
+    
+    #[Route(path: '/release', name: 'jobs_release', methods: ['POST'])]
     public function releaseJobsAction(Request $request)
     {
         $token = $request->request->get('_csrf_token');
@@ -277,22 +269,19 @@ class JobController extends CommonController
 
         $jobs = $request->get('jobs');
 
-        $em = $this->getDoctrine()->getManager();
-        $jobrepo = $em->getRepository(Job::class);
+        $jobrepo = $this->entityManager->getRepository(Job::class);
         foreach ($jobs as $job_id) {
             if (!$job = $jobrepo->find($job_id))
                 return new JsonResponse(array("status" => "NOT FOUND"), Response::HTTP_NOT_FOUND);
-            $em->remove($job);
+            $this->entityManager->remove($job);
         }
-        $em->flush();
+        $this->entityManager->flush();
 
         return new JsonResponse(array("status" => "OK"), Response::HTTP_OK);
     }
 
-    /**
-     *
-     * @Route("/move", name="jobs_move", methods={"POST"})
-     */
+    
+    #[Route(path: '/move', name: 'jobs_move', methods: ['POST'])]
     public function moveJobsAction(Request $request)
     {
         $user = $this->getUser();
@@ -302,9 +291,8 @@ class JobController extends CommonController
 
         $moves = $request->get('moves');
 
-        $em = $this->getDoctrine()->getManager();
-        $jobrepo = $em->getRepository(Job::class);
-        $shiftrepo = $em->getRepository(Shift::class);
+        $jobrepo = $this->entityManager->getRepository(Job::class);
+        $shiftrepo = $this->entityManager->getRepository(Shift::class);
         foreach ($moves as $job_id => $shift_id) {
             if (!$job = $jobrepo->find($job_id))
                 return new JsonResponse(array("status" => "Job not found"),
@@ -320,16 +308,15 @@ class JobController extends CommonController
             $job->setShift($shift);
             // I will not check overlap, this is hopefully done by purpose.
         }
-        $em->flush();
+        $this->entityManager->flush();
 
         return new JsonResponse(array("status" => "OK"), Response::HTTP_OK);
     }
 
     /**
      * Finds and displays the gedmo loggable history
-     *
-     * @Route("/{id}/log", name="job_log")
      */
+    #[Route(path: '/{id}/log', name: 'job_log')]
     public function showLogAction(Request $request, $access, $id)
     {
         return  $this->showLogPage($request,$access, Job::class, $id);
@@ -337,14 +324,11 @@ class JobController extends CommonController
 
     /**
      * Sends messages to a batch of jobs.
-     *
-     * @Route("/jobs_send_message", name="jobs_send_message", methods={"POST"})
      */
-    public function jobsSendMessageAction(Request $request)
+    #[Route(path: '/jobs_send_message', name: 'jobs_send_message', methods: ['POST'])]
+    public function jobsSendMessageAction(Request $request, SakonninMessages $sakonninMessages)
     {
-        $em = $this->getDoctrine()->getManager();
-        $jrepo = $em->getRepository(Job::class);
-        $sm = $this->get('sakonnin.messages');
+        $jrepo = $this->entityManager->getRepository(Job::class);
         $body = $request->request->get('body');
         $subject = $request->request->get('subject') ?? "Message from CrewCall";
         $job_ids = $request->request->get('jobs_list') ?? [];
@@ -369,7 +353,7 @@ class JobController extends CommonController
         $sm->postMessage(array(
             'subject' => $subject,
             'body' => $body,
-            'from' => $this->parameter_bag->get('mailfrom'),
+            'from' => $this->parameterBag->get('mailfrom'),
             'message_type' => $message_type,
             'to_type' => "INTERNAL",
             'from_type' => "INTERNAL",
@@ -382,11 +366,8 @@ class JobController extends CommonController
      * Notes stuff.
      * I'd put it in a trait if it werent for it all being easier this way.
      */
-
-    /**
-     *
-     * @Route("/{job}/add_note", name="job_add_note", methods={"POST"})
-     */
+    
+    #[Route(path: '/{job}/add_note', name: 'job_add_note', methods: ['POST'])]
     public function addNoteAction(Request $request, Job $job, $access)
     {
         $token = $request->request->get('_csrf_token');
@@ -399,8 +380,7 @@ class JobController extends CommonController
                 'subject' => $request->request->get('subject'),
                 'body' => $request->request->get('body')
             ]);
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
+            $this->entityManager->flush();
             return new JsonResponse([
                 "status" => "OK",
                 ], Response::HTTP_CREATED);
@@ -408,10 +388,8 @@ class JobController extends CommonController
         return new Response("Bad token", Response::HTTP_FORBIDDEN);
     }
 
-    /**
-     *
-     * @Route("/{job}/{note_id}/edit_note", name="job_edit_note", methods={"POST"})
-     */
+    
+    #[Route(path: '/{job}/{note_id}/edit_note', name: 'job_edit_note', methods: ['POST'])]
     public function editNoteAction(Request $request, Job $job, $note_id, $access)
     {
         $token = $request->request->get('_csrf_token');
@@ -423,26 +401,22 @@ class JobController extends CommonController
                 'subject' => $request->request->get('subject'),
                 'body' => $request->request->get('body')
             ]);
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
+            $this->entityManager->flush();
         }
         return new JsonResponse([
             "status" => "OK",
             ], Response::HTTP_OK);
     }
 
-    /**
-     *
-     * @Route("/{job}/{note_id}/remove_note", name="job_remove_note", methods={"POST"})
-     */
+    
+    #[Route(path: '/{job}/{note_id}/remove_note', name: 'job_remove_note', methods: ['POST'])]
     public function removeNoteAction(Request $request, Job $job, $note_id, $access)
     {
         $token = $request->request->get('_csrf_token');
 
         if ($token && $this->isCsrfTokenValid('job-remove-note'.$note_id, $token)) {
             $job->removeNote($note_id);
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
+            $this->entityManager->flush();
             return new Response("Deleted", Response::HTTP_NO_CONTENT);
         }
         return new Response("Bad token", Response::HTTP_FORBIDDEN);

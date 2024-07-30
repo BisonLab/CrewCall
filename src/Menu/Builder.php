@@ -4,8 +4,10 @@ namespace App\Menu;
 
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use BisonLab\SakonninBundle\Service\Messages;
 
 use App\Lib\ExternalEntityConfig;
 
@@ -13,31 +15,28 @@ class Builder
 {
     use \BisonLab\CommonBundle\Menu\StylingTrait;
 
-    private $user = null;
-    private $token = null;
-    private $router = null;
-    private $factory = null;
-    private $container = null;
     private $custom_builder = null;
     private $common_builder = null;
     private $sakonnin_builder = null;
+    private $user = null;
 
-    public function __construct(FactoryInterface $factory, $container)
-    {
-        $this->factory = $factory;
-        $this->container = $container;
-        $this->router = $this->container->get('router');
-        if ($this->token = $this->container->get('security.token_storage')->getToken())
-            $this->user = $this->container->get('security.token_storage')->getToken()->getUser();
+    public function __construct(
+        private FactoryInterface $factory,
+        private RouterInterface $router,
+        private TokenStorageInterface $tokenStorage,
+        private ParameterBagInterface $parameterBag,
+        private Messages $sakonnin
+    ) {
+        $this->user = $tokenStorage->getToken()->getUser();
 
         if (class_exists('CustomBundle\Menu\Builder')) {
             $this->custom_builder = new \CustomBundle\Menu\Builder();
         }
         if (class_exists('BisonLab\SakonninBundle\Menu\Builder')) {
-            $this->sakonnin_builder = new \BisonLab\SakonninBundle\Menu\Builder();
+            $this->sakonnin_builder = new \BisonLab\SakonninBundle\Menu\Builder($this->router);
         }
         if (class_exists('BisonLab\CommonBundle\Menu\Builder')) {
-            $this->common_builder = new \BisonLab\CommonBundle\Menu\Builder();
+            $this->common_builder = new \BisonLab\CommonBundle\Menu\Builder($this->tokenStorage, $this->parameterBag);
         }
     }
 
@@ -63,9 +62,8 @@ class Builder
                 array('route' => 'role_index'));
             $adminmenu->addChild('Report generator', array('route' => 'reports'));
 
-            $sakonnin = $this->container->get('sakonnin.messages');
             // Do we have a message for the front page?
-            $fpnl_type = $sakonnin->getMessageType('Front page not logged in');
+            $fpnl_type = $this->sakonnin->getMessageType('Front page not logged in');
 ;
             if (count($fpnl_type->getMessages()) > 0) {
                 $fpm = $fpnl_type->getMessages()[0];
@@ -79,7 +77,7 @@ class Builder
                 $alpm->setLinkAttribute('onClick', "return openCcModal('" . $uri . "', 'Add login page message');");
             }
 
-            if ($this->container->getParameter('allow_registration')) {
+            if ($this->parameterBag->get('allow_registration')) {
                 $adminmenu->addChild('Applicants', array('route' => 'person_applicants'));
             }
             // Not sure I need it, reapply in custom if you need it.
@@ -90,7 +88,6 @@ class Builder
                 array('route' => 'messagetype'));
         }
         $options['menu']      = $menu;
-        $options['container'] = $this->container;
         $options['factory']   = $this->factory;
         $options['router']    = $this->router;
         $options['user']      = $this->user;
@@ -114,7 +111,6 @@ class Builder
         // Yeah, I'd call this a hack too.
         $options['menu']      = $menu;
         $options['factory']   = $this->factory;
-        $options['container'] = $this->container;
         $options['router']    = $this->router;
         $options['user']      = $this->user;
 
@@ -140,7 +136,7 @@ class Builder
 
         $usermenu->addChild('Sign Out', array('route' => 'app_logout'));
 
-        if ($this->container->getParameter('enable_personal_messaging')) {
+        if ($this->parameterBag->get('enable_personal_messaging')) {
             $usermenu = $this->sakonnin_builder->messageMenu($this->factory, $options);
             if ($this->user->isAdmin()) {
                 $pmmenu = $usermenu['Messages']->addChild('Write PM and send SMS', array('uri' => '#'));

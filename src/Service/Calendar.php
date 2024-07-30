@@ -3,6 +3,9 @@
 namespace App\Service;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+
 use App\Entity\Job;
 use App\Entity\Shift;
 use App\Entity\ShiftOrganization;
@@ -10,24 +13,19 @@ use App\Entity\Event;
 use App\Entity\PersonState;
 
 /*
- * This thignie will convert events, shiftfs, and more with start and
+ * This thingie will convert events, shiftfs, and more with start and
  * end to FullCalendar - json and ical objects.
  */
 
 class Calendar
 {
-    private $router;
-    private $summarizer;
-
-    /*
-     *
-     */
     private $options = [];
 
-    public function __construct($router, $summarizer)
-    {
-        $this->router = $router;
-        $this->summarizer = $summarizer;
+    public function __construct(
+        private Summarizer $summarizer,
+        private RouterInterface $router,
+        private ParameterBagInterface $parameterBag,
+    ) {
     }
 
     public function toIcal($frog, $options = [])

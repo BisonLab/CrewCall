@@ -12,37 +12,34 @@ use App\Lib\ExternalEntityConfig;
 use App\Entity\EmbeddableAddress;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="crewcall_organization")
- * @ORM\Entity(repositoryClass="App\Repository\OrganizationRepository")
- * @UniqueEntity("name")
- * @Gedmo\Loggable
  */
+#[ORM\Entity(repositoryClass: \App\Repository\OrganizationRepository::class)]
+#[UniqueEntity('name')]
+#[ORM\Table(name: 'crewcall_organization')]
+#[Gedmo\Loggable]
 class Organization
 {
     use \BisonLab\CommonBundle\Entity\AttributesTrait;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255, nullable=false, unique=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'name', type: 'string', length: 255, nullable: false, unique: true)]
+    #[Gedmo\Versioned]
     private $name;
 
     /**
      * Most countries has an organization number of some sort. This is for that.
      * @var string
-     * @ORM\Column(name="organization_number", type="string", length=255, nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'organization_number', type: 'string', length: 255, nullable: true)]
+    #[Gedmo\Versioned]
     private $organization_number;
 
     /**
@@ -56,9 +53,9 @@ class Organization
      * (Which means everything with "one line addressing" can be handled.)
      *
      * @var string
-     * @ORM\Column(name="office_phone_number", type="string", length=255, nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'office_phone_number', type: 'string', length: 255, nullable: true)]
+    #[Gedmo\Versioned]
     private $office_phone_number;
 
     /**
@@ -67,48 +64,36 @@ class Organization
      * organization, like "CONTACT_PERSON"), but "post@foocompany.bar".
      *
      * @var string
-     * @ORM\Column(name="office_email", type="string", length=255, nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'office_email', type: 'string', length: 255, nullable: true)]
+    #[Gedmo\Versioned]
     private $office_email;
 
-    /**
-     * @ORM\Embedded(class="EmbeddableAddress")
-     **/
+    #[ORM\Embedded(class: \EmbeddableAddress::class)]
     private $visit_address;
 
-    /**
-     * @ORM\Embedded(class="EmbeddableAddress")
-     **/
+    #[ORM\Embedded(class: \EmbeddableAddress::class)]
     private $postal_address;
 
     /**
      * @var string $state
      *
-     * @ORM\Column(name="state", type="string", length=40, nullable=true)
-     * @Gedmo\Versioned
-     * @Assert\Choice(callback = "getStatesList")
      */
+    #[ORM\Column(name: 'state', type: 'string', length: 40, nullable: true)]
+    #[Gedmo\Versioned]
+    #[Assert\Choice(callback: 'getStatesList')]
     private $state = "ACTIVE";
 
-    /**
-     * @ORM\OneToMany(targetEntity="PersonRoleOrganization", mappedBy="organization", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: \PersonRoleOrganization::class, mappedBy: 'organization', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $person_role_organizations;
 
-    /**
-     * @ORM\OneToMany(targetEntity="ShiftOrganization", mappedBy="organization", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: \ShiftOrganization::class, mappedBy: 'organization', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $shift_organizations;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Event", mappedBy="organization", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: \Event::class, mappedBy: 'organization', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $events;
 
-    /**
-     * @ORM\OneToMany(targetEntity="OrganizationContext", mappedBy="owner", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: \OrganizationContext::class, mappedBy: 'owner', cascade: ['persist', 'remove', 'merge'], orphanRemoval: true)]
     private $contexts;
 
     public function __construct()

@@ -8,47 +8,41 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="crewcall_person_function", uniqueConstraints={@ORM\UniqueConstraint(name="person_function_idx", columns={"person_id", "function_id"})})
- * @ORM\Entity(repositoryClass="App\Repository\PersonFunctionRepository")
- * @Gedmo\Loggable
  */
+#[ORM\Entity(repositoryClass: \App\Repository\PersonFunctionRepository::class)]
+#[ORM\Table(name: 'crewcall_person_function')]
+#[ORM\UniqueConstraint(name: 'person_function_idx', columns: ['person_id', 'function_id'])]
+#[Gedmo\Loggable]
 class PersonFunction
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Person", inversedBy="person_functions", cascade={"persist"})
-     * @ORM\JoinColumn(name="person_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \Person::class, inversedBy: 'person_functions', cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'person_id', referencedColumnName: 'id', nullable: false)]
     private $person;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="FunctionEntity", inversedBy="person_functions", cascade={"persist"})
-     * @ORM\JoinColumn(name="function_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \FunctionEntity::class, inversedBy: 'person_functions', cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'function_id', referencedColumnName: 'id', nullable: false)]
     private $function;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="from_date", type="date", nullable=false)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'from_date', type: 'date', nullable: false)]
+    #[Gedmo\Versioned]
     private $from_date;
 
     /**
      * @var string
      * This is basically an expiration. It's typically for licensed functions.
      *
-     * @ORM\Column(name="to_date", type="date", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'to_date', type: 'date', nullable: true)]
+    #[Gedmo\Versioned]
     private $to_date;
 
     public function __construct()

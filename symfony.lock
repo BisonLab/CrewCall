@@ -144,17 +144,11 @@
             ".php_cs.dist"
         ]
     },
-    "friendsofphp/proxy-manager-lts": {
-        "version": "v1.0.0"
-    },
     "fullcalendar/fullcalendar": {
         "version": "v3.x-dev"
     },
     "gedmo/doctrine-extensions": {
         "version": "v3.0.0"
-    },
-    "imagine/imagine": {
-        "version": "1.2.4"
     },
     "jms/metadata": {
         "version": "2.x-dev"
@@ -184,9 +178,6 @@
     },
     "kriswallsmith/assetic": {
         "version": "v1.0.5"
-    },
-    "laminas/laminas-code": {
-        "version": "3.5.1"
     },
     "maennchen/zipstream-php": {
         "version": "2.1.0"
@@ -250,6 +241,18 @@
     },
     "phpstan/phpdoc-parser": {
         "version": "0.4.10"
+    },
+    "phpstan/phpstan": {
+        "version": "1.11",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.0",
+            "ref": "5e490cc197fb6bb1ae22e5abbc531ddc633b6767"
+        },
+        "files": [
+            "phpstan.dist.neon"
+        ]
     },
     "phpunit/php-code-coverage": {
         "version": "9.2.13"
@@ -357,18 +360,6 @@
     },
     "sebastian/version": {
         "version": "3.0.2"
-    },
-    "sensio/framework-extra-bundle": {
-        "version": "5.2",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "5.2",
-            "ref": "fb7e19da7f013d0d422fa9bce16f5c510e27609b"
-        },
-        "files": [
-            "config/packages/sensio_framework_extra.yaml"
-        ]
     },
     "setasign/fpdi": {
         "version": "v2.3.5"
@@ -612,9 +603,6 @@
     "symfony/polyfill-mbstring": {
         "version": "v1.20.0"
     },
-    "symfony/polyfill-php73": {
-        "version": "v1.20.0"
-    },
     "symfony/polyfill-php80": {
         "version": "v1.20.0"
     },
@@ -629,9 +617,6 @@
     },
     "symfony/property-info": {
         "version": "v5.2.0"
-    },
-    "symfony/proxy-manager-bridge": {
-        "version": "v5.4.3"
     },
     "symfony/routing": {
         "version": "5.1",
@@ -666,9 +651,6 @@
         "version": "v5.2.0"
     },
     "symfony/security-csrf": {
-        "version": "v5.2.0"
-    },
-    "symfony/security-guard": {
         "version": "v5.2.0"
     },
     "symfony/security-http": {

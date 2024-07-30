@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use App\Entity\Person;
 use App\Entity\Location;
 use App\Entity\Organization;
@@ -21,13 +22,14 @@ class Addressing
     private $default_country_code;
     private $default_country_name;
 
-    public function __construct($locale, $addressing)
-    {
-        $this->locale = $locale;
-        $this->addressing = $addressing;
-        $this->default_country_code = $addressing['default_country_code'];
-        $this->default_country_name = $addressing['default_country_name'];
-        $this->format = $addressing['format'];
+    public function __construct(
+        protected ParameterBagInterface $parameterBag,
+    ) {
+        $this->locale = $this->parameterBag->get('locale');
+        $this->addressing = $this->parameterBag->get('addressing');
+        $this->default_country_code = $this->addressing['default_country_code'];
+        $this->default_country_name = $this->addressing['default_country_name'];
+        $this->format = $this->addressing['format'];
     }
 
     public function compose($frog, $format = null)

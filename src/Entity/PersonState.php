@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 
 use App\Lib\ExternalEntityConfig;
@@ -12,50 +11,43 @@ use App\Lib\ExternalEntityConfig;
 /**
  * PersonState - In and out of work.
  *
- * @ORM\Table(name="crewcall_personstate")
- * @ORM\Entity(repositoryClass="App\Repository\PersonStateRepository")
- * @Gedmo\Loggable
  */
+#[ORM\Entity(repositoryClass: \App\Repository\PersonStateRepository::class)]
+#[ORM\Table(name: 'crewcall_personstate')]
 class PersonState
 {
     /**
      * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="from_date", type="date", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'from_date', type: 'date', nullable: true)]
     private $from_date;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="to_date", type="date", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'to_date', type: 'date', nullable: true)]
     private $to_date;
 
     /**
      * @var string $state
      *
-     * @ORM\Column(name="state", type="string", length=40, nullable=false)
-     * @Gedmo\Versioned
-     * @Assert\Choice(callback = "getStatesList")
      */
+    #[ORM\Column(name: 'state', type: 'string', length: 40, nullable: false)]
+    #[Assert\Choice(callback: 'getStatesList')]
     private $state;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Person", inversedBy="person_states")
-     * @ORM\JoinColumn(name="person_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \Person::class, inversedBy: 'person_states')]
+    #[ORM\JoinColumn(name: 'person_id', referencedColumnName: 'id', nullable: false)]
     private $person;
 
     public function __construct()

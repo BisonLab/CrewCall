@@ -7,7 +7,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\PersonFunction;
 use App\Entity\Person;
@@ -15,17 +16,23 @@ use App\Entity\FunctionEntity;
 
 /**
  * PersonFunction controller.
- *
- * @Route("/admin/{access}/personfunction", defaults={"access" = "web"}, requirements={"access": "web|rest|ajax"})
  */
-class PersonFunctionController extends CommonController
+#[Route(path: '/admin/{access}/personfunction', defaults: ['access' => 'web'], requirements: ['access' => 'web|rest|ajax'])]
+class PersonFunctionController extends AbstractController
 {
+    use \BisonLab\CommonBundle\Controller\CommonControllerTrait;
+    use \BisonLab\ContextBundle\Controller\ContextTrait;
+
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
+    }
+
     /**
      * Creates a new personFunction entity.
      * Pure REST/AJAX.
-     *
-     * @Route("/new", name="personfunction_new", methods={"POST"})
      */
+    #[Route(path: '/new', name: 'personfunction_new', methods: ['POST'])]
     public function newAction(Request $request, $access)
     {
         $fe_id = $request->request->get('function_id');
@@ -34,10 +41,8 @@ class PersonFunctionController extends CommonController
         if (!$fe_id || !$p_id)
             return new JsonResponse(array("error" => "Missing person or function ID"), Response::HTTP_UNPROCESSABLE_ENTITY);
 
-
-        $em = $this->getDoctrine()->getManager();
-        $function = $em->getRepository(FunctionEntity::class)->find($fe_id);
-        $person = $em->getRepository(Person::class)->find($p_id);
+        $function = $this->entityManager->getRepository(FunctionEntity::class)->find($fe_id);
+        $person = $this->entityManager->getRepository(Person::class)->find($p_id);
         if (!$person || !$function) {
             return new JsonResponse(array("error" => "Could not find person or function"), Response::HTTP_UNPROCESSABLE_ENTITY);
         }
@@ -50,17 +55,16 @@ class PersonFunctionController extends CommonController
         } else {
             $pf->setFromDate(new \DateTime());
         }
-        $em->persist($pf);
-        $em->flush($pf);
+        $this->entityManager->persist($pf);
+        $this->entityManager->flush($pf);
 
         return new JsonResponse(array("status" => "OK"), Response::HTTP_CREATED);
     }
 
     /**
      * Finds and displays a personFunction entity.
-     *
-     * @Route("/{id}", name="personfunction_show", methods={"GET"})
      */
+    #[Route(path: '/{id}', name: 'personfunction_show', methods: ['GET'])]
     public function showAction(PersonFunction $personFunction)
     {
         $deleteForm = $this->createDeleteForm($personFunction);
@@ -73,9 +77,8 @@ class PersonFunctionController extends CommonController
 
     /**
      * Displays a form to edit an existing personFunction entity.
-     *
-     * @Route("/{id}/edit", name="personfunction_edit", methods={"GET", "POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'personfunction_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, PersonFunction $personFunction)
     {
         $deleteForm = $this->createDeleteForm($personFunction);
@@ -83,7 +86,7 @@ class PersonFunctionController extends CommonController
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('personfunction_show', array('id' => $personFunction->getId()));
         }
@@ -97,18 +100,16 @@ class PersonFunctionController extends CommonController
 
     /**
      * Deletes a personFunction entity.
-     *
-     * @Route("/{id}", name="personfunction_delete", methods={"DELETE"})
      */
+    #[Route(path: '/{id}', name: 'personfunction_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, PersonFunction $personFunction)
     {
         $form = $this->createDeleteForm($personFunction);
         $form->handleRequest($request);
         $person = $personFunction->getPerson();
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($personFunction);
-            $em->flush($personFunction);
+            $this->entityManager->remove($personFunction);
+            $this->entityManager->flush($personFunction);
         }
         return $this->redirectToRoute('person_show', array('id' => $person->getId()));
     }

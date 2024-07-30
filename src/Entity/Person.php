@@ -22,211 +22,190 @@ use App\Entity\Shift;
 use App\Entity\Event;
 use App\Lib\ExternalEntityConfig;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="crewcall_person")
- * @ORM\Entity(repositoryClass=PersonRepository::class)
- * @UniqueEntity(fields={"email"}, message="There is already an account with this email address")
- * @UniqueEntity(fields={"username"}, message="There is already an account with this username")
- * @Gedmo\Loggable
- */
+#[ORM\Entity(repositoryClass: PersonRepository::class)]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email address')]
+#[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
+#[ORM\Table(name: 'crewcall_person')]
+#[Gedmo\Loggable]
 class Person implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use \BisonLab\CommonBundle\Entity\AttributesTrait;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @ORM\Column(type="string", length=180, unique=true)
-     * @Assert\NotBlank
-     */
+    #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[Assert\NotBlank]
     private $username;
 
-    /**
-     * @ORM\Column(type="json")
-     */
+    #[ORM\Column(type: 'json')]
     private $system_roles = [];
 
     /**
      * @var string The hashed password
-     * @ORM\Column(type="string")
      */
+    #[ORM\Column(type: 'string')]
     private $password;
 
     /**
      * Could be based on state. Maybe should?
-     * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: 'boolean')]
     private $is_verified = false;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private $enabled = true;
 
     /**
      * @var datetime Last Login
-     * @ORM\Column(type="datetime", nullable=true)
      */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $last_login;
 
-    /**
-     * @ORM\Column(type="string", length=180, unique=true)
-     * @Assert\NotBlank
-     * @Assert\Email
-     */
+    #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Email]
     private $email;
 
     /**
      * @var string
-     * @ORM\Column(name="first_name", type="string", length=255, nullable=true)
-     * @Gedmo\Versioned
-     * @Assert\NotBlank
      */
+    #[ORM\Column(name: 'first_name', type: 'string', length: 255, nullable: true)]
+    #[Gedmo\Versioned]
+    #[Assert\NotBlank]
     private $first_name;
 
     /**
      * @var string
-     * @ORM\Column(name="last_name", type="string", length=255, nullable=true)
-     * @Gedmo\Versioned
-     * @Assert\NotBlank
      */
+    #[ORM\Column(name: 'last_name', type: 'string', length: 255, nullable: true)]
+    #[Gedmo\Versioned]
+    #[Assert\NotBlank]
     private $last_name;
 
     /**
      * @var string
-     * @ORM\Column(name="full_name", type="string", length=255, nullable=true)
-     *
-     * This one is not to be set by anything else than this Entity.
      */
+    #[ORM\Column(name: 'full_name', type: 'string', length: 255, nullable: true)] // This one is not to be set by anything else than this Entity.
     private $full_name;
 
     /**
      * Looks odd, but age may be quite useful in many cases.
      * @var string
-     * @ORM\Column(name="date_of_birth", type="date", length=255, nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'date_of_birth', type: 'date', length: 255, nullable: true)]
+    #[Gedmo\Versioned]
     private $date_of_birth;
 
     /**
      * Another odd one, but it's an increasingly hot topic.
      * @var string
-     * @ORM\Column(name="diets", type="array", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'diets', type: 'array', nullable: true)]
+    #[Gedmo\Versioned]
     private $diets;
 
     /**
      * Not that hot topic, and in my view should be handled by PersonRole, but
      * hard to document properly and get the right usage from.
-     * 
+     *
      * It could be argued that this and also diets should be handled as
      * attributes with a way to customize based on the specific need.
      *
      * I am just not ready to add that code/complexity yet.
      *
      * @var integer
-     * @ORM\Column(name="workload_percentage", type="integer", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'workload_percentage', type: 'integer', nullable: true)]
+    #[Gedmo\Versioned]
     private $workload_percentage;
 
     /**
      * And again. But now I have decided on having these fields, but make the
      * visibility configureable.
      * @var string
-     * @ORM\Column(name="nationality", type="string", length=100, nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'nationality', type: 'string', length: 100, nullable: true)]
+    #[Gedmo\Versioned]
     private $nationality;
 
     /**
      * @var text
-     * @ORM\Column(name="emergency_contact", type="text", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'emergency_contact', type: 'text', nullable: true)]
+    #[Gedmo\Versioned]
     private $emergency_contact;
 
     /**
      * @var string
-     * @ORM\Column(name="mobile_phone_number", type="string", length=255, nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'mobile_phone_number', type: 'string', length: 255, nullable: true)]
+    #[Gedmo\Versioned]
     private $mobile_phone_number;
 
     /**
      * The last of two phone numbers.
-     * Two should be enough for a table, the rest should be added as 
-     * attributes, same with Facebook/Google usernames/addresses 
+     * Two should be enough for a table, the rest should be added as
+     * attributes, same with Facebook/Google usernames/addresses
      *
      * @var string
-     * @ORM\Column(name="home_phone_number", type="string", length=255, nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'home_phone_number', type: 'string', length: 255, nullable: true)]
+    #[Gedmo\Versioned]
     private $home_phone_number;
 
-    /**
-     * @ORM\Embedded(class="EmbeddableAddress")
-     **/
+    #[ORM\Embedded(class: \EmbeddableAddress::class)]
     private $address;
 
-    /**
-     * @ORM\Embedded(class="EmbeddableAddress")
-     **/
+    #[ORM\Embedded(class: \EmbeddableAddress::class)]
     private $postal_address;
 
     /**
      * This is for the non-connected functions. (Skills)
-     * @ORM\OneToMany(targetEntity="PersonFunction", mappedBy="person", cascade={"persist", "remove"}, orphanRemoval=true)
      */
+    #[ORM\OneToMany(targetEntity: \PersonFunction::class, mappedBy: 'person', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $person_functions;
 
     /**
      * This is really functions, but since we have three (four) ways for a
      * function to be connected to this Person object we have to define each
      * by the other end of the person_role_ connection.
-     * @ORM\OneToMany(targetEntity="PersonRoleOrganization", mappedBy="person", cascade={"persist", "remove"}, orphanRemoval=true)
      */
+    #[ORM\OneToMany(targetEntity: \PersonRoleOrganization::class, mappedBy: 'person', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $person_role_organizations;
 
     /**
      * This is really functions, but since we have three (four) ways for a
      * function to be connected to this Person object we have to define each
      * by the other end of the person_role_ connection.
-     * @ORM\OneToMany(targetEntity="PersonRoleEvent", mappedBy="person", cascade={"persist", "remove"}, orphanRemoval=true)
      */
+    #[ORM\OneToMany(targetEntity: \PersonRoleEvent::class, mappedBy: 'person', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $person_role_events;
 
     /**
      * And again!
-     * @ORM\OneToMany(targetEntity="PersonRoleLocation", mappedBy="person", cascade={"persist", "remove"}, orphanRemoval=true)
      */
+    #[ORM\OneToMany(targetEntity: \PersonRoleLocation::class, mappedBy: 'person', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $person_role_locations;
 
     /**
      * This is for the actual jobs.
-     * @ORM\OneToMany(targetEntity="Job", mappedBy="person", fetch="EXTRA_LAZY", cascade={"remove"})
      */
+    #[ORM\OneToMany(targetEntity: \Job::class, mappedBy: 'person', fetch: 'EXTRA_LAZY', cascade: ['remove'])]
     private $jobs;
 
     /**
      * This is for states. A person shall only be able to have one at all
      * time, but we need the history and need to set states in the future
      * (Vacation)
-     * @ORM\OneToMany(targetEntity="PersonState", mappedBy="person", fetch="LAZY", cascade={"persist", "remove"}, orphanRemoval=true)
-     * @ORM\OrderBy({"from_date" = "ASC"})
      */
+    #[ORM\OneToMany(targetEntity: \PersonState::class, mappedBy: 'person', fetch: 'LAZY', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['from_date' => 'ASC'])]
     private $person_states;
 
-    /**
-     * @ORM\OneToMany(targetEntity="PersonContext", mappedBy="owner", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: \PersonContext::class, mappedBy: 'owner', cascade: ['persist', 'remove', 'merge'], orphanRemoval: true)]
     private $contexts;
 
     public function __construct()
@@ -1463,7 +1442,7 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see UserInterface
      */
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;

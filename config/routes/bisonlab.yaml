@@ -1,14 +1,14 @@
 bison_lab_sakonnin:
-    resource: "@BisonLabSakonninBundle/Controller/"
-    type:     annotation
+    resource: "@BisonLabSakonninBundle/src/Controller/"
+    type:     attribute
     prefix:   /
 
 bisonlab_reports:
     resource: "@BisonLabReportsBundle/Controller/"
-    type:     annotation
+    type:     attribute
     prefix:   /
 
 BisonLabCommonBundle:
     resource: "@BisonLabCommonBundle/Controller/"
-    type:     annotation
+    type:     attribute
     prefix:   /

@@ -16,12 +16,11 @@ use App\Lib\ExternalEntityConfig;
  * Yes, this should be named "Function" since that's what it is supposed to be.
  * But feel free to try.
  *
- * @ORM\Entity()
- * @ORM\Table(name="crewcall_function")
- * @ORM\Entity(repositoryClass="App\Repository\FunctionEntityRepository")
- * @UniqueEntity("name")
- * @Gedmo\Loggable
  */
+#[ORM\Entity(repositoryClass: \App\Repository\FunctionEntityRepository::class)]
+#[UniqueEntity('name')]
+#[ORM\Table(name: 'crewcall_function')]
+#[Gedmo\Loggable]
 class FunctionEntity
 {
     // Not sure if I need it, but they might be useful.
@@ -30,63 +29,60 @@ class FunctionEntity
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255, nullable=false, unique=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'name', type: 'string', length: 255, nullable: false, unique: true)]
+    #[Gedmo\Versioned]
     private $name;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="text", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'description', type: 'text', nullable: true)]
+    #[Gedmo\Versioned]
     private $description;
 
     /**
      * @var string $state
      *
-     * @ORM\Column(name="state", type="string", length=40, nullable=true)
-     * @Gedmo\Versioned
-     * @Assert\Choice(callback = "getStatesList")
-     * @Assert\NotBlank
      */
+    #[ORM\Column(name: 'state', type: 'string', length: 40, nullable: true)]
+    #[Assert\Choice(callback: 'getStatesList')]
+    #[Assert\NotBlank]
+    #[Gedmo\Versioned]
     private $state;
 
     /**
      * For the obvious use.
-     * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: 'boolean')]
     private $crew_manager = false;
 
     /**
      * If true, the user can pick this itself.
-     * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: 'boolean')]
     private $user_pickable = false;
 
     /**
      * This is for the non-connected functions.
-     * @ORM\OneToMany(targetEntity="PersonFunction", mappedBy="function",
-     * cascade={"remove"})
      */
+    #[ORM\OneToMany(targetEntity: \PersonFunction::class, mappedBy: 'function', cascade: ['remove'])]
     private $person_functions;
 
     /**
      * This is for the non-connected functions.
-     * @ORM\OneToMany(targetEntity="Shift", mappedBy="function",
-     * cascade={"remove"})
      */
+    #[ORM\OneToMany(targetEntity: \Shift::class, mappedBy: 'function', cascade: ['remove'])]
     private $shifts;
 
     public function __construct($options = array())

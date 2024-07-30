@@ -10,13 +10,33 @@ use App\Lib\ExternalEntityConfig;
 
 /*
  */
-class CrewList extends CommonReportFunctions
+class CrewList implements ReportsInterface
 {
-    protected $container;
+    use \BisonLab\ReportsBundle\Lib\Reports\CommonReportFunctions;
 
-    public function __construct($container, $options = array())
+    public function getReportName(): string
     {
-        $this->container = $container;
+        return "CrewList";
+    }
+
+    public function getDescription(): string
+    {
+        return "Crew list";
+    }
+
+    public function getCriterias(): array
+    {
+        return [];
+    }
+
+    public function getRequiredOptions(): array
+    {
+        return [];
+    }
+
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
     }
 
     // All fixed reports shall be hydrated as arrays.

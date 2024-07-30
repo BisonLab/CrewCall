@@ -11,21 +11,6 @@ class SakonninFunctions implements \BisonLab\SakonninBundle\Lib\Sakonnin\Sakonni
 
     public $callback_functions = array();
 
-    public $forward_functions = array(
-        'smscodehandle' => array(
-            'class' => 'App\Lib\Sakonnin\SmsHandler',
-            'description' => "Act from code and content in SMS.",
-            'attribute_spec' => null,
-            'needs_attributes' => false,
-        ),
-        'sendlistemail' => array(
-            'class' => 'App\Lib\Sakonnin\SendListEmail',
-            'description' => "Send mail to specified email address and log to Event",
-            'attribute_spec' => null,
-            'needs_attributes' => false,
-        ),
-    );
-
     public function __construct($container, $options = array())
     {
         $this->container = $container;

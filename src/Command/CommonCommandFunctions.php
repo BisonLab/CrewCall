@@ -17,19 +17,16 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 trait CommonCommandFunctions
 {
-    private $params;
-    private $manager_registry;
     private $crewcall_em;
     private $sakonnin_em;
-    private $userPasswordHasher;
 
-    public function __construct(ManagerRegistry $manager_registry, UserPasswordHasherInterface $userPasswordHasher, ParameterBagInterface $params)
-    {
-        $this->params = $params;
-        $this->manager_registry = $manager_registry;
+    public function __construct(
+        private ManagerRegistry $manager_registry,
+        private UserPasswordHasherInterface $userPasswordHasher,
+        private ParameterBagInterface $params
+    ) {
         $this->crewcall_em = $manager_registry->getManager('crewcall');
         $this->sakonnin_em = $manager_registry->getManager('sakonnin');
-        $this->userPasswordHasher = $userPasswordHasher;
 
         parent::__construct();
     }

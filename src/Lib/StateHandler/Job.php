@@ -2,17 +2,19 @@
 
 namespace App\Lib\StateHandler;
 
+use BisonLab\SakonninBundle\Service\Messages as SakonninMessages;
+use App\Entity\Job as JobEntity;
+
 class Job
 {
-    private $container;
-    private $em;
-    private $sm;
+    public function __construct(
+        private SakonninMessages $sakonninMessages,
+    ) {
+    }
 
-    public function __construct($container)
+    public function getStateHandleClass()
     {
-        $this->container = $container;
-        $this->em = $container->get('doctrine')->getManager();
-        $this->sm = $container->get('sakonnin.messages');
+        return JobEntity::class;
     }
 
     public function handle(\App\Entity\Job $job, $from, $to)
@@ -33,7 +35,7 @@ class Job
                 $template = 'assigned';
 
             if (in_array('sms', $notify_methods)) {
-                $this->sm->postMessage([
+                $this->sakonninMessages->postMessage([
                     'template' => $template - '-sms',
                     'template_data' => $data,
                     'subject' => "Confirmation",
@@ -48,7 +50,7 @@ class Job
                 ]);
             }
             if (in_array('mail', $notify_methods)) {
-                $this->sm->postMessage([
+                $this->sakonninMessages->postMessage([
                     'template' => $template - '-mail',
                     'template_data' => $data,
                     'subject' => "Confirmation",
@@ -63,7 +65,7 @@ class Job
                 ]);
             }
             if (in_array('pm', $notify_methods)) {
-                $this->sm->postMessage([
+                $this->sakonninMessages->postMessage([
                     'template' => $template - '-mail',
                     'template_data' => $data,
                     'subject' => "Confirmation",

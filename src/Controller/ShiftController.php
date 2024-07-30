@@ -2,34 +2,40 @@
 
 namespace App\Controller;
 
-use App\Entity\Shift;
-use App\Entity\Event;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
+use BisonLab\SakonninBundle\Service\Messages as SakonninMessages;
 
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 use App\Lib\ExternalEntityConfig;
+use App\Entity\Shift;
+use App\Entity\Event;
 
 /**
  * Shift controller.
- *
- * @Route("/admin/{access}/shift", defaults={"access" = "web"}, requirements={"access": "web|rest|ajax"})
  */
-class ShiftController extends CommonController
+#[Route(path: '/admin/{access}/shift', defaults: ['access' => 'web'], requirements: ['access' => 'web|rest|ajax'])]
+class ShiftController extends AbstractController
 {
+    use \BisonLab\CommonBundle\Controller\CommonControllerTrait;
+    use \BisonLab\ContextBundle\Controller\ContextTrait;
+
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
+    }
+
     /**
      * Lists all shift entities in an event.
-     *
-     * @Route("/{event}/index", name="shift_index", methods={"GET"})
      */
+    #[Route(path: '/{event}/index', name: 'shift_index', methods: ['GET'])]
     public function indexAction(Request $request, $access, Event $event)
     {
-        $em = $this->getDoctrine()->getManager();
-
         // Again, ajax/html-centric. But maybe return json later.
         if ($this->isRest($access)) {
             return $this->render('shift/_index.html.twig', array(
@@ -43,12 +49,10 @@ class ShiftController extends CommonController
 
     /**
      * Finds and displays a event entity.
-     *
-     * @Route("/{id}/show_printable", name="shift_show_printable", methods={"GET"})
      */
+    #[Route(path: '/{id}/show_printable', name: 'shift_show_printable', methods: ['GET'])]
     public function showPrintableAction(Request $request, Shift $shift)
     {
-        $em = $this->getDoctrine()->getManager();
         return $this->render('shift/printable.html.twig', array(
             'shift' => $shift,
             'booked' => true,
@@ -58,8 +62,6 @@ class ShiftController extends CommonController
 
     /**
      * Creates a new shift entity.
-     *
-     * @Route("/new", name="shift_new", methods={"GET", "POST"})
      */
     /*
      * This one is quite hacked together, but it's because I have to keep the
@@ -68,18 +70,18 @@ class ShiftController extends CommonController
      * REST (apps you know..) Return JSON.
      *
      */
+    #[Route(path: '/new', name: 'shift_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request, $access)
     {
         $shift = new Shift();
-        $em = $this->getDoctrine()->getManager();
 
         // If this has a event set here, it's not an invalid create attempt.
         $event = null;
         if ($event_id = $request->get('event')) {
-            $event = $em->getRepository(Event::class)->find($event_id);
+            $event = $this->entityManager->getRepository(Event::class)->find($event_id);
         }
         if ($from_shift = $request->get('from_shift')) {
-            $from_shift = $em->getRepository(Shift::class)->find($from_shift);
+            $from_shift = $this->entityManager->getRepository(Shift::class)->find($from_shift);
             $event = $from_shift->getEvent();
         }
 
@@ -93,8 +95,8 @@ class ShiftController extends CommonController
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em->persist($shift);
-                $em->flush($shift);
+                $this->entityManager->persist($shift);
+                $this->entityManager->flush($shift);
                 if ($this->isRest($access)) {
                     return new JsonResponse(array("status" => "OK"),
                         Response::HTTP_CREATED);
@@ -147,17 +149,15 @@ class ShiftController extends CommonController
 
     /**
      * Displays a form to edit an existing shift entity.
-     *
-     * @Route("/{id}/edit", name="shift_edit", defaults={"id" = 0}, methods={"GET", "POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'shift_edit', defaults: ['id' => 0], methods: ['GET', 'POST'])]
     public function editAction(Request $request, Shift $shift, $access)
     {
-        $em = $this->getDoctrine()->getManager();
         $editForm = $this->createForm('App\Form\ShiftType', $shift);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('event_show', array('id' => $shift->getEvent()->getId()));
         }
@@ -178,18 +178,16 @@ class ShiftController extends CommonController
 
     /**
      * Deletes a shift entity.
-     *
-     * @Route("/{id}", name="shift_delete", methods={"DELETE"})
      */
+    #[Route(path: '/{id}', name: 'shift_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, $access, Shift $shift)
     {
         $event = $shift->getEvent();
         // Bloody good question here, because CSRF.
         // This should add some sort of protection.
         if ($this->isRest($access)) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($shift);
-            $em->flush($shift);
+            $this->entityManager->remove($shift);
+            $this->entityManager->flush($shift);
             return new JsonResponse(array("status" => "OK"),
                 Response::HTTP_OK);
         }
@@ -198,9 +196,8 @@ class ShiftController extends CommonController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($shift);
-            $em->flush($shift);
+            $this->entityManager->remove($shift);
+            $this->entityManager->flush($shift);
         }
         return $this->redirectToRoute('event_show',
             array('id' => $event->getId()));
@@ -208,15 +205,13 @@ class ShiftController extends CommonController
 
     /**
      * Sets a (new) state on the shift.
-     *
-     * @Route("/{id}/state/{state}", name="shift_state", methods={"POST"})
      */
+    #[Route(path: '/{id}/state/{state}', name: 'shift_state', methods: ['POST'])]
     public function stateAction(Request $request, Shift $shift, $state, $access)
     {
         if ($state != $shift->getState()) {
             $shift->setState($state);
-            $em = $this->getDoctrine()->getManager();
-            $em->flush($shift);
+            $this->entityManager->flush($shift);
         }
         if ($this->isRest($access)) {
             return new JsonResponse(array("status" => "OK"),
@@ -231,9 +226,8 @@ class ShiftController extends CommonController
 
     /**
      * Very simple, but useful.
-     *
-     * @Route("/{id}/amounts", name="shift_amounts", defaults={"id" = 0}, methods={"GET"})
      */
+    #[Route(path: '/{id}/amounts', name: 'shift_amounts', defaults: ['id' => 0], methods: ['GET'])]
     public function amountsAction(Shift $shift)
     {
         $shiftamounts            = $shift->getJobsAmountByState();
@@ -249,12 +243,10 @@ class ShiftController extends CommonController
 
     /**
      * Sends messages to a batch of persons.
-     *
-     * @Route("/{id}/send_message", name="shift_send_message", methods={"POST"})
      */
-    public function sendMessageAction($access, Request $request, Shift $shift)
+    #[Route(path: '/{id}/send_message', name: 'shift_send_message', methods: ['POST'])]
+    public function sendMessageAction($access, Request $request, Shift $shift, SakonninMessages $sakonninMessages)
     {
-        $sm = $this->get('sakonnin.messages');
         $body = $request->request->get('body');
         $subject = $request->request->get('subject') ?? "Message from CrewCall";
 
@@ -280,7 +272,7 @@ class ShiftController extends CommonController
             ];
             }, $people->toArray());
         $message_type = $request->request->get('message_type');
-        $sm->postMessage(array(
+        $sakonninMessages->postMessage(array(
             'subject' => $subject,
             'body' => $body,
             'from' => $this->parameter_bag->get('mailfrom'),
@@ -294,9 +286,8 @@ class ShiftController extends CommonController
 
     /**
      * Finds and displays the gedmo loggable history
-     *
-     * @Route("/{id}/log", name="shift_log")
      */
+    #[Route(path: '/{id}/log', name: 'shift_log')]
     public function showLogAction(Request $request, $access, $id)
     {
         return  $this->showLogPage($request,$access, Shift::class, $id);
@@ -324,11 +315,8 @@ class ShiftController extends CommonController
      * (But I will more or less cut&paste from here to the other places needing
      * this. Just replace shift with i.e. shift.)
      */
-
-    /**
-     *
-     * @Route("/{shift}/add_note", name="shift_add_note", methods={"POST"})
-     */
+    
+    #[Route(path: '/{shift}/add_note', name: 'shift_add_note', methods: ['POST'])]
     public function addNoteAction(Request $request, Shift $shift, $access)
     {
         $token = $request->request->get('_csrf_token');
@@ -341,8 +329,7 @@ class ShiftController extends CommonController
                 'subject' => $request->request->get('subject'),
                 'body' => $request->request->get('body')
             ]);
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
+            $this->entityManager->flush();
         }
         $event = $shift->getEvent()->getParent() ?? $shift->getEvent();
         $event_id = $request->request->get('event') ?? $event->getId();
@@ -350,10 +337,8 @@ class ShiftController extends CommonController
             'id' => $event_id));
     }
 
-    /**
-     *
-     * @Route("/{shift}/{note_id}/edit_note", name="shift_edit_note", methods={"POST"})
-     */
+    
+    #[Route(path: '/{shift}/{note_id}/edit_note', name: 'shift_edit_note', methods: ['POST'])]
     public function editNoteAction(Request $request, Shift $shift, $note_id, $access)
     {
         $token = $request->request->get('_csrf_token');
@@ -365,8 +350,7 @@ class ShiftController extends CommonController
                 'subject' => $request->request->get('subject'),
                 'body' => $request->request->get('body')
             ]);
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
+            $this->entityManager->flush();
         }
         $event = $shift->getEvent()->getParent() ?? $shift->getEvent();
         $event_id = $request->request->get('event') ?? $event->getId();
@@ -374,18 +358,15 @@ class ShiftController extends CommonController
             'id' => $event_id));
     }
 
-    /**
-     *
-     * @Route("/{shift}/{note_id}/remove_note", name="shift_remove_note", methods={"POST"})
-     */
+    
+    #[Route(path: '/{shift}/{note_id}/remove_note', name: 'shift_remove_note', methods: ['POST'])]
     public function removeNoteAction(Request $request, Shift $shift, $note_id, $access)
     {
         $token = $request->request->get('_csrf_token');
 
         if ($token && $this->isCsrfTokenValid('shift-remove-note'.$note_id, $token)) {
             $shift->removeNote($note_id);
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
+            $this->entityManager->flush();
         }
         $event = $shift->getEvent()->getParent() ?? $shift->getEvent();
         $event_id = $request->request->get('event') ?? $event->getId();

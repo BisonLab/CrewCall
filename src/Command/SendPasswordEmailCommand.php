@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
@@ -19,29 +20,24 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 use App\Entity\Person;
 
+#[AsCommand(
+    name: 'crewcall:user:send-passwordmail',
+    description: 'Sends a passord reset email to the specified username'
+)]
 class SendPasswordEmailCommand extends Command
 {
-    protected static $defaultName = 'crewcall:user:send-passwordmail';
-
-    private $entityManager;
-    private $resetPasswordHelper;
-    private $mailer;
-    private $params;
-
-    public function __construct(EntityManagerInterface $entityManager, ResetPasswordHelperInterface $resetPasswordHelper, MailerInterface $mailer, ParameterBagInterface $params)
-    {
-        $this->entityManager = $entityManager;
-        $this->resetPasswordHelper = $resetPasswordHelper;
-        $this->mailer = $mailer;
-        $this->params = $params;
-
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private ResetPasswordHelperInterface $resetPasswordHelper,
+        private MailerInterface $mailer,
+        private ParameterBagInterface $params
+    ) {
         parent::__construct();
     }
 
     protected function configure()
     {
         $this
-            ->setDescription('Sends a passord reset email to the specified username')
             ->addArgument('username', InputArgument::REQUIRED, 'Username')
         ;
     }

@@ -12,12 +12,15 @@ doctrine:
         default_entity_manager: crewcall
         auto_generate_proxy_classes: "%kernel.debug%"
         enable_lazy_ghost_objects: true
+        controller_resolver:
+            auto_mapping: true
+
         # No automapping when more than one entity manager.
         # auto_mapping: true
         #mappings:
         #    App:
         #        is_bundle: false
-        #        type: annotation
+        #        type: attribute
         #        dir: '%kernel.project_dir%/src/Entity'
         #        prefix: 'App\Entity'
         #        alias: App
@@ -30,7 +33,7 @@ doctrine:
                 mappings:
                     App:
                         # is_bundle: false
-                        type: annotation
+                        type: attribute
                         dir: '%kernel.project_dir%/src/Entity'
                         prefix: 'App\Entity'
                         alias: App
@@ -39,7 +42,7 @@ doctrine:
                     BisonLabSakonninBundle:
                         mapping: false
                     gedmo_loggable:
-                        type: annotation
+                        type: attribute
                         prefix: Gedmo\Loggable\Entity
                         dir: "%kernel.project_dir%/vendor/gedmo/doctrine-extensions/src/Loggable/Entity"
                         alias: GedmoLoggable

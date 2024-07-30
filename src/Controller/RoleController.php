@@ -7,27 +7,33 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 
 use App\Lib\ExternalEntityConfig;
 use App\Entity\Role;
 
 /**
  * Functionentity controller.
- *
- * @Route("/admin/{access}/role", defaults={"access" = "web"}, requirements={"access": "web|rest|ajax"})
  */
-class RoleController extends CommonController
+#[Route(path: '/admin/{access}/role', defaults: ['access' => 'web'], requirements: ['access' => 'web|rest|ajax'])]
+class RoleController extends AbstractController
 {
+    use \BisonLab\CommonBundle\Controller\CommonControllerTrait;
+    use \BisonLab\ContextBundle\Controller\ContextTrait;
+
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
+    }
+
     /**
      * Lists all Role entities.
-     *
-     * @Route("/", name="role_index", methods={"GET"})
      */
+    #[Route(path: '/', name: 'role_index', methods: ['GET'])]
     public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-        $roles = $em->getRepository(Role::class)->findAll();
+        $roles = $this->entityManager->getRepository(Role::class)->findAll();
 
         return $this->render('role/index.html.twig', array(
             'roles' => $roles,
@@ -36,9 +42,8 @@ class RoleController extends CommonController
 
     /**
      * Creates a new Role entity.
-     *
-     * @Route("/new", name="role_new", methods={"GET", "POST"})
      */
+    #[Route(path: '/new', name: 'role_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request)
     {
         $role = new Role();
@@ -46,9 +51,8 @@ class RoleController extends CommonController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($role);
-            $em->flush($role);
+            $this->entityManager->persist($role);
+            $this->entityManager->flush($role);
 
             return $this->redirectToRoute('role_show', array('id' => $role->getId()));
         }
@@ -61,9 +65,8 @@ class RoleController extends CommonController
 
     /**
      * Finds and displays a Role entity.
-     *
-     * @Route("/{id}", name="role_show", methods={"GET"})
      */
+    #[Route(path: '/{id}', name: 'role_show', methods: ['GET'])]
     public function showAction(Role $Role)
     {
         $deleteForm = $this->createDeleteForm($Role);
@@ -76,9 +79,8 @@ class RoleController extends CommonController
 
     /**
      * Displays a form to edit an existing Role entity.
-     *
-     * @Route("/{id}/edit", name="role_edit", methods={"GET", "POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'role_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Role $Role)
     {
         $deleteForm = $this->createDeleteForm($Role);
@@ -86,7 +88,7 @@ class RoleController extends CommonController
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('role_show', array('id' => $Role->getId()));
         }
@@ -100,18 +102,16 @@ class RoleController extends CommonController
 
     /**
      * Deletes a Role entity.
-     *
-     * @Route("/{id}", name="role_delete", methods={"DELETE"})
      */
+    #[Route(path: '/{id}', name: 'role_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Role $Role)
     {
         $form = $this->createDeleteForm($Role);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($Role);
-            $em->flush($Role);
+            $this->entityManager->remove($Role);
+            $this->entityManager->flush($Role);
         }
         return $this->redirectToRoute('role_index');
     }

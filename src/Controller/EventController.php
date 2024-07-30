@@ -8,32 +8,47 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
-
+use BisonLab\SakonninBundle\Service\Messages as SakonninMessages;
 use App\Entity\Event;
 use App\Entity\PersonRoleEvent;
 use App\Entity\Role;
 use App\Entity\FunctionEntity;
+use App\Service\Addressing;
+use App\Service\Jobs as CcJobs;
+use App\Service\Events as CcEvents;
+use App\Service\Calendar as CcCalendar;
 
 /**
  * Event controller.
- *
- * @Route("/admin/{access}/event", defaults={"access" = "web"}, requirements={"access": "web|rest|ajax"})
  */
-class EventController extends CommonController
+#[Route(path: '/admin/{access}/event', defaults: ['access' => 'web'], requirements: ['access' => 'web|rest|ajax'])]
+class EventController extends AbstractController
 {
+    use \BisonLab\CommonBundle\Controller\CommonControllerTrait;
+    use \BisonLab\ContextBundle\Controller\ContextTrait;
+
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private ParameterBagInterface $parameterBag,
+        private CcJobs $ccJobs,
+        private CcEvents $ccEvents,
+        private CcCalendar $ccCalendar,
+    ) {
+    }
+
     /**
      * Lists all event entities.
-     *
-     * @Route("/", name="event_index", methods={"GET"})
      */
-    public function indexAction(Request $request, $access)
+    #[Route(path: '/', name: 'event_index', methods: ['GET'])]
+    public function indexAction(Request $request, $access, EntityManagerInterface $entityManager)
     {
-        $em = $this->getDoctrine()->getManager();
-        $eventrepo = $em->getRepository(Event::class);
+        $eventrepo = $entityManager->getRepository(Event::class);
 
         $past = $upcoming = false;
         if ($request->get('past')) {
@@ -71,15 +86,13 @@ class EventController extends CommonController
 
     /**
      * Creates a new event entity.
-     *
-     * @Route("/new", name="event_new", methods={"GET", "POST"})
      */
-    public function newAction(Request $request)
+    #[Route(path: '/new', name: 'event_new', methods: ['GET', 'POST'])]
+    public function newAction(Request $request, EntityManagerInterface $entityManager)
     {
         $event = new Event();
         if ($parent_id = $request->get('parent')) {
-            $em = $this->getDoctrine()->getManager();
-            if ($parent = $em->getRepository(Event::class)->find($parent_id)) {
+            if ($parent = $entityManager->getRepository(Event::class)->find($parent_id)) {
                 $event->setParent($parent);
             }
         }
@@ -89,9 +102,8 @@ class EventController extends CommonController
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($event);
-                $em->flush($event);
+                $entityManager->persist($event);
+                $entityManager->flush($event);
 
                 if ($event->getParent())
                     return $this->redirectToRoute('event_show', array('id' => $event->getParent()->getId()));
@@ -128,13 +140,10 @@ class EventController extends CommonController
 
     /**
      * Finds and displays a event entity.
-     *
-     * @Route("/{id}/show", name="event_show", methods={"GET"})
      */
-    public function showAction(Request $request, Event $event)
+    #[Route(path: '/{id}/show', name: 'event_show', methods: ['GET'])]
+    public function showAction(Request $request, Event $event, EntityManagerInterface $entityManager)
     {
-        $em = $this->getDoctrine()->getManager();
-
         if ($request->get('printable')) {
             $mailForm = $this->createSendMailForm($event, $request->get('state'));
             return $this->render('event/printable.html.twig', array(
@@ -145,8 +154,8 @@ class EventController extends CommonController
             ));
         }
 
-        $role_repo = $em->getRepository(Role::class);
-        $function_repo = $em->getRepository(FunctionEntity::class);
+        $role_repo = $entityManager->getRepository(Role::class);
+        $function_repo = $entityManager->getRepository(FunctionEntity::class);
         $pre = new PersonRoleEvent();
         $pre->setEvent($event);
         if ($contact = $role_repo->findOneByName('Contact'))
@@ -169,8 +178,8 @@ class EventController extends CommonController
          * event is to use the function.
          */
         $add_crewman_form = null;
-        if ($this->container->getParameter('enable_crew_manager')) {
-            $crew_manager_role = $this->container->getParameter('crew_manager_role');
+        if ($this->parameterBag->get('enable_crew_manager')) {
+            $crew_manager_role = $this->parameterBag->get('crew_manager_role');
             $crewman_role = $role_repo->findOneByName($crew_manager_role);
             $crewman_functions = $function_repo->findBy(['crew_manager' => true]);
             if ($crewman_role && !empty($crewman_functions)) {
@@ -192,17 +201,14 @@ class EventController extends CommonController
 
     /**
      * Displays a form to edit an existing event entity.
-     *
-     * @Route("/{id}/edit", name="event_edit", methods={"GET", "POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'event_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Event $event)
     {
         $editForm = $this->createForm('App\Form\EventType', $event);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
             if ($event->getParent())
                 return $this->redirectToRoute('event_show', array('id' => $event->getParent()->getId()));
             else
@@ -217,19 +223,17 @@ class EventController extends CommonController
 
     /**
      * Deletes a event entity.
-     *
-     * @Route("/{id}/delete", name="event_delete", methods={"DELETE"})
      */
-    public function deleteAction(Request $request, Event $event, $access)
+    #[Route(path: '/{id}/delete', name: 'event_delete', methods: ['DELETE'])]
+    public function deleteAction(Request $request, Event $event, $access, EntityManagerInterface $entityManager)
     {
         $form = $this->createDeleteForm($event);
         $form->handleRequest($request);
         $parent = $event->getParent();
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($event);
-            $em->flush($event);
+            $entityManager->remove($event);
+            $entityManager->flush($event);
         }
 
         if ($this->isRest($access)) {
@@ -246,17 +250,15 @@ class EventController extends CommonController
 
     /**
      * Sets a state on the event and all shifts underneith.
-     *
-     * @Route("/{id}/state/{state}", name="event_state", methods={"POST"})
      */
-    public function stateAction(Request $request, Event $event, $state, $access)
+    #[Route(path: '/{id}/state/{state}', name: 'event_state', methods: ['POST'])]
+    public function stateAction(Request $request, Event $event, $state, $access, EntityManagerInterface $entityManager)
     {
         $form = $this->createStateForm($event);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $event->setState($state);
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
+            $entityManager->flush();
         }
         if ($this->isRest($access)) {
             return new Response("OK", Response::HTTP_OK);
@@ -267,29 +269,25 @@ class EventController extends CommonController
     /**
      * Clone or copy? It takes an event and creates a new set of subevents and
      * shifts based on a new start date.
-     *
-     * @Route("/{event}/clone", name="event_clone", methods={"GET", "POST"})
      */
-    public function cloneAction(Request $request, Event $event)
+    #[Route(path: '/{event}/clone', name: 'event_clone', methods: ['GET', 'POST'])]
+    public function cloneAction(Request $request, Event $event, EntityManagerInterface $entityManager)
     {
         $clone = new Event();
         $form = $this->createForm('App\Form\EventType', $clone);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $events = $this->container->get('crewcall.events');
-
-            $em->getConnection()->beginTransaction();
+            $entityManager->getConnection()->beginTransaction();
             try {
-                $clone = $events->cloneEvent($event, $clone);
-                $em->persist($clone);
-                $em->flush($clone);
-                $em->getConnection()->commit();
+                $clone = $this->ccEvents->cloneEvent($event, $clone);
+                $entityManager->persist($clone);
+                $entityManager->flush($clone);
+                $entityManager->getConnection()->commit();
             } catch (\Exception $e) {
                 error_log("cloneAction ERROR:" . $e->getMessage());
-                $em->getConnection()->rollback();
-                $em->close();
+                $entityManager->getConnection()->rollback();
+                $entityManager->close();
                 throw $e;
             }
             return $this->redirectToRoute('event_show', array('id' => $clone->getId()));
@@ -316,21 +314,16 @@ class EventController extends CommonController
 
     /**
      * Calendar for event
-     *
-     * @Route("/calendar", name="event_calendar", methods={"GET", "POST"})
      */
-    public function eventCalendarAction(Request $request, $access)
+    #[Route(path: '/calendar', name: 'event_calendar', methods: ['GET', 'POST'])]
+    public function eventCalendarAction(Request $request, $access, EntityManagerInterface $entityManager)
     {
         if ($this->isRest($access)) {
-            $calendar = $this->container->get('crewcall.calendar');
-            $jobservice = $this->container->get('crewcall.jobs');
-
             // Gotta get the time scope.
             $from = new \Datetime($request->get('start'));
             $to = new \Datetime($request->get('end'));
 
-            $em = $this->getDoctrine()->getManager();
-            $qb = $em->createQueryBuilder();
+            $qb = $entityManager->createQueryBuilder();
             $qb->select('e')
                  ->from(Event::class, 'e')
                  ->where('e.end > :from')
@@ -339,7 +332,7 @@ class EventController extends CommonController
                  ->setParameter('to', $to, \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE);
             $events = $qb->getQuery()->getResult();
             
-            $calitems = $calendar->toFullCalendarArray($events, ['person' => $this->getUser()]);
+            $calitems = $this->ccCalendar->toFullCalendarArray($events, ['person' => $this->getUser()]);
             // Not liked by OWASP since we just return an array.
             return new JsonResponse($calitems, Response::HTTP_OK);
         }
@@ -351,20 +344,18 @@ class EventController extends CommonController
      * Creates a new PersonRoleEvent entity.
      * But it's only the Crewmanager role here. Simplicity for now.
      * Pure REST/AJAX.
-     *
-     * @Route("/{id}/add_crewmanager", name="event_add_crewmanager", methods={"GET", "POST"})
      */
-    public function addCrewManagerAction(Request $request, Event $event, $access)
+    #[Route(path: '/{id}/add_crewmanager', name: 'event_add_crewmanager', methods: ['GET', 'POST'])]
+    public function addCrewManagerAction(Request $request, Event $event, $access, EntityManagerInterface $entityManager)
     {
-        $em = $this->getDoctrine()->getManager();
         $pre = new PersonRoleEvent();
         $pre->setEvent($event);
 
-        $crew_manager_role = $this->container->getParameter('crew_manager_role');
-        $role_repo = $em->getRepository(Role::class);
+        $crew_manager_role = $this->parameterBag->get('crew_manager_role');
+        $role_repo = $entityManager->getRepository(Role::class);
         $role = $role_repo->findOneByName($crew_manager_role);
 
-        $function_repo = $em->getRepository(FunctionEntity::class);
+        $function_repo = $entityManager->getRepository(FunctionEntity::class);
         $functions = $function_repo->findBy(['crew_manager' => true]);
 
         if (!$role && empty($functions)) {
@@ -396,9 +387,8 @@ class EventController extends CommonController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($pre);
-            $em->flush($pre);
+            $entityManager->persist($pre);
+            $entityManager->flush($pre);
 
             return new JsonResponse(array("status" => "OK"), Response::HTTP_CREATED);
         }
@@ -414,15 +404,13 @@ class EventController extends CommonController
     /**
      * Removes a PersonRoleEvent entity.
      * Pure REST/AJAX.
-     *
-     * @Route("/{id}/remove_crewmanager", name="event_remove_crewmanager", methods={"DELETE", "POST"})
      */
-    public function removeCrewmanagerAction(Request $request, PersonRoleEvent $pfe, $access)
+    #[Route(path: '/{id}/remove_crewmanager', name: 'event_remove_crewmanager', methods: ['DELETE', 'POST'])]
+    public function removeCrewmanagerAction(Request $request, PersonRoleEvent $pfe, $access, EntityManagerInterface $entityManager)
     {
         $event = $pfe->getEvent();
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($pfe);
-        $em->flush($pfe);
+        $entityManager->remove($pfe);
+        $entityManager->flush($pfe);
         if ($this->isRest($access)) {
             return new JsonResponse(array("status" => "OK"),
                 Response::HTTP_OK);
@@ -437,12 +425,10 @@ class EventController extends CommonController
      * Creates a new PersonRoleEvent entity.
      * But it's only the Contact role here. Simplicity for now.
      * Pure REST/AJAX.
-     *
-     * @Route("/{id}/add_contact", name="event_add_contact", methods={"GET", "POST"})
      */
-    public function addContactAction(Request $request, Event $event, $access)
+    #[Route(path: '/{id}/add_contact', name: 'event_add_contact', methods: ['GET', 'POST'])]
+    public function addContactAction(Request $request, Event $event, $access, EntityManagerInterface $entityManager)
     {
-        $em = $this->getDoctrine()->getManager();
         $pre = new PersonRoleEvent();
         $pre->setEvent($event);
 
@@ -460,9 +446,8 @@ class EventController extends CommonController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($pre);
-            $em->flush($pre);
+            $entityManager->persist($pre);
+            $entityManager->flush($pre);
 
             return new JsonResponse(array("status" => "OK"), Response::HTTP_CREATED);
         }
@@ -478,15 +463,13 @@ class EventController extends CommonController
     /**
      * Removes a PersonRoleEvent entity.
      * Pure REST/AJAX.
-     *
-     * @Route("/{id}/remove_contact", name="event_remove_contact", methods={"DELETE", "POST"})
      */
-    public function removeContactAction(Request $request, PersonRoleEvent $pre, $access)
+    #[Route(path: '/{id}/remove_contact', name: 'event_remove_contact', methods: ['DELETE', 'POST'])]
+    public function removeContactAction(Request $request, PersonRoleEvent $pre, $access, EntityManagerInterface $entityManager)
     {
         $event = $pre->getEvent();
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($pre);
-        $em->flush($pre);
+        $entityManager->remove($pre);
+        $entityManager->flush($pre);
         if ($this->isRest($access)) {
             return new JsonResponse(array("status" => "OK"),
                 Response::HTTP_OK);
@@ -501,30 +484,27 @@ class EventController extends CommonController
      * This is the wrong way to handle contacts for events.
      * The correct way is to usee the person role event relation with contact
      * as the role. But I had to make it.
-     * 
+     *
      * List all available contact info from location and organization.
      * Pure Ajax for now.
-     *
-     * @Route("/{id}/pick_contact_info", name="event_pick_contact_info", methods={"GET"})
      */
-    public function getContactInfoAction(Request $request, Event $event, $access)
+    #[Route(path: '/{id}/pick_contact_info', name: 'event_pick_contact_info', methods: ['GET'])]
+    public function getContactInfoAction(Request $request, Event $event, $access, SakonninMessages $sakonninMessages)
     {
-        $sakonnin = $this->get('sakonnin.messages');
-
         $loc_context = [
             'system' => 'crewcall',
             'object_name' => 'location',
             'message_type' => 'Contact Info',
             'external_id' => $event->getLocation()->getId(),
         ];
-        $loc_infos = $sakonnin->getMessagesForContext($loc_context);
+        $loc_infos = $sakonninMessages->getMessagesForContext($loc_context);
         $org_context = [
             'system' => 'crewcall',
             'object_name' => 'organization',
             'message_type' => 'Contact Info',
             'external_id' => $event->getOrganization()->getId(),
         ];
-        $org_infos = $sakonnin->getMessagesForContext($org_context);
+        $org_infos = $sakonninMessages->getMessagesForContext($org_context);
 
         return $this->render('event/_add_contact_info_list.html.twig', array(
             'event' => $event,
@@ -535,12 +515,10 @@ class EventController extends CommonController
 
     /**
      * Sends messages to a batch of persons.
-     *
-     * @Route("/{id}/send_message", name="event_send_message", methods={"POST"})
      */
-    public function sendMessageAction($access, Request $request, Event $event)
+    #[Route(path: '/{id}/send_message', name: 'event_send_message', methods: ['POST'])]
+    public function sendMessageAction($access, Request $request, Event $event, EntityManagerInterface $entityManager, SakonninMessages $sakonninMessages)
     {
-        $sm = $this->get('sakonnin.messages');
         $body = $request->request->get('body');
         $subject = $request->request->get('subject') ?? "Message from CrewCall";
 
@@ -584,7 +562,7 @@ class EventController extends CommonController
             ];
             }, $people->toArray());
         $message_type = $request->request->get('message_type');
-        $sm->postMessage(array(
+        $sakonninMessages->postMessage(array(
             'subject' => $subject,
             'body' => $body,
             'from' => $this->parameter_bag->get('mailfrom'),
@@ -596,17 +574,14 @@ class EventController extends CommonController
         return new Response($status_text, Response::HTTP_OK);
     }
 
-    /**
-     * @Route("/search", name="event_search", methods={"GET"})
-     */
-    public function searchAction(Request $request, $access)
+    #[Route(path: '/search', name: 'event_search', methods: ['GET'])]
+    public function searchAction(Request $request, $access, EntityManagerInterface $entityManager)
     {
         if (!$term = $request->query->get("term"))
             $term = $request->query->get("event");
                 // Gotta be able to handle two-letter usernames.
         if (strlen($term) > 1) {
             $result = array();
-            $em = $this->getDoctrine()->getManager();
             $qb = $em->createQueryBuilder();
             $qb->select('e')
                 ->from(Event::class, 'e')
@@ -636,12 +611,10 @@ class EventController extends CommonController
 
     /**
      * Finds and displays a event entity.
-     *
-     * @Route("/{id}/send_mail", name="event_send_as_mail", methods={"POST"})
      */
-    public function sendMailAction(Request $request, Event $event)
+    #[Route(path: '/{id}/send_mail', name: 'event_send_as_mail', methods: ['POST'])]
+    public function sendMailAction(Request $request, Event $event, EntityManagerInterface $entityManager, SakonninMessages $sakonninMessages)
     {
-        $em = $this->getDoctrine()->getManager();
         $mailForm = $this->createSendMailForm($event);
         $mailForm->handleRequest($request);
         $fields = $request->get('fields');
@@ -662,8 +635,7 @@ class EventController extends CommonController
             $pdf = $mpdf->Output('', 'S');
 
             $body = "Here is the staff list for " . $event->getName();
-            $sm = $this->container->get('sakonnin.messages');
-            $sm->postMessage([
+            $sakonninMessages->postMessage([
                 'subject' => $event->getName(),
                 'body' => $body,
                 'to' => $fd['email'],
@@ -751,11 +723,8 @@ class EventController extends CommonController
      * (But I will more or less cut&paste from here to the other places needing
      * this. Just replace event with i.e. shift.)
      */
-
-    /**
-     *
-     * @Route("/{event}/add_note", name="event_add_note", methods={"POST"})
-     */
+    
+    #[Route(path: '/{event}/add_note', name: 'event_add_note', methods: ['POST'])]
     public function addNoteAction(Request $request, Event $event, $access)
     {
         $token = $request->request->get('_csrf_token');
@@ -768,8 +737,7 @@ class EventController extends CommonController
                 'subject' => $request->request->get('subject'),
                 'body' => $request->request->get('body')
             ]);
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
+            $entityManager->flush();
         }
         if ($event->getParent())
             return $this->redirectToRoute('event_show', array('id' => $event->getParent()->getId()));
@@ -777,11 +745,9 @@ class EventController extends CommonController
             return $this->redirectToRoute('event_show', array('id' => $event->getId()));
     }
 
-    /**
-     *
-     * @Route("/{event}/{note_id}/edit_note", name="event_edit_note", methods={"POST"})
-     */
-    public function editNoteAction(Request $request, Event $event, $note_id, $access)
+    
+    #[Route(path: '/{event}/{note_id}/edit_note', name: 'event_edit_note', methods: ['POST'])]
+    public function editNoteAction(Request $request, Event $event, $note_id, $access, EntityManagerInterface $entityManager)
     {
         $token = $request->request->get('_csrf_token');
 
@@ -792,8 +758,7 @@ class EventController extends CommonController
                 'subject' => $request->request->get('subject'),
                 'body' => $request->request->get('body')
             ]);
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
+            $entityManager->flush();
         }
 
         if ($event->getParent())
@@ -802,18 +767,15 @@ class EventController extends CommonController
             return $this->redirectToRoute('event_show', array('id' => $event->getId()));
     }
 
-    /**
-     *
-     * @Route("/{event}/{note_id}/remove_note", name="event_remove_note", methods={"POST"})
-     */
-    public function removeNoteAction(Request $request, Event $event, $note_id, $access)
+    
+    #[Route(path: '/{event}/{note_id}/remove_note', name: 'event_remove_note', methods: ['POST'])]
+    public function removeNoteAction(Request $request, Event $event, $note_id, $access, EntityManagerInterface $entityManager)
     {
         $token = $request->request->get('_csrf_token');
 
         if ($token && $this->isCsrfTokenValid('event-remove-note'.$note_id, $token)) {
             $event->removeNote($note_id);
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
+            $entityManager->flush();
         }
 
         if ($event->getParent())

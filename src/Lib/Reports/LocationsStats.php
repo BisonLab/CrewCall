@@ -11,13 +11,33 @@ use App\Entity\Event;
 /*
  *
  */
-class LocationsStats extends CommonReportFunctions
+class LocationsStats implements ReportsInterface
 {
-    protected $container;
+    use \BisonLab\ReportsBundle\Lib\Reports\CommonReportFunctions;
 
-    public function __construct($container, $options = array())
+    public function getReportName(): string
     {
-        $this->container = $container;
+        return "LocationsStats";
+    }
+
+    public function getDescription(): string
+    {
+        return "Summary of jobs, events and people per Location.";
+    }
+
+    public function getCriterias(): array
+    {
+        return ['location'];
+    }
+
+    public function getRequiredOptions(): array
+    {
+        return ['location'];
+    }
+
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
     }
 
     // All fixed reports shall be hydrated as arrays.

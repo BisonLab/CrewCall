@@ -9,13 +9,33 @@ use BisonLab\ReportsBundle\Lib\Reports\CommonReportFunctions;
 /*
  */
 
-class WorkLog extends CommonReportFunctions
+class WorkLog implements ReportsInterface
 {
-    protected $container;
+    use \BisonLab\ReportsBundle\Lib\Reports\CommonReportFunctions;
 
-    public function __construct($container, $options = array())
+    public function getReportName(): string
     {
-        $this->container = $container;
+        return "WorkLog";
+    }
+
+    public function getDescription(): string
+    {
+        return "Jobs done in an event.";
+    }
+
+    public function getCriterias(): array
+    {
+        return ['event'];
+    }
+
+    public function getRequiredOptions(): array
+    {
+        return ['event'];
+    }
+
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
     }
 
     // All fixed reports shall be hydrated as arrays.

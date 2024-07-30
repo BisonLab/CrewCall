@@ -3,18 +3,17 @@
 namespace App\Service;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
+use BisonLab\SakonninBundle\Service\Messages as SakonninMessages;
 use App\Entity\Event;
 use App\Entity\Shift;
 
 class Events
 {
-    private $em;
-    private $sakonnin;
-
-    public function __construct($em, $sakonnin)
-    {
-        $this->em = $em;
-        $this->sakonnin = $sakonnin;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private SakonninMessages $sakonninMessages,
+    ) {
     }
 
     public function cloneEvent(Event $orig, Event $clone)
@@ -39,7 +38,7 @@ class Events
             // Cascade persist should have fixed this. But I have to use
             // prePersist for state change handling. (As far as I have found)
             $clone->addShift($ns);
-            $this->em->persist($ns);
+            $this->entityManager->persist($ns);
             $this->_cloneMessages($shift, $ns);
         }
 
@@ -55,7 +54,7 @@ class Events
             $nc = $this->cloneEvent($child, $new_child);
             $clone->addChild($nc);
         }
-        $this->em->persist($clone);
+        $this->entityManager->persist($clone);
         $this->_cloneMessages($orig, $clone);
         
         return $clone;
@@ -81,7 +80,7 @@ class Events
                 'object_name' => $object_name,
                 'external_id' => $clone->getId()
         ];
-        foreach ($this->sakonnin->getMessagesForContext($orig_context) as $orig_msg) { 
+        foreach ($this->sakonninMessages->getMessagesForContext($orig_context) as $orig_msg) { 
             // TODO: See if we want a white or black -list. Starting
             // with a blacklist/exclude.
             if ($orig_msg->getMessageType()->getName() == "List Sent")
@@ -95,7 +94,7 @@ class Events
                 'from_type' => $orig_msg->getFromType(),
                 'content_type' => $orig_msg->getContentType(),
             ];
-            $this->sakonnin->postMessage($clone_msg, $clone_context);
+            $this->sakonninMessages->postMessage($clone_msg, $clone_context);
         }
     }
 }

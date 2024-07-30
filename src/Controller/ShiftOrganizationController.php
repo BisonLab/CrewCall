@@ -7,33 +7,38 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Organization;
 use App\Entity\ShiftOrganization;
 
 /**
  * Shiftorganization controller.
- *
- * @Route("/admin/{access}/shiftorganization", defaults={"access" = "web"}, requirements={"access": "web|rest|ajax"})
  */
-class ShiftOrganizationController extends CommonController
+#[Route(path: '/admin/{access}/shiftorganization', defaults: ['access' => 'web'], requirements: ['access' => 'web|rest|ajax'])]
+class ShiftOrganizationController extends AbstractController
 {
+    use \BisonLab\CommonBundle\Controller\CommonControllerTrait;
+    use \BisonLab\ContextBundle\Controller\ContextTrait;
+
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
+    }
+
     /**
      * Lists all shiftOrganization entities.
-     *
-     * @Route("/", name="shiftorganization_index", methods={"GET"})
      */
+    #[Route(path: '/', name: 'shiftorganization_index', methods: ['GET'])]
     public function indexAction(Request $request, $access)
     {
-        $em = $this->getDoctrine()->getManager();
         if ($shift_id = $request->get('shift')) {
-            $em = $this->getDoctrine()->getManager();
-            if ($shift = $em->getRepository(Shift::class)->find($shift_id)) {
+            if ($shift = $this->entityManager->getRepository(Shift::class)->find($shift_id)) {
                 $shiftOrganizations = $shift;
             }
         } else {
-            $shiftOrganizations = $em->getRepository(ShiftOrganization::class)->findAll();
+            $shiftOrganizations = $this->entityManager->getRepository(ShiftOrganization::class)->findAll();
         }
 
         // Again, ajax-centric.
@@ -49,9 +54,8 @@ class ShiftOrganizationController extends CommonController
 
     /**
      * Creates a new shiftOrganization entity.
-     *
-     * @Route("/new", name="shiftorganization_new", methods={"GET", "POST"})
      */
+    #[Route(path: '/new', name: 'shiftorganization_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request, $access)
     {
         $shiftOrganization = new Shiftorganization();
@@ -59,9 +63,8 @@ class ShiftOrganizationController extends CommonController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($shiftOrganization);
-            $em->flush($shiftOrganization);
+            $this->entityManager->persist($shiftOrganization);
+            $this->entityManager->flush($shiftOrganization);
 
             if ($this->isRest($access)) {
                 return new JsonResponse(array("status" => "OK"), Response::HTTP_CREATED);
@@ -72,8 +75,7 @@ class ShiftOrganizationController extends CommonController
 
         // If this has a shift set here, it's not an invalid create attempt.
         if ($shift_id = $request->get('shift')) {
-            $em = $this->getDoctrine()->getManager();
-            if ($shift = $em->getRepository(Shift::class)->find($shift_id)) {
+            if ($shift = $this->entityManager->getRepository(Shift::class)->find($shift_id)) {
                 $shiftOrganization->setShift($shift);
                 $form->setData($shiftOrganization);
             }
@@ -92,9 +94,8 @@ class ShiftOrganizationController extends CommonController
 
     /**
      * Finds and displays a shiftOrganization entity.
-     *
-     * @Route("/{id}", name="shiftorganization_show", methods={"GET"})
      */
+    #[Route(path: '/{id}', name: 'shiftorganization_show', methods: ['GET'])]
     public function showAction(ShiftOrganization $shiftOrganization)
     {
         $deleteForm = $this->createDeleteForm($shiftOrganization);
@@ -107,9 +108,8 @@ class ShiftOrganizationController extends CommonController
 
     /**
      * Displays a form to edit an existing shiftOrganization entity.
-     *
-     * @Route("/{id}/edit", name="shiftorganization_edit", defaults={"id" = 0}, methods={"GET", "POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'shiftorganization_edit', defaults: ['id' => 0], methods: ['GET', 'POST'])]
     public function editAction(Request $request, ShiftOrganization $shiftOrganization, $access)
     {
         $deleteForm = $this->createDeleteForm($shiftOrganization);
@@ -117,7 +117,7 @@ class ShiftOrganizationController extends CommonController
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $this->entityManager->flush();
 
             if ($this->isRest($access)) {
                 // No content, well, sortof.
@@ -143,16 +143,14 @@ class ShiftOrganizationController extends CommonController
 
     /**
      * Deletes a shiftOrganization entity.
-     *
-     * @Route("/{id}", name="shiftorganization_delete", methods={"DELETE"})
      */
+    #[Route(path: '/{id}', name: 'shiftorganization_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, ShiftOrganization $shiftOrganization, $access)
     {
         // If rest, no form.
         if ($this->isRest($access)) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($shiftOrganization);
-            $em->flush($shiftOrganization);
+            $this->entityManager->remove($shiftOrganization);
+            $this->entityManager->flush($shiftOrganization);
             return new JsonResponse(array("status" => "OK"), Response::HTTP_NO_CONTENT);
         }
 
@@ -160,9 +158,8 @@ class ShiftOrganizationController extends CommonController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($shiftOrganization);
-            $em->flush($shiftOrganization);
+            $this->entityManager->remove($shiftOrganization);
+            $this->entityManager->flush($shiftOrganization);
         }
 
         return $this->redirectToRoute('shiftorganization_index');

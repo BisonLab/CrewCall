@@ -2,18 +2,18 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     globals:
         allow_registration: '%allow_registration%'
-        enable_personal_messaging: "%enable_personal_messaging%"
-        fullcalendar_locale: "%fullcalendar_locale%"
-        javascript_locale:  "%javascript_locale%"
-        sakonnin_messages:  "@sakonnin.messages"
-        sakonnin_files:     "@sakonnin.files"
-        cc_jobs:            "@crewcall.jobs"
-        cc_addressing:      "@crewcall.addressing"
-        states:             "%app.states%"
-        types:              "%app.types%"
-        personfields:       "%personfields%"
-        logo_link_path:     "%env(LOGO_LINK_PATH)%"
-        has_sms:            "%env(bool:HAS_SMS)%"
+        enable_personal_messaging: '%enable_personal_messaging%'
+        fullcalendar_locale: '%fullcalendar_locale%'
+        javascript_locale:  '%javascript_locale%'
+        sakonnin_messages:      '@BisonLab\SakonninBundle\Service\Messages'
+        sakonnin_files:         '@BisonLab\SakonninBundle\Service\Files'
+        cc_jobs:            '@App\Service\Jobs'
+        cc_addressing:      '@App\Service\Addressing'
+        states:             '%app.states%'
+        types:              '%app.types%'
+        personfields:       '%personfields%'
+        logo_link_path:     '%env(LOGO_LINK_PATH)%'
+        has_sms:            '%env(bool:HAS_SMS)%'
 
     form_themes:
         - 'bootstrap_4_horizontal_layout.html.twig'

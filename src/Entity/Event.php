@@ -16,57 +16,59 @@ use App\Lib\ExternalEntityConfig;
 /**
  * Event
  *
- * @ORM\Table(name="crewcall_event", indexes={
- *      @ORM\Index(name="crewcall_event_starttime_idx", columns={"starttime"}),
- *      @ORM\Index(name="crewcall_event_endtime_idx", columns={"endtime"}),
- *      @ORM\Index(name="crewcall_event_starttime_endtime_idx", columns={"starttime", "endtime"})
- * })
- * @ORM\Entity(repositoryClass="App\Repository\EventRepository")
- * @Gedmo\Loggable
  */
+#[ORM\Entity(repositoryClass: \App\Repository\EventRepository::class)]
+#[ORM\Table(name: 'crewcall_event')]
+#[ORM\Index(name: 'crewcall_event_starttime_idx', columns: ['starttime'])]
+#[ORM\Index(name: 'crewcall_event_endtime_idx', columns: ['endtime'])]
+#[ORM\Index(name: 'crewcall_event_starttime_endtime_idx', columns: ['starttime', 'endtime'])]
+#[Gedmo\Loggable]
 class Event
 {
     use NotesTrait;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255, nullable=false)
      * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'name', type: 'string', length: 255, nullable: false)]
+    #[Gedmo\Versioned]
     private $name;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="string", length=255, nullable=true)
      * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'description', type: 'string', length: 255, nullable: true)]
+    #[Gedmo\Versioned]
     private $description;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="starttime", type="datetime", nullable=false)
      * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'starttime', type: 'datetime', nullable: false)]
+    #[Gedmo\Versioned]
     private $start;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="endtime", type="datetime", nullable=true)
      * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'endtime', type: 'datetime', nullable: true)]
+    #[Gedmo\Versioned]
     private $end;
 
     /**
@@ -74,33 +76,26 @@ class Event
      * right now.
      * @var string $state
      *
-     * @ORM\Column(name="state", type="string", length=40, nullable=true)
      * @Gedmo\Versioned
-     * @Assert\Choice(callback = "getStatesList")
      */
+    #[ORM\Column(name: 'state', type: 'string', length: 40, nullable: true)]
+    #[Gedmo\Versioned]
+    #[Assert\Choice(callback: 'getStatesList')]
     private $state;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Location", inversedBy="events")
-     * @ORM\JoinColumn(name="location_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: \Location::class, inversedBy: 'events')]
+    #[ORM\JoinColumn(name: 'location_id', referencedColumnName: 'id')]
     private $location;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Organization", inversedBy="events")
-     * @ORM\JoinColumn(name="organization_id", referencedColumnName="id", nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: \Organization::class, inversedBy: 'events')]
+    #[ORM\JoinColumn(name: 'organization_id', referencedColumnName: 'id', nullable: true)]
     private $organization;
 
-    /**
-     * @ORM\OneToMany(targetEntity="PersonRoleEvent", mappedBy="event", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: \PersonRoleEvent::class, mappedBy: 'event', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $person_role_events;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Shift", mappedBy="event", fetch="EXTRA_LAZY", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
-     * @ORM\OrderBy({"start" = "ASC", "id" = "ASC"})
-     */
+    #[ORM\OneToMany(targetEntity: \Shift::class, mappedBy: 'event', fetch: 'EXTRA_LAZY', cascade: ['persist', 'remove', 'merge'], orphanRemoval: true)]
+    #[ORM\OrderBy(['start' => 'ASC', 'id' => 'ASC'])]
     private $shifts;
 
     /* 
@@ -111,17 +106,16 @@ class Event
      * then connect these events against one or the other.  And I may well
      * do that if this ends up being too odd for the users or code.
      */
-    /**
-     * @ORM\OneToMany(targetEntity="Event", mappedBy="parent", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
-     * @ORM\OrderBy({"start" = "ASC", "id" = "ASC"})
-     */
+    #[ORM\OneToMany(targetEntity: \Event::class, mappedBy: 'parent', cascade: ['persist', 'remove', 'merge'], orphanRemoval: true)]
+    #[ORM\OrderBy(['start' => 'ASC', 'id' => 'ASC'])]
     private $children;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Event", inversedBy="children")
-     * @ORM\JoinColumn(name="parent_event_id", referencedColumnName="id")
      * @Gedmo\Versioned
      */
+    #[ORM\ManyToOne(targetEntity: \Event::class, inversedBy: 'children')]
+    #[ORM\JoinColumn(name: 'parent_event_id', referencedColumnName: 'id')]
+    #[Gedmo\Versioned]
     private $parent;
 
     public function __construct($options = array())
@@ -696,9 +690,7 @@ class Event
         return !$this->isBooked();
     }
 
-    /**
-     * @Assert\Callback
-     */
+    #[Assert\Callback]
     public function validate(ExecutionContextInterface $context)
     {
         if ($this->end && ($this->start >= $this->end)) {

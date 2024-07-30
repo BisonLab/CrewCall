@@ -14,61 +14,57 @@ use App\Lib\ExternalEntityConfig;
 /**
  * Location
  *
- * @ORM\Entity()
- * @ORM\Table(name="crewcall_location")
- * @ORM\Entity(repositoryClass="App\Repository\LocationRepository")
- * @UniqueEntity("name")
- * @Gedmo\Loggable
  */
+#[ORM\Entity(repositoryClass: \App\Repository\LocationRepository::class)]
+#[UniqueEntity('name')]
+#[ORM\Table(name: 'crewcall_location')]
+#[Gedmo\Loggable]
 class Location
 {
     use \BisonLab\CommonBundle\Entity\AttributesTrait;
 
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255, nullable=false, unique=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'name', type: 'string', length: 255, nullable: false, unique: true)]
+    #[Gedmo\Versioned]
     private $name;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="text", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'description', type: 'text', nullable: true)]
+    #[Gedmo\Versioned]
     private $description;
 
     /**
      * @var string $state
      *
-     * @ORM\Column(name="state", type="string", length=40, nullable=true)
-     * @Gedmo\Versioned
-     * @Assert\Choice(callback = "getStatesList")
      */
+    #[ORM\Column(name: 'state', type: 'string', length: 40, nullable: true)]
+    #[Gedmo\Versioned]
+    #[Assert\Choice(callback: 'getStatesList')]
     private $state = "OPEN";
 
     /**
      * @var string
      *
-     * @ORM\Column(name="phone_number", type="string", length=20, nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'phone_number', type: 'string', length: 20, nullable: true)]
+    #[Gedmo\Versioned]
     private $phone_number;
 
-    /**
-     * @ORM\Embedded(class="EmbeddableAddress")
-     */
+    #[ORM\Embedded(class: \EmbeddableAddress::class)]
     private $address;
 
     /**
@@ -76,9 +72,9 @@ class Location
      *
      * Kinda alternative to address.
      *
-     * @ORM\Column(name="map_link", type="text", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'map_link', type: 'text', nullable: true)]
+    #[Gedmo\Versioned]
     private $map_link;
 
     /* 
@@ -89,36 +85,26 @@ class Location
      * then connect these locations against one or the other.  And I may well
      * do that if this ends up being too odd for the users or code.
      */
-    /**
-     * @ORM\OneToMany(targetEntity="Location", mappedBy="parent", fetch="EXTRA_LAZY", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: \Location::class, mappedBy: 'parent', fetch: 'EXTRA_LAZY', cascade: ['persist', 'remove', 'merge'], orphanRemoval: true)]
     private $children;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Location", inversedBy="children")
-     * @ORM\JoinColumn(name="parent_location_id", referencedColumnName="id")
-     * @Gedmo\Versioned
      */
+    #[ORM\ManyToOne(targetEntity: \Location::class, inversedBy: 'children')]
+    #[Gedmo\Versioned]
+    #[ORM\JoinColumn(name: 'parent_location_id', referencedColumnName: 'id')]
     private $parent;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Event", mappedBy="location")
-     */
+    #[ORM\OneToMany(targetEntity: \Event::class, mappedBy: 'location')]
     private $events;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Shift", mappedBy="location")
-     */
+    #[ORM\OneToMany(targetEntity: \Shift::class, mappedBy: 'location')]
     private $shifts;
 
-    /**
-     * @ORM\OneToMany(targetEntity="PersonRoleLocation", mappedBy="location", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: \PersonRoleLocation::class, mappedBy: 'location', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $person_role_locations;
 
-    /**
-     * @ORM\OneToMany(targetEntity="LocationContext", mappedBy="owner", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: \LocationContext::class, mappedBy: 'owner', cascade: ['persist', 'remove', 'merge'], orphanRemoval: true)]
     private $contexts;
 
     public function __construct($options = array())

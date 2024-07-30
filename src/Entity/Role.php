@@ -20,52 +20,44 @@ use App\Lib\ExternalEntityConfig;
  *
  * And there is a difference between a Function/Skill and a Role albeit subtle.
  *
- * @ORM\Entity()
- * @ORM\Table(name="crewcall_role")
- * @ORM\Entity(repositoryClass="App\Repository\RoleRepository")
- * @UniqueEntity("name")
- * @Gedmo\Loggable
  */
+#[ORM\Entity(repositoryClass: \App\Repository\RoleRepository::class)]
+#[UniqueEntity('name')]
+#[ORM\Table(name: 'crewcall_role')]
+#[Gedmo\Loggable]
 class Role
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255, nullable=false, unique=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'name', type: 'string', length: 255, nullable: false, unique: true)]
+    #[Gedmo\Versioned]
     private $name;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="text", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'description', type: 'text', nullable: true)]
+    #[Gedmo\Versioned]
     private $description;
 
-    /**
-     * @ORM\OneToMany(targetEntity="PersonRoleOrganization", mappedBy="role", cascade={"remove"})
-     */
+    #[ORM\OneToMany(targetEntity: \PersonRoleOrganization::class, mappedBy: 'role', cascade: ['remove'])]
     private $person_role_organizations;
 
-    /**
-     * @ORM\OneToMany(targetEntity="PersonRoleLocation", mappedBy="role", cascade={"remove"})
-     */
+    #[ORM\OneToMany(targetEntity: \PersonRoleLocation::class, mappedBy: 'role', cascade: ['remove'])]
     private $person_role_locations;
 
-    /**
-     * @ORM\OneToMany(targetEntity="PersonRoleEvent", mappedBy="role", cascade={"remove"})
-     */
+    #[ORM\OneToMany(targetEntity: \PersonRoleEvent::class, mappedBy: 'role', cascade: ['remove'])]
     private $person_role_events;
 
     public function __construct($options = array())

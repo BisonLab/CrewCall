@@ -9,36 +9,38 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Doctrine\Common\Collections\ArrayCollection;
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Job;
 use App\Entity\JobLog;
 use App\Entity\Shift;
 use App\Entity\Event;
+use App\Service\Jobs;
 
 /**
  * Crew Manager controller.
  * This is the controller for the front end par of the application.
- * 
+ *
  * It's the only one for now, and may be pushed onto it's own bundle in case
  * someone means we need different front ends. Which might be true, as this
  * starts very simple as I just need it for testing functionality.
- *
- * @Route("/crewman")
  */
-class CrewManagerController extends CommonController
+#[Route(path: '/crewman')]
+class CrewManagerController extends AbstractController
 {
+    use \BisonLab\CommonBundle\Controller\CommonControllerTrait;
+    use \BisonLab\ContextBundle\Controller\ContextTrait;
+
     /**
      * My crews jobs
-     * @Route("/my_crew", name="cm_my_crew", methods={"GET"})
      */
-    public function myCrew(Request $request)
+    #[Route(path: '/my_crew', name: 'cm_my_crew', methods: ['GET'])]
+    public function myCrew(Request $request, Jobs $ccjobs, EntityManagerInterface $entityManager, CsrfTokenManagerInterface $tokenManager)
     {
-        $em = $this->getDoctrine()->getManager();
-        $ccjobs = $this->container->get('crewcall.jobs');
         // Create a csrf token for use in the next step
-        $csrfman = $this->get('security.csrf.token_manager');
         $user = $this->getUser();
 
         // To be honest, I don't really know how it would be possible to be
@@ -48,7 +50,7 @@ class CrewManagerController extends CommonController
 
         $date = new \DateTime();
         if ($shift_id = $request->get('shift')) {
-            if (!$shift = $em->getRepository(Shift::class)
+            if (!$shift = $entityManager->getRepository(Shift::class)
                 ->find($shift_id))
                 throw $this->createNotFoundException('Shift not found');
             if (!$user->isCrewManager($shift))
@@ -58,7 +60,7 @@ class CrewManagerController extends CommonController
         } else {
             if ($request->get('date'))
                 $date = new \DateTime($request->get('date'));
-            $dated_events = $em->getRepository(Event::class)
+            $dated_events = $entityManager->getRepository(Event::class)
                 ->findEvents([
                     'on_date' => $date,
                     'booked' => true,
@@ -70,9 +72,9 @@ class CrewManagerController extends CommonController
         }
 
         $shifts = [];
-        $signintoken = $csrfman->getToken('signin-job')->getValue();
-        $signouttoken = $csrfman->getToken('signout-job')->getValue();
-        $deletejoblogtoken = $csrfman->getToken('delete-joblog')->getValue();
+        $signintoken = $tokenManager->getToken('signin-job')->getValue();
+        $signouttoken = $tokenManager->getToken('signout-job')->getValue();
+        $deletejoblogtoken = $tokenManager->getToken('delete-joblog')->getValue();
         foreach ($events as $event) {
             foreach ($event->getShifts() as $shift) {
                 $jobs = $shift->getJobs(['booked' => true]);
@@ -94,11 +96,9 @@ class CrewManagerController extends CommonController
         return $this->render('crewman/_crew.html.twig', $retarr);
     }
 
-    /**
-     *
-     * @Route("/signin/{id}", name="cm_signin_job", methods={"POST"})
-     */
-    public function signinJobAction(Request $request, Job $job)
+    
+    #[Route(path: '/signin/{id}', name: 'cm_signin_job', methods: ['POST'])]
+    public function signinJobAction(Request $request, Job $job, EntityManagerInterface $entityManager)
     {
         $user = $this->getUser(); 
         if (!$user->isCrewManager($job->getShift()))
@@ -125,17 +125,14 @@ class CrewManagerController extends CommonController
         $joblog->setJob($job);
         $joblog->setInTime($time);
 
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($joblog);
-        $em->flush();
+        $entityManager->persist($joblog);
+        $entityManager->flush();
         return new JsonResponse(["OK" => "Well done"], Response::HTTP_OK);
     }
 
-    /**
-     *
-     * @Route("/signout/{id}", name="cm_signout_job", methods={"POST"})
-     */
-    public function signoutJobAction(Request $request, Job $job)
+    
+    #[Route(path: '/signout/{id}', name: 'cm_signout_job', methods: ['POST'])]
+    public function signoutJobAction(Request $request, Job $job, EntityManagerInterface $entityManager)
     {
         $user = $this->getUser(); 
         if (!$user->isCrewManager($job->getShift()))
@@ -161,17 +158,14 @@ class CrewManagerController extends CommonController
         }
         $last_joblog->setOutTime($time);
 
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($last_joblog);
-        $em->flush();
+        $entityManager->persist($last_joblog);
+        $entityManager->flush();
         return new JsonResponse(["OK" => "Well done"], Response::HTTP_OK);
     }
 
-    /**
-     *
-     * @Route("/delete_joblog/{id}", name="cm_delete_joblog", methods={"DELETE", "POST"})
-     */
-    public function deleteJobLogAction(Request $request, JobLog $joblog)
+    
+    #[Route(path: '/delete_joblog/{id}', name: 'cm_delete_joblog', methods: ['DELETE', 'POST'])]
+    public function deleteJobLogAction(Request $request, JobLog $joblog, EntityManagerInterface $entityManager)
     {
         $user = $this->getUser(); 
         $job = $joblog->getJob();
@@ -187,9 +181,8 @@ class CrewManagerController extends CommonController
             return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
         }
 
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($joblog);
-        $em->flush();
+        $entityManager->remove($joblog);
+        $entityManager->flush();
         return new JsonResponse(["OK" => "Well done"], Response::HTTP_OK);
     }
 }

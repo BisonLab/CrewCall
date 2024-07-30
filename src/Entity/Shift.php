@@ -13,84 +13,71 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use App\Lib\ExternalEntityConfig;
 
 /**
- * @ORM\Table(name="crewcall_shift", indexes={
- *      @ORM\Index(name="crewcall_shift_starttime_idx", columns={"starttime"}),
- *      @ORM\Index(name="crewcall_shift_endtime_idx", columns={"endtime"}),
- *      @ORM\Index(name="crewcall_shift_starttime_endtime_idx", columns={"starttime", "endtime"})
- * })
- * @ORM\Entity(repositoryClass="App\Repository\ShiftRepository")
- * @Gedmo\Loggable
  */
+#[ORM\Entity(repositoryClass: \App\Repository\ShiftRepository::class)]
+#[ORM\Table(name: 'crewcall_shift')]
+#[ORM\Index(name: 'crewcall_shift_starttime_idx', columns: ['starttime'])]
+#[ORM\Index(name: 'crewcall_shift_endtime_idx', columns: ['endtime'])]
+#[ORM\Index(name: 'crewcall_shift_starttime_endtime_idx', columns: ['starttime', 'endtime'])]
+#[Gedmo\Loggable]
 class Shift
 {
     use NotesTrait;
 
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Event", inversedBy="shifts")
-     * @ORM\JoinColumn(name="event_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \Event::class, inversedBy: 'shifts')]
+    #[ORM\JoinColumn(name: 'event_id', referencedColumnName: 'id', nullable: false)]
     private $event;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="starttime", type="datetime", nullable=false)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'starttime', type: 'datetime', nullable: false)]
+    #[Gedmo\Versioned]
     private $start;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="endtime", type="datetime", nullable=false)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'endtime', type: 'datetime', nullable: false)]
+    #[Gedmo\Versioned]
     private $end;
 
     /**
      * @var string $state
      *
-     * @ORM\Column(name="state", type="string", length=40, nullable=false)
-     * @Gedmo\Versioned
-     * @Assert\Choice(callback = "getStatesList")
      */
+    #[ORM\Column(name: 'state', type: 'string', length: 40, nullable: false)]
+    #[Gedmo\Versioned]
+    #[Assert\Choice(callback: 'getStatesList')]
     private $state;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="FunctionEntity", inversedBy="shifts")
-     * @ORM\JoinColumn(name="function_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \FunctionEntity::class, inversedBy: 'shifts')]
+    #[ORM\JoinColumn(name: 'function_id', referencedColumnName: 'id', nullable: false)]
     private $function;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="amount", type="integer", nullable=false)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'amount', type: 'integer', nullable: false)]
+    #[Gedmo\Versioned]
     private $amount;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Location", inversedBy="shifts")
-     * @ORM\JoinColumn(name="location_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: \Location::class, inversedBy: 'shifts')]
+    #[ORM\JoinColumn(name: 'location_id', referencedColumnName: 'id')]
     private $location;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Job", mappedBy="shift", cascade={"persist","remove"})
-     */
+    #[ORM\OneToMany(targetEntity: \Job::class, mappedBy: 'shift', cascade: ['persist', 'remove'])]
     private $jobs;
 
-    /**
-     * @ORM\OneToMany(targetEntity="ShiftOrganization", mappedBy="shift", cascade={"remove"})
-     */
+    #[ORM\OneToMany(targetEntity: \ShiftOrganization::class, mappedBy: 'shift', cascade: ['remove'])]
     private $shift_organizations;
 
     public function __construct($options = array())
@@ -529,9 +516,7 @@ class Shift
         return in_array($this->getState(), ExternalEntityConfig::getOpenStatesFor('Shift'));
     }
 
-    /**
-     * @Assert\Callback
-     */
+    #[Assert\Callback]
     public function validate(ExecutionContextInterface $context)
     {
         if ($this->end && ($this->start >= $this->end)) {

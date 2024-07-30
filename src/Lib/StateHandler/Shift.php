@@ -2,17 +2,21 @@
 
 namespace App\Lib\StateHandler;
 
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Shift as ShiftEntity;
+
 /*
  */
 class Shift
 {
-    private $em;
-    private $sm;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
+    }
 
-    public function __construct($container)
+    public function getStateHandleClass()
     {
-        $this->em = $container->get('doctrine')->getManager();
-        $this->sm = $container->get('sakonnin.messages');
+        return ShiftEntity::class;
     }
 
     public function handle(\App\Entity\Shift $shift, $from, $to)
@@ -22,9 +26,9 @@ class Shift
                 $job->setState("COMPLETED");
                 if ($from === false)
                     continue;
-                $this->em->persist($job);
-                $meta = $this->em->getClassMetadata(get_class($job));
-                $uow = $this->em->getUnitOfWork();
+                $this->entityManager->persist($job);
+                $meta = $this->entityManager->getClassMetadata(get_class($job));
+                $uow = $this->entityManager->getUnitOfWork();
                 $uow->recomputeSingleEntityChangeSet($meta, $job);
             }
         }

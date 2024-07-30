@@ -18,18 +18,18 @@ services:
         exclude:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
-            - '../src/*Bundle/'
+            - '../src/CustomBundle/'
             - '../src/Kernel.php'
             - '../src/Tests/'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
-    App\Controller\:
-        resource: '../src/Controller/*'
-        tags: ['controller.service_arguments']
-        calls:
-            - [ setContainer, ['@service_container'] ]
-            - [ setParameterBag, ['@parameter_bag'] ]
+    # App\Controller\:
+    #     resource: '../src/Controller/*'
+    #     tags: ['controller.service_arguments']
+    #     calls:
+    #         - [ setContainer, ['@service_container'] ]
+    #         - [ setParameterBag, ['@parameter_bag'] ]
 
     App\EventListener\:
         resource: '../src/EventListener/*'
@@ -37,82 +37,74 @@ services:
         autoconfigure: true
 
     # Not yet
-    #App\Lib\StateHandler\:
-    #    resource: '../src/Lib/StateHandler/'
-    #    autowire: true
-    #    autoconfigure: true
-    #    tags:
-    #        - { name: 'app.statehandler' , index_by: 'key' }
+    App\Lib\StateHandler\:
+        resource: '../src/Lib/StateHandler/'
+        autowire: true
+        autoconfigure: true
+        tags:
+            - { name: 'app.statehandler' , index_by: 'key' }
 
-    #App\Service\StateHandler:
-    #    autowire: true
-    #    autoconfigure: true
-    #    arguments: [!tagged_locator { tag: 'app.statehandler', index_by: 'key' }]
+    App\Lib\Dashboarder\:
+        resource: '../src/Lib/Dashboarder/'
+        autowire: true
+        autoconfigure: true
+        tags:
+            - { name: 'app.dashies' , index_by: 'key' }
 
-    App\Service\StateHandler:
-        arguments: ['@service_container' ]
+    App\Service\:
+        resource: '../src/Service/*'
+        autowire: true
+        autoconfigure: true
 
     # Darn, I hate doing this. Gotta upgrade soon.
     crewcall.statehandler:
         alias: App\Service\StateHandler
         public: true
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
-
-    app.menu_builder:
-        class: App\Menu\Builder
-        arguments: ["@knp_menu.factory", '@service_container']
+    App\Menu\Builder:
+        autowire: true
+        autoconfigure: true
         tags:
             - { name: knp_menu.menu_builder, method: mainMenu, alias: mainmenu }
             - { name: knp_menu.menu_builder, method: userMenu, alias: usermenu }
 
     # TODO: Make these autowireable
     crewcall.events:
-        class: App\Service\Events
+        alias: App\Service\Events
         public: true
-        arguments: ["@doctrine.orm.entity_manager", "@sakonnin.messages"]
 
     crewcall.jobs:
-        class: App\Service\Jobs
+        alias: App\Service\Jobs
         public: true
-        arguments: ["@doctrine.orm.entity_manager", "@sakonnin.messages"]
 
     crewcall.joblogs:
-        class: App\Service\JobLogs
+        alias: App\Service\JobLogs
         public: true
-        arguments: ["@doctrine.orm.entity_manager", "@parameter_bag"]
 
     crewcall.retriever:
-        class: App\Service\CrewCallRetriever
+        alias: App\Service\CrewCallRetriever
         public: true
-        arguments: ["@doctrine.orm.entity_manager"]
 
     crewcall_retriever:
         alias: crewcall.retriever
         public: true
 
     crewcall.calendar:
-        class: App\Service\Calendar
+        alias: App\Service\Calendar
         public: true
-        arguments: ["@router", "@crewcall.summarizer"]
 
     crewcall.summarizer:
-        class: App\Service\Summarizer
+        alias: App\Service\Summarizer
         public: true
-        arguments: ['@router']
 
     crewcall.dashboarder:
-        class: App\Service\Dashboarder
+        alias: App\Service\Dashboarder
         public: true
-        arguments: ['%crewcall.dashboarder%','@router', "@doctrine.orm.entity_manager", "@twig"]
 
     crewcall.addressing:
-        class: App\Service\Addressing
+        alias: App\Service\Addressing
         public: true
-        arguments: ['%locale%','%addressing%']
 
     crewcall.attributeformer:
-        class: App\Service\AttributeFormer
+        alias: App\Service\AttributeFormer
         public: true
-        arguments: ['@form.factory']

@@ -9,8 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use App\Entity\Job;
 use App\Entity\JobLog;
@@ -21,22 +20,19 @@ use App\Lib\ExternalEntityConfig;
 
 /**
  * Job controller.
- *
- * @Route("/admin/{access}/joblog", defaults={"access" = "web"}, requirements={"access": "web|rest|ajax"})
  */
-class JobLogController extends CommonController
+#[Route(path: '/admin/{access}/joblog', defaults: ['access' => 'web'], requirements: ['access' => 'web|rest|ajax'])]
+class JobLogController extends AbstractController
 {
     /**
      * a Time Sheet.
-     *
-     * @Route("/", name="joblog_index", methods={"GET"})
      */
+    #[Route(path: '/', name: 'joblog_index', methods: ['GET'])]
     public function indexAction(Request $request, $access)
     {
-        $em = $this->getDoctrine()->getManager();
         $job = null;
         if ($job_id = $request->get('job')) {
-            $job = $em->getRepository(Job::class)->find($job_id);
+            $job = $this->entityManager->getRepository(Job::class)->find($job_id);
         }
         if (!$job)
             return $this->returnNotFound($request, 'No job to tie the log to');
@@ -61,21 +57,19 @@ class JobLogController extends CommonController
      * If it's gotten and posted with a shift, add a JobLog with the same
      * in/out on all jobs in the shift.
      * And if it's a Job, only add to that.
-     *
-     * @Route("/new", name="joblog_new", methods={"GET", "POST"})
      */
+    #[Route(path: '/new', name: 'joblog_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request, $access)
     {
-        $em = $this->getDoctrine()->getManager();
         $joblog = new JobLog();
 
         $job = null;
         if ($job_id = $request->get('job')) {
-            $job = $em->getRepository(Job::class)->find($job_id);
+            $job = $this->entityManager->getRepository(Job::class)->find($job_id);
         }
         $shift = null;
         if ($shift_id = $request->get('shift')) {
-            $shift = $em->getRepository(Shift::class)->find($shift_id);
+            $shift = $this->entityManager->getRepository(Shift::class)->find($shift_id);
         }
 
         if (!$job && !$shift)
@@ -110,23 +104,21 @@ class JobLogController extends CommonController
      * Creates one or more new JobLog entries.
      * I am splitting new and create as good old symfony.
      * Just too much code in the submit part to keep all in one.
-     *
-     * @Route("/create", name="joblog_create", methods={"GET", "POST"})
      */
+    #[Route(path: '/create', name: 'joblog_create', methods: ['GET', 'POST'])]
     public function createAction(Request $request, $access)
     {
-        $em = $this->getDoctrine()->getManager();
         $joblog = new JobLog();
         $form = $this->createForm(JobLogType::class, $joblog);
         $form->handleRequest($request);
 
         $job = null;
         if ($job_id = $request->get('job')) {
-            $job = $em->getRepository(Job::class)->find($job_id);
+            $job = $this->entityManager->getRepository(Job::class)->find($job_id);
         }
         $shift = null;
         if ($shift_id = $request->get('shift')) {
-            $shift = $em->getRepository(Shift::class)->find($shift_id);
+            $shift = $this->entityManager->getRepository(Shift::class)->find($shift_id);
         }
 
         if (!$job && !$shift)
@@ -145,10 +137,10 @@ class JobLogController extends CommonController
                     $joblog->setIn($in);
                     $joblog->setOut($out);
                     $joblog->setJob($job);
-                    if ($overlap = $em->getRepository(JobLog::class)->checkOverlapForPerson($joblog)) {
+                    if ($overlap = $this->entityManager->getRepository(JobLog::class)->checkOverlapForPerson($joblog)) {
                         return new Response("Found existing work in the timeframe you entered. Shift is " . (string)current($overlap)->getJob()->getShift() . " and person is " . (string)$job->getPerson(), Response::HTTP_CONFLICT);
                     }
-                    $em->persist($joblog);
+                    $this->entityManager->persist($joblog);
                 }
             } elseif (isset($data['noshow_state'])) {
                 $job->setState($data['noshow_state']);
@@ -156,13 +148,13 @@ class JobLogController extends CommonController
             } else {
                 $joblog->setJob($job);
                 // Check overlap.
-                if ($overlap = $em->getRepository(JobLog::class)->checkOverlapForPerson($joblog)) {
+                if ($overlap = $this->entityManager->getRepository(JobLog::class)->checkOverlapForPerson($joblog)) {
                     return new Response("Found existing work in the timeframe you entered. Shift is " . (string)current($overlap)->getJob()->getShift(), Response::HTTP_CONFLICT);
                 }
-                $em->persist($joblog);
+                $this->entityManager->persist($joblog);
             }
 
-            $em->flush();
+            $this->entityManager->flush();
 
             if ($this->isRest($access)) {
                 return new JsonResponse(array("status" => "OK"),
@@ -180,18 +172,16 @@ class JobLogController extends CommonController
 
     /**
      * The time log per person.
-     *
-     * @Route("/{id}/person", name="joblog_person", methods={"GET"})
      */
-    public function indexPersonAction(Request $request, $access, Person $person)
+    #[Route(path: '/{id}/person', name: 'joblog_person', methods: ['GET'])]
+    public function indexPersonAction(Request $request, JobLogs $joblogs, $access, Person $person)
     {
-        $handler = $this->get('crewcall.joblogs');
         $job = null;
         $options['summary_only'] = $request->get('summary_only');
         $options['from_date'] = $request->get('from_date');
         $options['to_date'] = $request->get('to_date');
 
-        $logs = $handler->getJobLogsForPerson($person, $options);
+        $logs = $joblogs->getJobLogsForPerson($person, $options);
 
         if ($this->isRest($access)) {
             return $this->render('joblog/_indexPerson.html.twig', array(
@@ -210,16 +200,15 @@ class JobLogController extends CommonController
 
     /**
      * Displays a form to edit an existing shift entity.
-     *
-     * @Route("/{id}/edit", name="joblog_edit", defaults={"id" = 0}, methods={"GET", "POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'joblog_edit', defaults: ['id' => 0], methods: ['GET', 'POST'])]
     public function editAction(Request $request, JobLog $joblog, $access)
     {
         $editForm = $this->createForm(JobLogType::class, $joblog);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $this->entityManager->flush();
 
             return new JsonResponse(array("status" => "OK"),
                 Response::HTTP_OK);
@@ -240,9 +229,8 @@ class JobLogController extends CommonController
 
     /**
      * Deletes a joblog entity.
-     *
-     * @Route("/{id}", name="joblog_delete", methods={"DELETE", "POST"})
      */
+    #[Route(path: '/{id}', name: 'joblog_delete', methods: ['DELETE', 'POST'])]
     public function deleteAction(Request $request, $access, JobLog $joblog)
     {
         if (!$token = $request->request->get('_token')) {
@@ -253,9 +241,8 @@ class JobLogController extends CommonController
             return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
         }
         if ($this->isRest($access)) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($joblog);
-            $em->flush($joblog);
+            $this->entityManager->remove($joblog);
+            $this->entityManager->flush($joblog);
             return new JsonResponse(array("status" => "OK"),
                 Response::HTTP_OK);
         }

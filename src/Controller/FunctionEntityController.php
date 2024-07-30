@@ -7,7 +7,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 
 use App\Lib\ExternalEntityConfig;
 use App\Entity\FunctionEntity;
@@ -17,20 +18,25 @@ use App\Form\FunctionEntityType;
 
 /**
  * Functionentity controller.
- *
- * @Route("/admin/{access}/function", defaults={"access" = "web"}, requirements={"access": "web|rest|ajax"})
  */
-class FunctionEntityController extends CommonController
+#[Route(path: '/admin/{access}/function', defaults: ['access' => 'web'], requirements: ['access' => 'web|rest|ajax'])]
+class FunctionEntityController extends AbstractController
 {
+    use \BisonLab\CommonBundle\Controller\CommonControllerTrait;
+    use \BisonLab\ContextBundle\Controller\ContextTrait;
+
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
+    }
+
     /**
      * Lists all functionEntity entities.
-     *
-     * @Route("/", name="function_index", methods={"GET"})
      */
+    #[Route(path: '/', name: 'function_index', methods: ['GET'])]
     public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-        $functionEntities = $em->getRepository(FunctionEntity::class)->findAll();
+        $functionEntities = $this->entityManager->getRepository(FunctionEntity::class)->findAll();
 
         return $this->render('functionentity/index.html.twig', array(
             'functionEntities' => $functionEntities,
@@ -39,17 +45,15 @@ class FunctionEntityController extends CommonController
 
     /**
      * Lists all functionEntity entities in a pickable fasion
-     *
-     * @Route("/picker", name="function_picker", methods={"GET"})
      */
+    #[Route(path: '/picker', name: 'function_picker', methods: ['GET'])]
     public function pickerAction(Request $request, $access)
     {
-        $em = $this->getDoctrine()->getManager();
-        $functionEntities = $em->getRepository(FunctionEntity::class)->findAllActive();
+        $functionEntities = $this->entityManager->getRepository(FunctionEntity::class)->findAllActive();
         $has_functions = $has_f_ids = array();
         $add_to = null;
         if ($person_id = $request->get('person_id')) {
-            $person = $em->getRepository(Person::class)->find($person_id);
+            $person = $this->entityManager->getRepository(Person::class)->find($person_id);
             $update = "PersonFunction";
             $update_id = $person_id;
             foreach ($person->getPersonFunctions() as $hf) {
@@ -82,34 +86,32 @@ class FunctionEntityController extends CommonController
 
     /**
      * Update the functions list on entities having them.
-     *
-     * @Route("/update_picked/{update}/{update_id}", name="picked_functions_updater", methods={"POST"})
      */
+    #[Route(path: '/update_picked/{update}/{update_id}', name: 'picked_functions_updater', methods: ['POST'])]
     public function updatePickedAction(Request $request, $update, $update_id)
     {
-        $em = $this->getDoctrine()->getManager();
         // So, let's handle these based on what to update.
         if ($update == "PersonFunction") {
-            $person = $em->getRepository(Person::class)->find($update_id);
+            $person = $this->entityManager->getRepository(Person::class)->find($update_id);
             $has_functions = $request->request->get('has_functions') ?? [];
             $pfs = array();
             foreach ($person->getPersonFunctions() as $pf) { 
                 if (!in_array($pf->getFunctionId(), $has_functions)) {
-                    $em->remove($pf);
+                    $this->entityManager->remove($pf);
                 }
                 $pfs[] = $pf->getFunctionId();
             }
             foreach ($has_functions as $hf) {
                 if (!in_array($hf, $pfs)) {
-                    $function = $em->getRepository(FunctionEntity::class)->find($hf);
+                    $function = $this->entityManager->getRepository(FunctionEntity::class)->find($hf);
                     $pf = new PersonFunction();
                     $pf->setFunction($function);
                     $pf->setFromDate(new \DateTime());
                     $person->addPersonFunction($pf);
-                    $em->persist($pf);
+                    $this->entityManager->persist($pf);
                 }
             }
-            $em->flush();
+            $this->entityManager->flush();
             return $this->redirectToRoute('person_show', array('id' => $update_id));
         }
         // Let the submitter decide what to do.
@@ -118,9 +120,8 @@ class FunctionEntityController extends CommonController
 
     /**
      * Creates a new functionEntity entity.
-     *
-     * @Route("/new", name="function_new", methods={"GET", "POST"})
      */
+    #[Route(path: '/new', name: 'function_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request)
     {
         $functionEntity = new FunctionEntity();
@@ -128,9 +129,8 @@ class FunctionEntityController extends CommonController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($functionEntity);
-            $em->flush();
+            $this->entityManager->persist($functionEntity);
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('function_show', array('id' => $functionEntity->getId()));
         }
@@ -143,9 +143,8 @@ class FunctionEntityController extends CommonController
 
     /**
      * Finds and displays a functionEntity entity.
-     *
-     * @Route("/{id}/show", name="function_show", methods={"GET"})
      */
+    #[Route(path: '/{id}/show', name: 'function_show', methods: ['GET'])]
     public function showAction(FunctionEntity $functionEntity)
     {
         $deleteForm = $this->createDeleteForm($functionEntity);
@@ -160,9 +159,8 @@ class FunctionEntityController extends CommonController
 
     /**
      * Displays a form to edit an existing functionEntity entity.
-     *
-     * @Route("/{id}/edit", name="function_edit", methods={"GET", "POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'function_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, FunctionEntity $functionEntity)
     {
         $deleteForm = $this->createDeleteForm($functionEntity);
@@ -171,7 +169,7 @@ class FunctionEntityController extends CommonController
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('function_show', array('id' => $functionEntity->getId()));
         }
@@ -186,9 +184,8 @@ class FunctionEntityController extends CommonController
 
     /**
      * Deletes a functionEntity entity.
-     *
-     * @Route("/{id}", name="function_delete", methods={"DELETE"})
      */
+    #[Route(path: '/{id}', name: 'function_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, FunctionEntity $functionEntity)
     {
         if (!$functionEntity->isDeleteable())
@@ -199,33 +196,30 @@ class FunctionEntityController extends CommonController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($functionEntity);
-            $em->flush($functionEntity);
+            $this->entityManager->remove($functionEntity);
+            $this->entityManager->flush($functionEntity);
         }
         return $this->redirectToRoute('function_index');
     }
 
     /**
      * Removes everyone from the function.
-     *
-     * @Route("/{id}", name="function_remove_people", methods={"POST"})
      */
+    #[Route(path: '/{id}', name: 'function_remove_people', methods: ['POST'])]
     public function removePeopleAction(Request $request, FunctionEntity $functionEntity)
     {
         $form = $this->createRemovePeopleForm($functionEntity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $repo = $em->getRepository(PersonFunction::class);
+            $repo = $this->entityManager->getRepository(PersonFunction::class);
             foreach ($request->request->get('personfunctions') as $pfid) {
                 $pf = $repo->find($pfid);
                 if ($pf->getFunction() !== $functionEntity)
                     continue;
-                $em->remove($pf);
+                $this->entityManager->remove($pf);
             }
-            $em->flush();
+            $this->entityManager->flush();
         }
         return $this->redirectToRoute('function_show',
             array('id' => $functionEntity->getId()));

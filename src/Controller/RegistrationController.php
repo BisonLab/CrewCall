@@ -23,21 +23,15 @@ use Doctrine\ORM\EntityRepository;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
-
-class RegistrationController extends CommonController
+class RegistrationController extends AbstractController
 {
-    private EmailVerifier $emailVerifier;
-
-    public function __construct(EmailVerifier $emailVerifier, ParameterBagInterface $params)
+    public function __construct(
+        private EmailVerifier $emailVerifier,
+        private ParameterBagInterface $params)
     {
-        $this->emailVerifier = $emailVerifier;
-        $this->params = $params;
     }
 
-    /**
-     * @Route("/register", name="app_register")
-     */
+    #[Route(path: '/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
         $user = new Person();
@@ -116,9 +110,7 @@ class RegistrationController extends CommonController
         ]);
     }
 
-    /**
-     * @Route("/verify/email", name="app_verify_email")
-     */
+    #[Route(path: '/verify/email', name: 'app_verify_email')]
     public function verifyUserEmail(Request $request): Response
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');

@@ -12,8 +12,10 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
+use BisonLab\SakonninBundle\Service\Messages as SakonninMessages;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 use App\Entity\Person;
 use App\Entity\PersonState;
@@ -28,26 +30,38 @@ use App\Form\PersonType;
 use App\Form\NewPersonType;
 use App\Form\ChangePasswordFosType;
 use App\Form\ResetPasswordRequestFormType;
+use App\Service\Addressing;
+use App\Service\Jobs as CcJobs;
+use App\Service\AttributeFormer;
+use App\Service\Calendar as CcCalendar;
 
 /**
  * Person controller.
- *
- * @Route("/admin/{access}/person", defaults={"access" = "web"}, requirements={"access": "web|rest|ajax"})
  */
-class PersonController extends CommonController
+#[Route(path: '/admin/{access}/person', defaults: ['access' => 'web'], requirements: ['access' => 'web|rest|ajax'])]
+class PersonController extends AbstractController
 {
+    use \BisonLab\CommonBundle\Controller\CommonControllerTrait;
+    use \BisonLab\ContextBundle\Controller\ContextTrait;
     use CommonControllerFunctions;
+
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private ParameterBagInterface $parameterBag,
+        private Addressing $addressing,
+        private CcJobs $ccJobs,
+        private AttributeFormer $attributeFormer,
+        private CcCalendar $ccCalendar,
+    ) {
+    }
     /**
      * Lists absolutely all person entities.
-     *
-     * @Route("/", name="person_index", methods={"GET"})
      */
+    #[Route(path: '/', name: 'person_index', methods: ['GET'])]
     public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $people = $em->getRepository(Person::class)->findAll();
-        $fe_repo = $em->getRepository(FunctionEntity::class);
+        $people = $this->entityManager->getRepository(Person::class)->findAll();
+        $fe_repo = $this->entityManager->getRepository(FunctionEntity::class);
 
         $functions = $fe_repo->findAll();
         return $this->render('person/index.html.twig', array(
@@ -60,15 +74,12 @@ class PersonController extends CommonController
 
     /**
      * Can become a new controller, but keep it here for now.
-     *
-     * @Route("/crew", name="crew_index", methods={"GET"})
      */
+    #[Route(path: '/crew', name: 'crew_index', methods: ['GET'])]
     public function crewIndexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $fe_repo = $em->getRepository(FunctionEntity::class);
-        $job_repo = $em->getRepository(Job::class);
+        $fe_repo = $this->entityManager->getRepository(FunctionEntity::class);
+        $job_repo = $this->entityManager->getRepository(Job::class);
 
         $select_grouping = $request->get('select_grouping');
         $simplified = $request->get('simplified');
@@ -121,7 +132,7 @@ class PersonController extends CommonController
                     $people->add($p);
             }
         } else {
-                $people = $this->filterPeople($em->getRepository(Person::class)->findAll(),[
+                $people = $this->filterPeople($this->entityManager->getRepository(Person::class)->findAll(),[
                     'crew_only' => true,
                     'select_grouping' => $select_grouping,
                     'on_date' => $on_date,
@@ -143,13 +154,11 @@ class PersonController extends CommonController
 
     /**
      * Lists all person entities with a function
-     *
-     * @Route("/function", name="person_function", methods={"GET"})
      */
+    #[Route(path: '/function', name: 'person_function', methods: ['GET'])]
     public function listByFunctionAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-        $fe_repo = $em->getRepository(FunctionEntity::class);
+        $fe_repo = $this->entityManager->getRepository(FunctionEntity::class);
 
         $fid = $request->get('function_id');
         $select_grouping = $request->get('select_grouping');
@@ -179,13 +188,11 @@ class PersonController extends CommonController
 
     /**
      * Lists all person entities with a Role
-     *
-     * @Route("/role", name="person_role", methods={"GET"})
      */
+    #[Route(path: '/role', name: 'person_role', methods: ['GET'])]
     public function listByRoleAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-        $role_repo = $em->getRepository(Role::class);
+        $role_repo = $this->entityManager->getRepository(Role::class);
 
         $on_date = $request->get('on_date');
         $role = null;
@@ -211,14 +218,11 @@ class PersonController extends CommonController
             'roles' => $role_repo->findAll(),
         ));
     }
-    /**
-     *
-     * @Route("/applicants", name="person_applicants", methods={"GET"})
-     */
+    
+    #[Route(path: '/applicants', name: 'person_applicants', methods: ['GET'])]
     public function listApplicantsAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-        $people = $em->getRepository(Person::class)->findByState('APPLICANT');
+        $people = $this->entityManager->getRepository(Person::class)->findByState('APPLICANT');
 
         return $this->render('person/applicants.html.twig', array(
             'applicants' => $people));
@@ -228,22 +232,18 @@ class PersonController extends CommonController
      * Creates a new person entity.
      * This is only used when you add a crewmember. People with roles
      * will be created via the Organization or Location controller.
-     *
-     * @Route("/new_crewmember", name="person_new_crewmember", methods={"GET", "POST"})
      */
+    #[Route(path: '/new_crewmember', name: 'person_new_crewmember', methods: ['GET', 'POST'])]
     public function newCrewmemberAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
         $person = new Person();
         $person->setSystemRole('ROLE_USER');
-        $addressing_config = $this->container->getParameter('addressing');
-        $personfields = $this->container->getParameter('personfields');
-        $addressing = $this->container->get('crewcall.addressing');
-        $attributeFormer = $this->container->get('crewcall.attributeformer');
-        $address_elements = $addressing->getFormElementList($person);
-        $internal_organization_config = $this->container->getParameter('internal_organization');
-        $first_org = $em->getRepository(Organization::class)->getInternalOrganization();
-        $first_role = $em->getRepository(Role::class)->getDefaultRole();
+        $addressing_config = $this->parameterBag->get('addressing');
+        $personfields = $this->parameterBag->get('personfields');
+        $address_elements = $this->addressing->getFormElementList($person);
+        $internal_organization_config = $this->parameterBag->get('internal_organization');
+        $first_org = $this->entityManager->getRepository(Organization::class)->getInternalOrganization();
+        $first_role = $this->entityManager->getRepository(Role::class)->getDefaultRole();
 
         $form = $this->createForm(NewPersonType::class,
             $person, [
@@ -275,14 +275,14 @@ class PersonController extends CommonController
             // I have removed password setting, alas I have to set something
             // until the user has reset their password.
             $person->setPassword(\ShortCode\Random::get(16));
-            $em->persist($person);
-            $em->persist($pf);
-            $em->persist($pro);
-            $em->flush($person);
+            $this->entityManager->persist($person);
+            $this->entityManager->persist($pf);
+            $this->entityManager->persist($pro);
+            $this->entityManager->flush($person);
 
             return $this->redirectToRoute('person_show', array('id' => $person->getId()));
         }
-        $attribute_forms = $attributeFormer->getEditForms($person);
+        $attribute_forms = $this->attributeFormer->getEditForms($person);
         $contexts      = $person->getContexts();
         $context_forms = $this->createContextForms('App:Person', $contexts);
         return $this->render('person/new.html.twig', array(
@@ -295,9 +295,8 @@ class PersonController extends CommonController
 
     /**
      * Finds and displays a person entity.
-     *
-     * @Route("/{id}/show", name="person_show", methods={"GET"})
      */
+    #[Route(path: '/{id}/show', name: 'person_show', methods: ['GET'])]
     public function showAction(Person $person)
     {
         $deleteForm = $this->createDeleteForm($person);
@@ -314,24 +313,20 @@ class PersonController extends CommonController
 
     /**
      * Calendar for person
-     *
-     * @Route("/{id}/calendar", name="person_calendar", methods={"POST"})
      */
+    #[Route(path: '/{id}/calendar', name: 'person_calendar', methods: ['POST'])]
     public function personCalendarAction(Request $request, $access, Person $person)
     {
-        $calendar = $this->container->get('crewcall.calendar');
-        $jobservice = $this->container->get('crewcall.jobs');
-
         // Gotta get the time scope.
         $from = $request->get('start');
         $to = $request->get('end');
-        $jobs = $jobservice->jobsForPerson($person,
+        $jobs = $this->CcJobs->jobsForPerson($person,
             array('all' => true, 'from' => $from, 'to' => $to));
         $states = $person->getStates();
         
         $calitems = array_merge(
-            $calendar->toFullCalendarArray($jobs, ['person' => $person]),
-            $calendar->toFullCalendarArray($states, ['person' => $person])
+            $this->ccCalendar->toFullCalendarArray($jobs, ['person' => $person]),
+            $this->ccCalendar->toFullCalendarArray($states, ['person' => $person])
         );
         // Not liked by OWASP since we just return an array.
         return new JsonResponse($calitems, Response::HTTP_OK);
@@ -339,16 +334,13 @@ class PersonController extends CommonController
 
     /**
      * Displays a form to edit an existing person entity.
-     *
-     * @Route("/{id}/edit", name="person_edit", methods={"GET", "POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'person_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Person $person)
     {
-        $addressing_config = $this->container->getParameter('addressing');
-        $personfields = $this->container->getParameter('personfields');
-        $addressing = $this->container->get('crewcall.addressing');
-        $attributeFormer = $this->container->get('crewcall.attributeformer');
-        $address_elements = $addressing->getFormElementList($person);
+        $addressing_config = $this->parameterBag->get('addressing');
+        $personfields = $this->parameterBag->get('personfields');
+        $address_elements = $this->addressing->getFormElementList($person);
         $editForm = $this->createForm(PersonType::class,
             $person, [
                 'addressing_config' => $addressing_config,
@@ -364,13 +356,12 @@ class PersonController extends CommonController
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->updateContextForms($request,'App:Person', "App\Entity\\PersonContext", $person);
-            $attributeFormer->updateForms($person, $request);
-
-            $this->getDoctrine()->getManager()->flush();
+            $this->attributeFormer->updateForms($person, $request);
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('person_show', array('id' => $person->getId()));
         }
-        $attribute_forms = $attributeFormer->getEditForms($person);
+        $attribute_forms = $this->attributeFormer->getEditForms($person);
 
         return $this->render('person/edit.html.twig', array(
             'person' => $person,
@@ -382,18 +373,16 @@ class PersonController extends CommonController
 
     /**
      * Deletes a person.
-     *
-     * @Route("/{id}", name="person_delete", methods={"DELETE"})
      */
+    #[Route(path: '/{id}', name: 'person_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Person $person)
     {
         $form = $this->createDeleteForm($person);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($person);
-            $em->flush($person);
+            $this->entityManager->remove($person);
+            $this->entityManager->flush($person);
         }
 
         return $this->redirectToRoute('dashboard');
@@ -401,12 +390,10 @@ class PersonController extends CommonController
 
     /**
      * Sends messages to a batch of persons.
-     *
-     * @Route("/persons_send_message", name="persons_send_message", methods={"POST"})
      */
-    public function personsSendMessageAction(Request $request)
+    #[Route(path: '/persons_send_message', name: 'persons_send_message', methods: ['POST'])]
+    public function personsSendMessageAction(Request $request, SakonninMessages $sakonninMessages)
     {
-        $sm = $this->get('sakonnin.messages');
         $body = $request->request->get('body');
         $subject = $request->request->get('subject') ?? "Message from CrewCall";
         $message_type = $request->request->get('message_type');
@@ -420,10 +407,10 @@ class PersonController extends CommonController
             ];
         }
         if (!empty($person_contexts)) {
-            $sm->postMessage(array(
+            $sakonninMessages->postMessage(array(
                 'subject' => $subject,
                 'body' => $body,
-                'from' => $this->container->getParameter('mailfrom'),
+                'from' => $this->parameterBag->get('mailfrom'),
                 'message_type' => $message_type,
                 'to_type' => "INTERNAL",
                 'from_type' => "INTERNAL",
@@ -437,9 +424,8 @@ class PersonController extends CommonController
 
     /**
      * Finds and displays the gedmo loggable history
-     *
-     * @Route("/{id}/log", name="person_log")
      */
+    #[Route(path: '/{id}/log', name: 'person_log')]
     public function showLogAction(Request $request, $access, $id)
     {
         return  $this->showLogPage($request,$access, Person::class, $id);
@@ -448,18 +434,16 @@ class PersonController extends CommonController
     /**
      * Finds and returns the jobs for a person.
      * I can not find this being used anywhere.
-     *
-     * @Route("/{id}/jobs", name="person_jobs", methods={"GET"})
      */
-    public function showJobsAction(Request $request, $access, Person $person)
+    #[Route(path: '/{id}/jobs', name: 'person_jobs', methods: ['GET'])]
+    public function showJobsAction(Request $request, $access, Person $person, Jobs $ccjobs)
     {
         $options = [];
         // I'll default today +2 days. Add options at will and need.
         $options['from'] = new \DateTime();
         $options['to'] = new \DateTime('+2days');
         $summary = [];
-        foreach($this->get('crewcall.jobs')->jobsForPerson(
-            $person, $options) as $job) {
+        foreach($ccjobs->jobsForPerson($person, $options) as $job) {
                 $summary[] = [(string)$job, $job->getStart()->format("d M H:i"), $job->getEnd()->format("d M H:i"), $job->getState()];
         }
         
@@ -471,10 +455,9 @@ class PersonController extends CommonController
 
     /**
      * Pretty darn simple.
-     *
-     * @Route("/{id}/jobs_card", name="person_jobs_card", methods={"GET"})
      */
-    public function showJobsCardAction(Request $request, Person $person)
+    #[Route(path: '/{id}/jobs_card', name: 'person_jobs_card', methods: ['GET'])]
+    public function showJobsCardAction(Request $request, Person $person, Jobs $ccjobs)
     {
         // These for now:
         $options = ['all' => true, 'from' => 'now'];
@@ -482,8 +465,7 @@ class PersonController extends CommonController
         if ($past = $request->get('past'))
             $options = ['past' => true];
 
-        $jobs = $this->get('crewcall.jobs')->jobsForPerson(
-            $person, $options);
+        $jobs = $ccjobs->jobsForPerson($person, $options);
 
         return $this->render('person/_jobstab.html.twig', array(
             'person' => $person,
@@ -494,9 +476,8 @@ class PersonController extends CommonController
 
     /**
      * Change password on self.
-     *
-     * @Route("/change_password", name="self_change_password", methods={"GET", "POST"})
      */
+    #[Route(path: '/change_password', name: 'self_change_password', methods: ['GET', 'POST'])]
     public function changeSelfPasswordAction(Request $request, UserPasswordHasherInterface $userPasswordHasher)
     {
         $user = $this->getUser();
@@ -512,8 +493,7 @@ class PersonController extends CommonController
 
             $user->setPassword($encodedPassword);
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('dashboard');
         } else {
@@ -574,9 +554,8 @@ class PersonController extends CommonController
 
     /**
      * Set state on a person.
-     *
-     * @Route("/{id}/state", name="person_state", methods={"POST"})
      */
+    #[Route(path: '/{id}/state', name: 'person_state', methods: ['POST'])]
     public function stateAction(Request $request, Person $person)
     {
         // Security? This is the admin area, they can mess it all up anyway.
@@ -585,13 +564,12 @@ class PersonController extends CommonController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
             $form_data = $form->getData();
             $person->setState($form_data['state'], array(
                 'from_date' => $form_data['from_date'] ?: null,
                 'to_date' => $form_data['to_date'] ?: null,
                 ));
-            $em->flush();
+            $this->entityManager->flush();
             return $this->redirectToRoute('person_show',
                 array('id' => $person->getId()));
         }
@@ -605,7 +583,7 @@ class PersonController extends CommonController
         if ($to_date = $request->request->get('to_date'))
             $options['to_date'] = $to_date;
         $person->setState($state, $options);
-        $this->getDoctrine()->getManager()->flush();
+        $this->entityManager->flush();
         $applicant = $request->request->get('applicant');
         if ($applicant)
             return $this->redirectToRoute('person_applicants');
@@ -614,9 +592,7 @@ class PersonController extends CommonController
                 array('id' => $person->getId()));
     }
 
-    /**
-     * @Route("/search", name="person_search", methods={"GET"})
-     */
+    #[Route(path: '/search', name: 'person_search', methods: ['GET'])]
     public function searchPersonAction(Request $request, $access)
     {
         if (!$term = $request->query->get("term"))
@@ -624,8 +600,7 @@ class PersonController extends CommonController
 
         // Gotta be able to handle two-letter usernames.
         if (strlen($term) > 1) {
-            $em = $this->getDoctrine()->getManager();
-            $repo = $em->getRepository(Person::class);
+            $repo = $this->entityManager->getRepository(Person::class);
 
             $q = $repo->createQueryBuilder('u')
                 ->where('lower(u.username) LIKE :term')

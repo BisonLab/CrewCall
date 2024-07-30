@@ -12,14 +12,13 @@ use App\Lib\ExternalEntityConfig;
 /**
  * Job
  *
- * @ORM\Table(name="crewcall_job",
- *      uniqueConstraints={@ORM\UniqueConstraint(name="person_shift_job_idx", columns={"person_id", "shift_id"})},
- *      indexes={@ORM\Index(name="crewcall_job_state_idx", columns={"state"})}
- * )
- * @ORM\Entity(repositoryClass="App\Repository\JobRepository")
- * @ORM\HasLifecycleCallbacks()
- * @Gedmo\Loggable
  */
+#[ORM\Entity(repositoryClass: \App\Repository\JobRepository::class)]
+#[ORM\HasLifecycleCallbacks]
+#[ORM\Table(name: 'crewcall_job')]
+#[ORM\Index(name: 'crewcall_job_state_idx', columns: ['state'])]
+#[ORM\UniqueConstraint(name: 'person_shift_job_idx', columns: ['person_id', 'shift_id'])]
+#[Gedmo\Loggable]
 class Job
 {
     use NotesTrait;
@@ -27,53 +26,43 @@ class Job
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string $state
      *
-     * @ORM\Column(name="state", type="string", length=40, nullable=true)
-     * @Gedmo\Versioned
-     * @Assert\Choice(callback = "getStatesList")
      */
+    #[ORM\Column(name: 'state', type: 'string', length: 40, nullable: true)]
+    #[Assert\Choice(callback: 'getStatesList')]
+    #[Gedmo\Versioned]
     private $state;
 
     /**
      * @var string $ucode
      * Just a unique representation of the ID.
      *
-     * @ORM\Column(name="ucode", type="string", length=10, unique=true, nullable=false)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'ucode', type: 'string', length: 10, unique: true, nullable: false)]
+    #[Gedmo\Versioned]
     private $ucode;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Person", inversedBy="jobs")
-     * @ORM\JoinColumn(name="person_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \Person::class, inversedBy: 'jobs')]
+    #[ORM\JoinColumn(name: 'person_id', referencedColumnName: 'id', nullable: false)]
     private $person;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Shift", inversedBy="jobs")
-     * @ORM\JoinColumn(name="shift_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \Shift::class, inversedBy: 'jobs')]
+    #[ORM\JoinColumn(name: 'shift_id', referencedColumnName: 'id', nullable: false)]
     private $shift;
 
-    /**
-     * @ORM\OneToMany(targetEntity="JobLog", mappedBy="job", cascade={"remove", "persist"})
-     * @ORM\OrderBy({"in" = "ASC"})
-     */
+    #[ORM\OneToMany(targetEntity: \JobLog::class, mappedBy: 'job', cascade: ['remove', 'persist'])]
+    #[ORM\OrderBy(['in' => 'ASC'])]
     private $joblogs;
 
-    /**
-     * @ORM\Column(name="state_changed", type="datetime", nullable=true)
-     * This is a lot quicker to pull than the info from Gedbo Loggable.
-     */
+    #[ORM\Column(name: 'state_changed', type: 'datetime', nullable: true)] // This is a lot quicker to pull than the info from Gedbo Loggable.
     private $state_changed;
 
     /*
@@ -108,9 +97,9 @@ class Job
     /**
      * Set uCode
      *
-     * @ORM\PrePersist
      * @return string
      */
+    #[ORM\PrePersist]
     public function setUcode()
     {
         /*

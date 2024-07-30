@@ -2,6 +2,9 @@
 
 namespace App\Lib\StateHandler;
 
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Event as EventEntity;
+
 /*
  * For now this handles the trickle down of states on the shifts based on the
  * (main) event.
@@ -12,13 +15,14 @@ namespace App\Lib\StateHandler;
  */
 class Event
 {
-    private $em;
-    private $sm;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
+    }
 
-    public function __construct($container)
+    public function getStateHandleClass()
     {
-        $this->em = $container->get('doctrine')->getManager();
-        $this->sm = $container->get('sakonnin.messages');
+        return EventEntity::class;
     }
 
     public function handle(\App\Entity\Event $event, $from, $to)

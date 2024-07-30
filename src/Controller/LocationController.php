@@ -7,30 +7,37 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Location;
 use App\Entity\PersonRoleLocation;
 use App\Entity\Person;
 use App\Entity\FunctionEntity;
+use App\Service\Addressing;
 
 /**
  * Location controller.
- *
- * @Route("/admin/{access}/location", defaults={"access" = "web"}, requirements={"access": "web|rest|ajax"})
  */
-class LocationController extends CommonController
+#[Route(path: '/admin/{access}/location', defaults: ['access' => 'web'], requirements: ['access' => 'web|rest|ajax'])]
+class LocationController extends AbstractController
 {
+    use \BisonLab\CommonBundle\Controller\CommonControllerTrait;
+    use \BisonLab\ContextBundle\Controller\ContextTrait;
+
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private Addressing $addressing,
+    ) {
+    }
+
     /**
      * Lists all location entities.
-     *
-     * @Route("/", name="location_index", methods={"GET"})
      */
+    #[Route(path: '/', name: 'location_index', methods: ['GET'])]
     public function indexAction()
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $locations = $em->getRepository(Location::class)->findAll();
+        $locations = $this->entityManager->getRepository(Location::class)->findAll();
 
         return $this->render('location/index.html.twig', array(
             'locations' => $locations,
@@ -39,27 +46,23 @@ class LocationController extends CommonController
 
     /**
      * Creates a new location entity.
-     *
-     * @Route("/new", name="location_new", methods={"GET", "POST"})
      */
+    #[Route(path: '/new', name: 'location_new', methods: ['GET', 'POST'])]
     public function newAction(Request $request)
     {
         $location = new Location();
         if ($parent_id = $request->get('parent')) {
-            $em = $this->getDoctrine()->getManager();
-            if ($parent = $em->getRepository(Location::class)->find($parent_id)) {
+            if ($parent = $this->entityManager->getRepository(Location::class)->find($parent_id)) {
                 $location->setParent($parent);
             }
         }
-        $addressing = $this->container->get('crewcall.addressing');
-        $address_elements = $addressing->getFormElementList($location);
+        $address_elements = $this->addressing->getFormElementList($location);
         $form = $this->createForm('App\Form\LocationType', $location, ['address_elements' => $address_elements]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($location);
-            $em->flush($location);
+            $this->entityManager->persist($location);
+            $this->entityManager->flush($location);
 
             return $this->redirectToRoute('location_show', array('id' => $location->getId()));
         }
@@ -72,35 +75,29 @@ class LocationController extends CommonController
 
     /**
      * Finds and displays a location entity.
-     *
-     * @Route("/{id}", name="location_show", methods={"GET"})
      */
+    #[Route(path: '/{id}', name: 'location_show', methods: ['GET'])]
     public function showAction(Location $location)
     {
-        $addressing = $this->container->get('crewcall.addressing');
         $deleteForm = $this->createDeleteForm($location);
         return $this->render('location/show.html.twig', array(
             'location' => $location,
-            'address_string' => $addressing->compose($location->getAddress(), 'string'),
+            'address_string' => $this->addressing->compose($location->getAddress(), 'string'),
             'delete_form' => $deleteForm->createView(),
         ));
     }
 
     /**
      * Displays a form to edit an existing location entity.
-     *
-     * @Route("/{id}/edit", name="location_edit", methods={"GET", "POST"})
      */
+    #[Route(path: '/{id}/edit', name: 'location_edit', methods: ['GET', 'POST'])]
     public function editAction(Request $request, Location $location)
     {
-        $addressing = $this->container->get('crewcall.addressing');
-        $address_elements = $addressing->getFormElementList($location);
+        $address_elements = $this->addressing->getFormElementList($location);
         $editForm = $this->createForm('App\Form\LocationType', $location, ['address_elements' => $address_elements]);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
             return $this->redirectToRoute('location_show', array('id' => $location->getId()));
         }
 
@@ -112,12 +109,10 @@ class LocationController extends CommonController
 
     /**
      * Creates a new PersonRoleLocation entity.
-     *
-     * @Route("/{id}/add_person", name="location_add_person", methods={"GET", "POST"})
      */
+    #[Route(path: '/{id}/add_person', name: 'location_add_person', methods: ['GET', 'POST'])]
     public function addPersonAction(Request $request, Location $location, $access)
     {
-        $em = $this->getDoctrine()->getManager();
         $pfl = new PersonRoleLocation();
         // Default-hack
         $pfl->setLocation($location);
@@ -129,9 +124,8 @@ class LocationController extends CommonController
         $new_form->handleRequest($request);
 
         if ($exists_form->isSubmitted() && $exists_form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($pfl);
-            $em->flush($pfl);
+            $this->entityManager->persist($pfl);
+            $this->entityManager->flush($pfl);
 
             if ($this->isRest($access)) {
                 return new JsonResponse(array("status" => "OK"), Response::HTTP_CREATED);
@@ -141,7 +135,6 @@ class LocationController extends CommonController
         }
 
         if ($new_form->isSubmitted() && $new_form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
             $person = new Person();
             $person->setState("EXTERNAL");
             $new_form_data = $new_form->getData();
@@ -162,14 +155,14 @@ class LocationController extends CommonController
             $person->setLastName($new_form_data['last_name']);
             $person->setPassword(sprintf("%16x", rand()));
 
-            $em->persist($person);
+            $this->entityManager->persist($person);
             $pfl->setPerson($person);
             $pfl->setFunction($new_form_data['function']);
             $pfl->setLocation($new_form_data['location']);
 
-            $em->persist($person);
-            $em->persist($pfl);
-            $em->flush();
+            $this->entityManager->persist($person);
+            $this->entityManager->persist($pfl);
+            $this->entityManager->flush();
 
             if ($this->isRest($access)) {
                 return new JsonResponse(array("status" => "OK"), Response::HTTP_CREATED);
@@ -178,7 +171,7 @@ class LocationController extends CommonController
             }
         }
 
-        if ($contact = $em->getRepository(FunctionEntity::class)->findOneBy(['name' => 'Contact'])) {
+        if ($contact = $this->entityManager->getRepository(FunctionEntity::class)->findOneBy(['name' => 'Contact'])) {
             $exists_form->get('function')->setData($contact);
             $new_form->get('function')->setData($contact);
         }
@@ -197,15 +190,13 @@ class LocationController extends CommonController
     /**
      * Removes a personRoleLocation entity.
      * Pure REST/AJAX.
-     *
-     * @Route("/{id}/remove_person", name="location_remove_person", methods={"GET", "DELETE", "POST"})
      */
+    #[Route(path: '/{id}/remove_person', name: 'location_remove_person', methods: ['GET', 'DELETE', 'POST'])]
     public function removePersonAction(Request $request, PersonRoleLocation $prl, $access)
     {
         $location = $prl->getLocation();
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($prl);
-        $em->flush($prl);
+        $this->entityManager->remove($prl);
+        $this->entityManager->flush($prl);
         if ($this->isRest($access)) {
             return new JsonResponse(array("status" => "OK"),
                 Response::HTTP_OK);
@@ -216,18 +207,16 @@ class LocationController extends CommonController
 
     /**
      * Deletes a location entity.
-     *
-     * @Route("/{id}", name="location_delete", methods={"DELETE"})
      */
+    #[Route(path: '/{id}', name: 'location_delete', methods: ['DELETE'])]
     public function deleteAction(Request $request, Location $location)
     {
         $form = $this->createDeleteForm($location);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($location);
-            $em->flush($location);
+            $this->entityManager->remove($location);
+            $this->entityManager->flush($location);
         }
 
         return $this->redirectToRoute('location_index');
@@ -235,9 +224,8 @@ class LocationController extends CommonController
 
     /**
      * Finds and displays the gedmo loggable history
-     *
-     * @Route("/{id}/log", name="location_log")
      */
+    #[Route(path: '/{id}/log', name: 'location_log')]
     public function showLogAction(Request $request, $access, $id)
     {
         return  $this->showLogPage($request,$access, Location::class, $id);

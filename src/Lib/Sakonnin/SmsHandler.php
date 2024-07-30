@@ -3,6 +3,9 @@
 namespace App\Lib\Sakonnin;
 
 use BisonLab\SakonninBundle\Entity\MessageContext;
+use BisonLab\SakonninBundle\Lib\Functions\CommonFunctions;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Job;
 
 /*
@@ -10,11 +13,22 @@ use App\Entity\Job;
 
 class SmsHandler
 {
-    protected $container;
+    use CommonFunctions;
 
-    public function __construct($container, $options = array())
-    {
-        $this->container = $container;
+    public $callback_functions = [];
+
+    public $forward_functions = [
+        'smscodehandle' => array(
+            'description' => "Act from code and content in SMS.",
+            'attribute_spec' => null,
+            'needs_attributes' => false,
+        ),
+    ];
+
+    public function __construct(
+        protected ParameterBagInterface $parameterBag,
+        protected EntityManagerInterface $entityManager,
+    ) {
     }
 
     /*
@@ -23,8 +37,7 @@ class SmsHandler
      */
     public function execute($options = array())
     {
-        $sm = $this->container->get('sakonnin.messages');
-        $codeword = $this->container->getParameter('sakonnin.sms')['smscode'];
+        $codeword = $this->parameterBag->get('sakonnin.sms')['smscode'];
 
         $message = $options['message'];
         $body = str_replace($codeword, "", strtolower($message->getBody()));
@@ -34,14 +47,12 @@ class SmsHandler
         $ucode = $umatch[1];
 
         // Gotta find the Job related to the code
-        $em = $this->container->get('doctrine.orm.crewcall_entity_manager');
-
         // Does the job exist?
-        if (!$job = $em->getRepository(Job::class)->findOneBy(['ucode' => $ucode])) {
+        if (!$job = $this->entityManager->getRepository(Job::class)->findOneBy(['ucode' => $ucode])) {
             return null;
         }
         // The sender matches the job owner?
-        $number_length = $this->container->getParameter('sakonnin.sms')['national_number_lenght'];
+        $number_length = $this->parameterBag->get('sakonnin.sms')['national_number_lenght'];
         $person = $job->getPerson();
         $snum = substr($message->getFrom(), $number_length * -1);
         $pnum = substr($person->getMobilePhoneNumber(), $number_length * -1);
@@ -54,7 +65,7 @@ class SmsHandler
         if (preg_match("/CONFIRM/", strtoupper($body)) && $job->getState() == "ASSIGNED") {
             $job->setState("CONFIRMED");
             // Gonna tie the message to the job object.
-            $smmanager = $sm->getDoctrineManager();
+            $smmanager = $this->sakonninMessages->getDoctrineManager();
             $mc = new MessageContext();
             $mc->setOwner($message);
             $mc->setSystem('crewcall');
@@ -62,7 +73,7 @@ class SmsHandler
             $mc->setExternalId($job->getId());
             $smmanager->persist($mc);
             $smmanager->flush();
-            $em->flush();
+            $this->entityManager->flush();
         }
         return true;
     }

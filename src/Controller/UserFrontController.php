@@ -11,7 +11,13 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Routing\RouterInterface;
+use BisonLab\SakonninBundle\Service\Messages as SakonninMessages;
+use BisonLab\SakonninBundle\Service\Files as SakonninFiles;
 
 use App\Entity\Person;
 use App\Entity\PersonFunction;
@@ -24,28 +30,45 @@ use App\Form\ChangePasswordFosType;
 use App\Form\ChangePasswordFormType;
 use App\Form\EditMyselfType;
 use App\Model\FullCalendarEvent;
+use App\Service\JobsLogs;
+use App\Service\Jobs as CcJobs;
+use App\Service\AttributeFormer;
+use App\Service\Calendar as CcCalendar;
+use App\Service\Addressing;
 
 /**
  * User controller.
  * This is the controller for the front end par of the application.
- * 
+ *
  * It's the only one for now, and may be pushed onto it's own bundle in case
  * someone means we need different front ends.
  *
  * Like an App for some odd reason.
- *
- * @Route("/uf")
  */
-class UserFrontController extends CommonController
+#[Route(path: '/uf')]
+class UserFrontController extends AbstractController
 {
+    use \BisonLab\CommonBundle\Controller\CommonControllerTrait;
+    use \BisonLab\ContextBundle\Controller\ContextTrait;
+
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private ParameterBagInterface $parameterBag,
+        private Addressing $addressing,
+        private CcJobs $ccJobs,
+        private CcCalendar $ccCalendar,
+        private AttributeFormer $attributeFormer,
+        private RouterInterface $router,
+    ) {
+    }
+
     private $shiftcache = [];
     private $eventcache = [];
 
     /**
      * Ping
-     *
-     * @Route("/ping", name="uf_ping", methods={"GET"})
      */
+    #[Route(path: '/ping', name: 'uf_ping', methods: ['GET'])]
     public function pingAction(Request $request)
     {
         return new JsonResponse([
@@ -56,9 +79,8 @@ class UserFrontController extends CommonController
 
     /**
      * Everything, and maybe more.
-     *
-     * @Route("/me", name="uf_me", methods={"GET"})
      */
+    #[Route(path: '/me', name: 'uf_me', methods: ['GET'])]
     public function meAction(Request $request)
     {
         $user = $this->getUser();
@@ -79,15 +101,12 @@ class UserFrontController extends CommonController
 
     /**
      * Everything, and maybe more.
-     *
-     * @Route("/me_profile", name="uf_me_profile", methods={"GET"})
      */
+    #[Route(path: '/me_profile', name: 'uf_me_profile', methods: ['GET'])]
     public function meProfileAction(Request $request)
     {
         $user = $this->getUser();
-        $sakonnin_files = $this->container->get('sakonnin.files');
-        $addressing = $this->container->get('crewcall.addressing');
-        $pfiles = $sakonnin_files->getFilesForContext([
+        $pfiles = $this->sakonninFiles->getFilesForContext([
                 'file_type' => 'ProfilePicture',
                 'system' => 'crewcall',
                 'object_name' => 'person',
@@ -95,8 +114,7 @@ class UserFrontController extends CommonController
             ]);
         $profile_picture_url = null;
         if (count($pfiles) > 0) {
-            $router = $this->container->get('router');
-            $profile_picture_url = $router->generate('uf_file', [
+            $profile_picture_url = $this->router->generate('uf_file', [
                 'id' => end($pfiles)->getFileId(), 'x' => 200, 'y' => 200]);
         }
 
@@ -111,8 +129,8 @@ class UserFrontController extends CommonController
             'functions' => [],
         ];
         if ($address = $user->getAddress()) {
-            $retarr['address'] = $addressing->compose($address);
-            $retarr['address_flat'] = $addressing->compose($address, 'flat');
+            $retarr['address'] = $this->addressing->compose($address);
+            $retarr['address_flat'] = $this->addressing->compose($address, 'flat');
         }
         foreach ($user->getPersonFunctions() as $pf) {
             $retarr['functions'][] = (string)$pf;
@@ -137,8 +155,8 @@ class UserFrontController extends CommonController
 
     /**
      * Notes
-     * @Route("/me_notes", name="uf_me_notes", methods={"GET"})
      */
+    #[Route(path: '/me_notes', name: 'uf_me_notes', methods: ['GET'])]
     public function meNotes(Request $request, $as_array = false)
     {
         $archive = $request->get('archive');
@@ -147,7 +165,6 @@ class UserFrontController extends CommonController
             $states = ['ARCHIVED'];
         
         $user = $this->getUser();
-        $sakonnin = $this->container->get('sakonnin.messages');
         $pncontext = [
             'system' => 'crewcall',
             'object_name' => 'person',
@@ -156,7 +173,7 @@ class UserFrontController extends CommonController
             'external_id' => $user->getId(),
         ];
         $pnotes = [];
-        foreach ($sakonnin->getMessagesForContext($pncontext) as $m) {
+        foreach ($this->sakonninMessages->getMessagesForContext($pncontext) as $m) {
             $parr = [
                 'subject' => $m->getSubject(),
                 'body' => $m->getBody(),
@@ -185,7 +202,7 @@ class UserFrontController extends CommonController
             'message_type' => 'Front page logged in',
             'order' => 'DESC'
         ];
-        foreach ($sakonnin->getMessages($criterias) as $m) {
+        foreach ($this->sakonninMessages->getMessages($criterias) as $m) {
             $gnotes[] = [
                 'subject' => $m->getSubject(),
                 'state' => $m->getState(),
@@ -210,15 +227,14 @@ class UserFrontController extends CommonController
 
     /**
      * Messages part
-     * @Route("/me_messages", name="uf_me_messages", methods={"GET"})
      */
+    #[Route(path: '/me_messages', name: 'uf_me_messages', methods: ['GET'])]
     public function meMessages(Request $request, $as_array = false)
     {
         $user = $this->getUser();
-        $sakonnin = $this->container->get('sakonnin.messages');
         $pmessages = [];
 
-        foreach ($sakonnin->getMessagesForUser($user, ['state' => 'UNREAD']) as $m) {
+        foreach ($this->sakonninMessages->getMessagesForUser($user, ['state' => 'UNREAD']) as $m) {
             $pmessages[] = [
                 'subject' => $m->getSubject(),
                 'body' => $m->getBody(),
@@ -253,15 +269,11 @@ class UserFrontController extends CommonController
      * few bubbles needing updates.
      * I'll try to filter out the cases when it's not like that to speed it all
      * up a bit.
-     *
-     * @Route("/me_jobs", name="uf_me_jobs", methods={"GET"})
      */
-    public function meJobs(Request $request, $as_array = false)
+    #[Route(path: '/me_jobs', name: 'uf_me_jobs', methods: ['GET'])]
+    public function meJobs(Request $request, CsrfTokenManagerInterface $csrfman, $as_array = false)
     {
-        $em = $this->getDoctrine()->getManager();
-        $ccjobs = $this->container->get('crewcall.jobs');
         // Create a csrf token for use in the next step
-        $csrfman = $this->get('security.csrf.token_manager');
         $view = $request->get('view') ?? null;
         if ($view && !in_array($view, ['past', 'jobs_list', 'opportunities', 'interested', 'uninterested', 'assigned', 'confirmed']))
             throw new \InvalidArgumentException("Funnily enough, I do not acceept your view.");
@@ -401,7 +413,7 @@ class UserFrontController extends CommonController
                 $to = new \DateTime();
                 $retarr['period'] = [ 'from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d') ];
             }
-            $retarr['past'] = $em->getRepository(Job::class)
+            $retarr['past'] = $this->entityManager->getRepository(Job::class)
                 ->findJobsForPerson($user, [
                     'from' => $from,
                     'to' => $to,
@@ -418,10 +430,8 @@ class UserFrontController extends CommonController
         return $this->render('user/_' . $view . '.html.twig', $retarr);
     }
 
-    /**
-     *
-     * @Route("/confirm/{id}", name="uf_confirm_job", methods={"POST"})
-     */
+    
+    #[Route(path: '/confirm/{id}', name: 'uf_confirm_job', methods: ['POST'])]
     public function confirmJobAction(Request $request, Job $job)
     {
         if (!$token = $request->request->get('_csrf_token')) {
@@ -441,16 +451,13 @@ class UserFrontController extends CommonController
             return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
         
         $job->setState('CONFIRMED');
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($job);
-        $em->flush($job);
+        $this->entityManager->persist($job);
+        $this->entityManager->flush($job);
         return new JsonResponse(["OK" => "Well done"], Response::HTTP_OK);
     }
 
-    /**
-     *
-     * @Route("/signup/{id}", name="uf_signup_shift", methods={"POST"})
-     */
+    
+    #[Route(path: '/signup/{id}', name: 'uf_signup_shift', methods: ['POST'])]
     public function signupShiftAction(Request $request, Shift $shift)
     {
         $json_data = json_decode($request->getContent(), true);
@@ -480,8 +487,7 @@ class UserFrontController extends CommonController
         if (!$checked_checks = $request->request->get('checks')) {
             $checked_checks = $json_data['checks'] ?? array();
         }
-        $jobservice = $this->container->get('crewcall.jobs');
-        $shift_checks = $jobservice->checksForShift($job->getShift());
+        $shift_checks = $this->CcJobs->checksForShift($job->getShift());
         foreach ($shift_checks as $check) {
             if (!isset($checked_checks[$check['id']]))
                 continue;
@@ -492,16 +498,13 @@ class UserFrontController extends CommonController
                 'state' => 'CHECKED'
             ]);
         }
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($job);
-        $em->flush($job);
+        $this->entityManager->persist($job);
+        $this->entityManager->flush($job);
         return new JsonResponse(["OK" => "Well done"], Response::HTTP_OK);
     }
 
-    /**
-     *
-     * @Route("/uninterested/{id}", name="uf_uninterested", methods={"POST"})
-     */
+    
+    #[Route(path: '/uninterested/{id}', name: 'uf_uninterested', methods: ['POST'])]
     public function uninterestedAction(Request $request, Shift $shift)
     {
         $json_data = json_decode($request->getContent(), true);
@@ -519,17 +522,16 @@ class UserFrontController extends CommonController
         $job->setShift($shift);
         $job->setPerson($user);
         $job->setState('UNINTERESTED');
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($job);
-        $em->flush($job);
+        $this->entityManager->persist($job);
+        $this->entityManager->flush($job);
         return new JsonResponse(["OK" => "Well done"], Response::HTTP_OK);
     }
 
     /**
      *
      * Now also deleting uninterested.
-     * @Route("/delete_interest/{id}", name="uf_delete_interest", methods={"DELETE", "POST"})
      */
+    #[Route(path: '/delete_interest/{id}', name: 'uf_delete_interest', methods: ['DELETE', 'POST'])]
     public function deleteInterestAction(Request $request, Job $job)
     {
         if (!$token = $request->request->get('_csrf_token')) {
@@ -548,18 +550,16 @@ class UserFrontController extends CommonController
         if ($job->getPerson() !== $user)
             return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
 
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($job);
-        $em->flush($job);
+        $this->entityManager->remove($job);
+        $this->entityManager->flush($job);
         return new JsonResponse(["OK" => "Well done"], Response::HTTP_OK);
     }
 
     /**
      * Lists all the users jobs as calendar events.
      * Now also personstates.
-     *
-     * @Route("/me_calendar", name="uf_me_calendar")
      */
+    #[Route(path: '/me_calendar', name: 'uf_me_calendar')]
     public function meCalendarAction(Request $request)
     {
         // Gotta get the time scope.
@@ -574,8 +574,6 @@ class UserFrontController extends CommonController
                 'to' => $to,
                 ]);
         $user = $this->getUser();
-        $calendar = $this->container->get('crewcall.calendar');
-        $jobservice = $this->container->get('crewcall.jobs');
 
         $options = [ 'from' => $from, 'to' => $to ];
         if ($state = $request->get('state'))
@@ -589,7 +587,7 @@ class UserFrontController extends CommonController
         $confirmed = [];
         $assigned = [];
         $interested = [];
-        foreach ($jobservice->jobsForPerson($user, $options) as $job) {
+        foreach ($this->CcJobs->jobsForPerson($user, $options) as $job) {
             if ($job->getState() == 'CONFIRMED')
                 $confirmed[] = $job;
             if ($job->getState() == 'ASSIGNED')
@@ -614,23 +612,21 @@ class UserFrontController extends CommonController
         // 20 days and above? Summary it is.        
         if (!$no_summary && (($to_t - $from_t) > 1728000)) {
             $calitems = array_merge(
-                $calendar->toFullCalendarSummary($jobs, ['person' => $user, 'event_url' => false]),
-                $calendar->toFullCalendarSummary($states, ['person' => $user, 'event_url' => false])
+                $this->ccCalendar->toFullCalendarSummary($jobs, ['person' => $user, 'event_url' => false]),
+                $this->ccCalendar->toFullCalendarSummary($states, ['person' => $user, 'event_url' => false])
             );
         } else {
  */
             $calitems = array_merge(
-                $calendar->toFullCalendarArray($jobs, ['person' => $user, 'event_url' => false, 'ical_add_url' => true, 'with_times' => true, 'count_interested' => true]),
-                $calendar->toFullCalendarArray($states, ['person' => $user, 'event_url' => false, 'ical_add_url' => true, 'with_times' => true, 'count_interested' => true])
+                $this->ccCalendar->toFullCalendarArray($jobs, ['person' => $user, 'event_url' => false, 'ical_add_url' => true, 'with_times' => true, 'count_interested' => true]),
+                $this->ccCalendar->toFullCalendarArray($states, ['person' => $user, 'event_url' => false, 'ical_add_url' => true, 'with_times' => true, 'count_interested' => true])
             );
   //      }
         return new JsonResponse($calitems, Response::HTTP_OK);
     }
 
-    /**
-     *
-     * @Route("/job_calendaritem/{id}", name="uf_job_calendar_item", methods={"GET"})
-     */
+    
+    #[Route(path: '/job_calendaritem/{id}', name: 'uf_job_calendar_item', methods: ['GET'])]
     public function jobCaledarItemAction(Request $request, Job $job)
     {
         $user = $this->getUser();
@@ -638,8 +634,7 @@ class UserFrontController extends CommonController
         if ($user->getId() != $job->getPerson()->getId())
             throw new \InvalidArgumentException("You are not the one to grab this.");
 
-        $calendar = $this->container->get('crewcall.calendar');
-        $ical = $calendar->toIcal($job);
+        $ical = $this->ccCalendar->toIcal($job);
 
         $response = new Response($ical, Response::HTTP_OK);
         $response->headers->set('Content-Type', 'text/calendar; charset=utf-8');
@@ -649,19 +644,17 @@ class UserFrontController extends CommonController
 
     /**
      * The time log per person.
-     *
-     * @Route("/me_joblog", name="uf_me_joblog", methods={"GET"})
      */
-    public function jobLogAction(Request $request)
+    #[Route(path: '/me_joblog', name: 'uf_me_joblog', methods: ['GET'])]
+    public function jobLogAction(Request $request, JobLogs $joblogs)
     {
-        $handler = $this->get('crewcall.joblogs');
         $job = null;
         $options['summary_only'] = $request->get('summary_only');
         $options['from_date'] = $request->get('from_date');
         $options['to_date'] = $request->get('to_date');
 
         $person = $this->getUser();
-        $logs = $handler->getJobLogsForPerson($person, $options);
+        $logs = $joblogs->getJobLogsForPerson($person, $options);
 
         // Angularfrontent
         if (in_array('application/json', $request->getAcceptableContentTypes()))
@@ -675,9 +668,8 @@ class UserFrontController extends CommonController
 
     /**
      * The edit yourself job log / in/out form.
-     *
-     * @Route("/{job}/me_new_joblog", name="uf_me_new_joblog", methods={"GET"})
      */
+    #[Route(path: '/{job}/me_new_joblog', name: 'uf_me_new_joblog', methods: ['GET'])]
     public function newJobLogAction(Request $request, Job $job)
     {
         $user = $this->getUser();
@@ -691,9 +683,8 @@ class UserFrontController extends CommonController
 
     /**
      * The edit yourself job log / in/out.
-     *
-     * @Route("/{job}/me_create_joblog", name="uf_me_create_joblog", methods={"POST"})
      */
+    #[Route(path: '/{job}/me_create_joblog', name: 'uf_me_create_joblog', methods: ['POST'])]
     public function createJobLogAction(Request $request, Job $job)
     {
         $user = $this->getUser();
@@ -712,7 +703,7 @@ class UserFrontController extends CommonController
         $joblog->setInTime($request->request->get('in'));
         $joblog->setOutTime($request->request->get('out'));
         $joblog->setBreakMinutes($request->request->get('break') ?? 0);
-        $em->persist($joblog);
+        $this->entityManager->persist($joblog);
 
         if ($comment = $request->request->get('joblogcomment')) {
             $job->addNote([
@@ -721,15 +712,14 @@ class UserFrontController extends CommonController
             ]);
         }
 
-        $em->flush();
+        $this->entityManager->flush();
         return new Response("Added", Response::HTTP_CREATED);
     }
 
     /**
      * The delete yourself job log / in/out.
-     *
-     * @Route("/{joblog}/me_delete_joblog", name="uf_me_delete_joblog", methods={"POST", "DELETE"})
      */
+    #[Route(path: '/{joblog}/me_delete_joblog', name: 'uf_me_delete_joblog', methods: ['POST', 'DELETE'])]
     public function deleteJobLogAction(Request $request, JobLog $joblog)
     {
         $user = $this->getUser();
@@ -742,17 +732,15 @@ class UserFrontController extends CommonController
             || !$this->isCsrfTokenValid('deletejoblog' . $joblog->getId(), $token)) {
             return new JsonResponse(["ERRROR" => "No luck"], Response::HTTP_FORBIDDEN);
         }
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($joblog);
-        $em->flush();
+        $this->entityManager->remove($joblog);
+        $this->entityManager->flush();
         return new Response("Deleted", Response::HTTP_OK);
     }
 
     /**
      * The absence log
-     *
-     * @Route("/me_absence", name="uf_me_absence", methods={"GET"})
      */
+    #[Route(path: '/me_absence', name: 'uf_me_absence', methods: ['GET'])]
     public function absenceAction(Request $request)
     {
         $user = $this->getUser();
@@ -788,13 +776,11 @@ class UserFrontController extends CommonController
 
     /**
      * Profilepicture
-     *
-     * @Route("/{id}/file", name="uf_file", methods={"GET"})
      */
+    #[Route(path: '/{id}/file', name: 'uf_file', methods: ['GET'])]
     public function fileAction(Request $request, $id)
     {
-        $sf = $this->container->get('sakonnin.files');
-        $sfile = $sf->getFiles(['fileid' => $id]);
+        $sfile = $this->sakonninFiles->getFiles(['fileid' => $id]);
         if (!$sfile)
             return new JsonResponse([
                 'ERROR'=> 'Not found'], Response::HTTP_NOT_FOUND);
@@ -816,14 +802,11 @@ class UserFrontController extends CommonController
      * Everything, and maybe more.
      *
      * To be honest, probably less.
-     *
-     * @Route("/me_files", name="uf_me_files", methods={"GET"})
      */
+    #[Route(path: '/me_files', name: 'uf_me_files', methods: ['GET'])]
     public function meFiles(Request $request)
     {
         $user = $this->getUser();
-        $sakonnin_files = $this->container->get('sakonnin.files');
-        $addressing = $this->container->get('crewcall.addressing');
         $sfiles = $sakonnin_files->getFilesForContext([
                 'system' => 'crewcall',
                 'object_name' => 'person',
@@ -832,8 +815,7 @@ class UserFrontController extends CommonController
         $fileslist = [];
         foreach($sfiles as $sfile) {
             $f = [];
-            $router = $this->container->get('router');
-            $f['url'] = $router->generate('uf_file', [
+            $f['url'] = $this->router->generate('uf_file', [
                 'id' => $sfile->getFileId()]);
             $f['name'] = $sfile->getName();
             $f['file_type'] = $sfile->getFileType();
@@ -850,19 +832,14 @@ class UserFrontController extends CommonController
 
     /**
      * Edit myself.
-     *
-     * @Route("/edit_myself", name="uf_me_edit_myself", methods={"GET", "POST"})
      */
+    #[Route(path: '/edit_myself', name: 'uf_me_edit_myself', methods: ['GET', 'POST'])]
     public function meEditMyselfAction(Request $request)
     {
         $user = $this->getUser();
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $addressing = $this->container->get('crewcall.addressing');
-        $addressing_config = $this->container->getParameter('addressing');
-        $address_elements = $addressing->getFormElementList($user);
-        $personfields = $this->container->getParameter('personfields');
-        $attributeFormer = $this->container->get('crewcall.attributeformer');
+        $addressing_config = $this->parameterBag->get('addressing');
+        $address_elements = $this->addressing->getFormElementList($user);
+        $personfields = $this->parameterBag->get('personfields');
 
         $form = $this->createForm(EditMyselfType::class, $user, [
                'addressing_config' => $addressing_config,
@@ -870,7 +847,7 @@ class UserFrontController extends CommonController
                'personfields' => $personfields,
             ]);
 
-        $feRepo = $entityManager->getRepository(FunctionEntity::class);
+        $feRepo = $this->entityManager->getRepository(FunctionEntity::class);
         $pickable_functions = $feRepo->findPickableFunctions();
 
         $form->handleRequest($request);
@@ -878,7 +855,7 @@ class UserFrontController extends CommonController
         if ($form->isSubmitted() && $form->isValid()) {
             // We can only update what we are supposed to update. I do not
             // want any trickery.
-            $attributes_forms = $attributeFormer->getForms($user);
+            $attributes_forms = $this->attributeFormer->getForms($user);
             foreach ($attributes_forms as $aform) {
                 $aform->handleRequest($request);
                 $aformdata = $aform->getData();
@@ -896,25 +873,25 @@ class UserFrontController extends CommonController
                     if (!$pickable_functions->contains($pf->getFunction()))
                         continue;
                     if (!in_array($pf->getFunctionId(), $functions)) {
-                        $entityManager->remove($pf);
+                        $this->entityManager->remove($pf);
                     }
                     $pfs[] = $pf->getFunctionId();
                 }
                 foreach ($functions as $hf) {
                     if (!in_array($hf, $pfs)) {
-                        $function = $entityManager->getRepository(FunctionEntity::class)->find($hf);
+                        $function = $this->entityManager->getRepository(FunctionEntity::class)->find($hf);
                         $pf = new PersonFunction();
                         $pf->setFunction($function);
                         $pf->setFromDate(new \DateTime());
                         $user->addPersonFunction($pf);
-                        $entityManager->persist($pf);
+                        $this->entityManager->persist($pf);
                     }
                 }
             }
-            $entityManager->flush();
+            $this->entityManager->flush();
             return $this->redirectToRoute('uf_me_profile');
         }
-        $attributes_forms = $attributeFormer->getEditForms($user);
+        $attributes_forms = $this->attributeFormer->getEditForms($user);
         // Gotta filter out the fields not user editable.
         $my_attributes_forms = [];
         foreach ($attributes_forms as $aform) {
@@ -934,9 +911,8 @@ class UserFrontController extends CommonController
 
     /**
      * Change password on self.
-     *
-     * @Route("/change_password", name="uf_me_change_password", methods={"GET", "POST"})
      */
+    #[Route(path: '/change_password', name: 'uf_me_change_password', methods: ['GET', 'POST'])]
     public function meChangePasswordAction(Request $request, UserPasswordHasherInterface $userPasswordHasher)
     {
         $user = $this->getUser();
@@ -954,8 +930,7 @@ class UserFrontController extends CommonController
 
             $user->setPassword($encodedPassword);
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             return $this->redirectToRoute('uf_me_profile');
         } else {
@@ -972,10 +947,7 @@ class UserFrontController extends CommonController
      */
     public function jobsForPersonAsArray(Person $person, $options = array())
     {
-        $em = $this->getDoctrine()->getManager();
-        $ccjobs = $this->container->get('crewcall.jobs');
-
-        $jobs = $em->getRepository(Job::class)
+        $jobs = $this->entityManager->getRepository(Job::class)
             ->findJobsForPerson($person, $options);
 
         /*
@@ -992,7 +964,7 @@ class UserFrontController extends CommonController
             // As I said, just get rid.
             if ($job->getStart() == "UNINTERESTED"
                 && $job->getStart() < $now) {
-                $em->remove($job);
+                $this->entityManager->remove($job);
                 continue;
             }
 
@@ -1004,7 +976,7 @@ class UserFrontController extends CommonController
             $shiftarr = $this->getShiftArr($job->getShift());
             $arr = array_merge($arr, $shiftarr);
 
-            if ($lastjob && $ccjobs->shiftOverlaps($job->getShift(), $lastjob->getShift())) {
+            if ($lastjob && $this->ccJobs->shiftOverlaps($job->getShift(), $lastjob->getShift())) {
                 $arr['overlap'] = true;
                 $checked->last()['overlap'] = true;
             } else {
@@ -1014,7 +986,7 @@ class UserFrontController extends CommonController
             $lastjob = $job;
         }
         // And make them no longer useful UNINTERESTED go.
-        $em->flush();
+        $this->entityManager->flush();
         return $checked->toArray();
     }
 
@@ -1024,13 +996,10 @@ class UserFrontController extends CommonController
      */
     public function opportunitiesForPersonAsArray(Person $person, $options = array())
     {
-        $em = $this->getDoctrine()->getManager();
-        $ccjobs = $this->container->get('crewcall.jobs');
-
         $opps = [];
-        $opportunities = $ccjobs->opportunitiesForPerson($person, $options);
+        $opportunities = $this->ccJobs->opportunitiesForPerson($person, $options);
 
-        foreach ($ccjobs->opportunitiesForPerson($person, $options) as $o) {
+        foreach ($this->ccJobs->opportunitiesForPerson($person, $options) as $o) {
             $arr = [
                 'name' => (string)$o,
                 // Kinda cheating.
@@ -1047,9 +1016,7 @@ class UserFrontController extends CommonController
 
     public function getShiftArr(Shift $shift)
     {
-        $sakonnin = $this->container->get('sakonnin.messages');
         // TODO: Eventcache
-
         // So, what do we need here? To be continued..
         if (!isset($this->shiftcache[$shift->getId()])) {
             $event = $shift->getEvent();
@@ -1136,10 +1103,9 @@ class UserFrontController extends CommonController
                 'inform_notes' => $inform_notes
             ];
             if ($address = $location->getAddress()) {
-                $addressing = $this->container->get('crewcall.addressing');
-                $shiftarr['location']['address'] = $addressing->compose($address);
-                $shiftarr['location']['address_flat'] = $addressing->compose($address, 'flat');
-                $shiftarr['location']['address_string'] = $addressing->compose($address, 'string');
+                $shiftarr['location']['address'] = $this->addressing->compose($address);
+                $shiftarr['location']['address_flat'] = $this->addressing->compose($address, 'flat');
+                $shiftarr['location']['address_string'] = $this->addressing->compose($address, 'string');
             }
             $this->shiftcache[$shift->getId()] = $shiftarr;
         }
@@ -1148,8 +1114,6 @@ class UserFrontController extends CommonController
 
     public function getEventArr(Event $event)
     {
-        $sakonnin = $this->container->get('sakonnin.messages');
-
         // So, what do we need here? To be continued..
         if (!isset($this->eventcache[$event->getId()])) {
             $eventparent = $event->getParent();

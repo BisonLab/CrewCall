@@ -46,7 +46,7 @@ class Kernel extends BaseKernel
         }
     }
 
-    public function boot()
+    public function boot(): void
     {
         parent::boot();
         ExternalEntityConfig::setStatesConfig($this->getContainer()->getParameter('app.states')["App"]);

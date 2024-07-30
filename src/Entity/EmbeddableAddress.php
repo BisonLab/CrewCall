@@ -22,103 +22,99 @@ use Symfony\Component\Validator\Constraints as Assert;
  * So, we'll find out how successful this is. I'll stick to the Address model
  * from CommerceGuys anyway. It is for Drupal and we'll find out how useful it
  * is quite soon.
- *
- * @ORM\Embeddable()
  */
+#[ORM\Embeddable]
 class EmbeddableAddress
 {
     /**
      * The two-letter country code.
      *
      * @var string
-     * @ORM\Column(name="country_code", type="string", length=4, nullable=true)
-     * @Gedmo\Versioned
-     * @Assert\Length(
-     *      max = 3,
-     *      maxMessage = "Country code can be max {{ limit }} characters long. It is not the coutry, but the code, like NO or UK."
-     * )
      */
+    #[ORM\Column(name: 'country_code', type: 'string', length: 4, nullable: true)]
+    #[Gedmo\Versioned]
+    #[Assert\Length(max: 3, maxMessage: 'Country code can be max {{ limit }} characters long. It is not the coutry, but the code, like NO or UK.')]
     protected $countryCode;
 
     /**
      * The top-level administrative subdivision of the country.
      *
      * @var string
-     * @ORM\Column(name="administrative_area", type="text", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'administrative_area', type: 'text', nullable: true)]
+    #[Gedmo\Versioned]
     protected $administrativeArea;
 
     /**
      * The locality (i.e. city).
      *
      * @var string
-     * @ORM\Column(name="locality", type="text", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'locality', type: 'text', nullable: true)]
+    #[Gedmo\Versioned]
     protected $locality;
 
     /**
      * The dependent locality (i.e. neighbourhood).
      *
      * @var string
-     * @ORM\Column(name="dependent_locality", type="text", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'dependent_locality', type: 'text', nullable: true)]
+    #[Gedmo\Versioned]
     protected $dependentLocality;
 
     /**
      * The postal code.
      *
      * @var string
-     * @ORM\Column(name="postal_code", type="string", length=255, nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'postal_code', type: 'string', length: 255, nullable: true)]
+    #[Gedmo\Versioned]
     protected $postalCode;
 
     /**
      * The postal name. (Yes, it should probably be extracted from postalCode)
      *
      * @var string
-     * @ORM\Column(name="postal_name", type="string", length=255, nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'postal_name', type: 'string', length: 255, nullable: true)]
+    #[Gedmo\Versioned]
     protected $postalName;
 
     /**
      * The sorting code.
      *
      * @var string
-     * @ORM\Column(name="sorting_code", type="string", length=255, nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'sorting_code', type: 'string', length: 255, nullable: true)]
+    #[Gedmo\Versioned]
     protected $sortingCode;
 
     /**
      * The first line of the address block.
      *
      * @var string
-     * @ORM\Column(name="address_line_1", type="text", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'address_line_1', type: 'text', nullable: true)]
+    #[Gedmo\Versioned]
     protected $addressLine1;
 
     /**
      * The second line of the address block.
      *
      * @var string
-     * @ORM\Column(name="address_line_2", type="text", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'address_line_2', type: 'text', nullable: true)]
+    #[Gedmo\Versioned]
     protected $addressLine2;
 
     /**
      * The locale.
      *
      * @var string
-     * @ORM\Column(name="locale", type="string", length=255, nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'locale', type: 'string', length: 255, nullable: true)]
+    #[Gedmo\Versioned]
     protected $locale;
 
     /**

@@ -3,21 +3,15 @@
 namespace App\Lib\Dashboarder;
 
 use App\Entity\Shift;
+use App\Entity\Person;
+use Doctrine\ORM\EntityManagerInterface;
 
 class AdminUpcomingShifts
 {
-    private $router;
-    private $entitymanager;
-    private $twig;
-
-    /*
-     * I may need a lot more here. Too bad I can't use the container.
-     */
-    public function __construct($router, $entitymanager, $twig)
-    {
-        $this->router = $router;
-        $this->entitymanager = $entitymanager;
-        $this->twig = $twig;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private \Twig\Environment $twig
+    ) {
     }
 
     public function dashize(\App\Entity\Person $user)

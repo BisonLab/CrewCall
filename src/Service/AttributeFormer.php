@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use Symfony\Component\Form\FormFactoryInterface;
+
 /* 
  * This one looks up in places for forms handling attributes.
  * This is so the users can "edit" attributes in an easier way.
@@ -15,11 +17,9 @@ namespace App\Service;
  */
 class AttributeFormer
 {
-    private $form_factory;
-
-    public function __construct($form_factory)
-    {
-        $this->form_factory = $form_factory;
+    public function __construct(
+        protected FormFactoryInterface $formFactory
+    ) {
     }
 
     public function getForms($frog)
@@ -27,7 +27,7 @@ class AttributeFormer
         $forms = [];
         if (class_exists('CustomBundle\Lib\AttributeFormer\AttributeFormer')) {
             $cs = new \CustomBundle\Lib\AttributeFormer\AttributeFormer(
-                $this->form_factory);
+                $this->formFactory);
             $forms = $cs->getForms($frog);
         }
         return $forms;

@@ -4,56 +4,43 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="crewcall_person_role_organization")
- * @ORM\Entity(repositoryClass="App\Repository\PersonRoleOrganizationRepository")
- * @Gedmo\Loggable
  */
+#[ORM\Entity(repositoryClass: \App\Repository\PersonRoleOrganizationRepository::class)]
+#[ORM\Table(name: 'crewcall_person_role_organization')]
 class PersonRoleOrganization
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Person", inversedBy="person_role_organizations")
-     * @ORM\JoinColumn(name="person_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \Person::class, inversedBy: 'person_role_organizations')]
+    #[ORM\JoinColumn(name: 'person_id', referencedColumnName: 'id', nullable: false)]
     private $person;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Role", inversedBy="person_role_organizations")
-     * @ORM\JoinColumn(name="role_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \Role::class, inversedBy: 'person_role_organizations')]
+    #[ORM\JoinColumn(name: 'role_id', referencedColumnName: 'id', nullable: false)]
     private $role;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Organization", inversedBy="person_role_organizations")
-     * @ORM\JoinColumn(name="organization_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \Organization::class, inversedBy: 'person_role_organizations')]
+    #[ORM\JoinColumn(name: 'organization_id', referencedColumnName: 'id', nullable: false)]
     private $organization;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="from_date", type="date", nullable=false)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'from_date', type: 'date', nullable: false)]
     private $from_date;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="to_date", type="date", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'to_date', type: 'date', nullable: true)]
     private $to_date;
 
     public function __construct()

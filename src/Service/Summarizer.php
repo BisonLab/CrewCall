@@ -2,6 +2,9 @@
 
 namespace App\Service;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Routing\RouterInterface;
+
 use App\Entity\Person;
 use App\Entity\Organization;
 use App\Entity\Event;
@@ -12,13 +15,15 @@ use App\Entity\Event;
  */
 class Summarizer
 {
-    private $router;
-
-    public function __construct($router)
-    {
-        $this->router = $router;
+    public function __construct(
+        private ParameterBagInterface $parameterBag,
+        private RouterInterface $router,
+    ) {
     }
 
+    /*
+     * Frog is the entity we are about to summarize.
+     */
     public function summarize($frog, $access = null)
     {
         if ($frog instanceOf Person)

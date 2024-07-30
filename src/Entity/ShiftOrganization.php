@@ -12,48 +12,41 @@ use App\Lib\ExternalEntityConfig;
 /**
  * This is the "An organization provides five roadies" equivalent of Job, which
  * is the connection between one individual and a function in a shift.
- * 
- * @ORM\Entity
- * @ORM\Table(name="crewcall_shift_organization")
- * @ORM\Entity(repositoryClass="App\Repository\ShiftOrganizationRepository")
- * @Gedmo\Loggable
+ *
  */
+#[ORM\Entity(repositoryClass: \App\Repository\ShiftOrganizationRepository::class)]
+#[ORM\Table(name: 'crewcall_shift_organization')]
+#[Gedmo\Loggable]
 class ShiftOrganization
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Shift", inversedBy="shift_organizations")
-     * @ORM\JoinColumn(name="shift_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \Shift::class, inversedBy: 'shift_organizations')]
+    #[ORM\JoinColumn(name: 'shift_id', referencedColumnName: 'id', nullable: false)]
     private $shift;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Organization", inversedBy="shift_organizations")
-     * @ORM\JoinColumn(name="organization_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \Organization::class, inversedBy: 'shift_organizations')]
+    #[ORM\JoinColumn(name: 'organization_id', referencedColumnName: 'id', nullable: false)]
     private $organization;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="amount", type="integer", nullable=false)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'amount', type: 'integer', nullable: false)]
+    #[Gedmo\Versioned]
     private $amount;
 
     /**
      * @var string $state
      *
-     * @ORM\Column(name="state", type="string", length=40, nullable=true)
-     * @Gedmo\Versioned
-     * @Assert\Choice(callback = "getStatesList")
      */
+    #[ORM\Column(name: 'state', type: 'string', length: 40, nullable: true)]
+    #[Gedmo\Versioned]
+    #[Assert\Choice(callback: 'getStatesList')]
     private $state;
 
     public function getId()

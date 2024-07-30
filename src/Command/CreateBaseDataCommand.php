@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use BisonLab\SakonninBundle\Entity\MessageType;
 use BisonLab\SakonninBundle\Entity\SakonninTemplate;
 
@@ -14,11 +15,13 @@ use App\Entity\FunctionEntity;
 use App\Entity\Role;
 use App\Entity\Organization;
 
+#[AsCommand(
+    name: 'onestore',
+    description: 'Creates the data we need in the data base for using this application.'
+)]
 class CreateBaseDataCommand extends Command
 {
     use \App\Command\CommonCommandFunctions;
-
-    protected static $defaultName = 'once:create-base-data';
 
     private $roles = array(
         array(
@@ -142,7 +145,6 @@ class CreateBaseDataCommand extends Command
     protected function configure()
     {
         $this->setDefinition(array())
-            ->setDescription('Creates the data we need in the data base for using this application.')
                 ->setHelp(<<<EOT
 Creates the data we need in the data base for using this application.
 EOT

@@ -9,18 +9,20 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Intl\Countries;
 use Doctrine\ORM\EntityManagerInterface;
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
 
 use App\Entity\Event;
 use App\Entity\Person;
 use App\Entity\Organization;
 use App\Entity\Location;
+use App\Service\Dashboarder;
 
-class DefaultController extends CommonController
+#[IsGranted("ROLE_USER")]
+class DefaultController extends AbstractController
 {
-    /**
-     * @Route("/", name="index")
-     */
+    use \BisonLab\CommonBundle\Controller\CommonControllerTrait;
+    use \BisonLab\ContextBundle\Controller\ContextTrait;
+
+    #[Route(path: '/', name: 'index')]
     public function indexAction(Request $request, EntityManagerInterface $entityManager)
     {
         // Pracitally only used by auth.
@@ -35,29 +37,22 @@ class DefaultController extends CommonController
         return $this->redirectToRoute('app_login');
     }
 
-    /**
-     * @Route("/dashboard", name="dashboard")
-     */
-    public function dashboardAction(Request $request)
+    #[Route(path: '/dashboard', name: 'dashboard')]
+    public function dashboardAction(Request $request, Dashboarder $dashboarder)
     {
         if (!$this->getUser()->isAdmin())
             return $this->redirectToRoute('user_view');
 
-        $dashboarder = $this->get('crewcall.dashboarder');
         return $this->render('default/index.html.twig',
             ['dashboarder' => $dashboarder]);
     }
 
-    /**
-     * @Route("/admin/global_search", name="global_search")
-     */
-    public function globalSearchAction(Request $request)
+    #[Route(path: '/admin/global_search', name: 'global_search')]
+    public function globalSearchAction(Request $request, EntityManagerInterface $entityManager)
     {
         $value = $request->get('value');
         if (empty($value))
             return $this->redirect($this->generateUrl('dashboard'));
-
-        $em = $this->getDoctrine()->getManager();
 
         // For now, always web.
         $access = "web";
@@ -67,7 +62,7 @@ class DefaultController extends CommonController
         $organizations = new \Doctrine\Common\Collections\ArrayCollection();
 
         foreach (array('name', 'description') as $field) {
-            $result = $em->getRepository(Event::class)
+            $result = $entityManager->getRepository(Event::class)
                         ->searchByField($field, trim($value));
             foreach ($result as $i) {
                 if (!$events->contains($i))
@@ -83,10 +78,10 @@ class DefaultController extends CommonController
                 $a3s = Countries::getAlpha3Names();
                 $countries = array_change_key_case(array_flip($a3s));
                 if ($nval = $countries[strtolower($value)] ?? false)
-                    $result = $em->getRepository(Person::class)
+                    $result = $entityManager->getRepository(Person::class)
                             ->searchByField($field, trim($nval));
             } else {
-                $result = $em->getRepository(Person::class)
+                $result = $entityManager->getRepository(Person::class)
                         ->searchByField($field, trim($value));
             }
             foreach ($result as $i) {
@@ -102,7 +97,7 @@ class DefaultController extends CommonController
         }
 
         foreach (array('name', 'description') as $field) {
-            $result = $em->getRepository(Location::class)
+            $result = $entityManager->getRepository(Location::class)
                         ->searchByField($field, trim($value));
             foreach ($result as $i) {
                 if (!$locations->contains($i))
@@ -111,7 +106,7 @@ class DefaultController extends CommonController
         }
 
         foreach (array('name', 'organization_number') as $field) {
-            $result = $em->getRepository(Organization::class)
+            $result = $entityManager->getRepository(Organization::class)
                         ->searchByField($field, trim($value));
             foreach ($result as $i) {
                 if (!$organizations->contains($i))
@@ -137,9 +132,7 @@ class DefaultController extends CommonController
             ));
     }
 
-    /**
-     * @Route("/ping", name="ping")
-     */
+    #[Route(path: '/ping', name: 'ping')]
     public function pingAction(Request $request)
     {
         $response = $request->request->all();

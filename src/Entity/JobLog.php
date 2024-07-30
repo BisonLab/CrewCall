@@ -13,65 +13,61 @@ use App\Lib\ExternalEntityConfig;
 /**
  * JobLog - In and out of work.
  *
- * @ORM\Table(name="crewcall_joblog")
- * @ORM\Entity(repositoryClass="App\Repository\JobLogRepository")
- * @Gedmo\Loggable
  */
+#[ORM\Entity(repositoryClass: \App\Repository\JobLogRepository::class)]
+#[ORM\Table(name: 'crewcall_joblog')]
+#[Gedmo\Loggable]
 class JobLog
 {
     /**
      * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="intime", type="datetime", nullable=false)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'intime', type: 'datetime', nullable: false)]
+    #[Gedmo\Versioned]
     private $in;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="outtime", type="datetime", nullable=true)
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'outtime', type: 'datetime', nullable: true)]
+    #[Gedmo\Versioned]
     private $out;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="break_minutes", type="integer", nullable=true, options={"default" = "0"})
-     * @Gedmo\Versioned
      */
+    #[ORM\Column(name: 'break_minutes', type: 'integer', nullable: true, options: ['default' => '0'])]
+    #[Gedmo\Versioned]
     private $break_minutes = 0;
 
     /**
      * @var string $state
      *
-     * @ORM\Column(name="state", type="string", length=40, nullable=true)
-     * @Gedmo\Versioned
-     * @Assert\Choice(callback = "getStatesList")
      */
+    #[ORM\Column(name: 'state', type: 'string', length: 40, nullable: true)]
+    #[Assert\Choice(callback: 'getStatesList')]
+    #[Gedmo\Versioned]
     private $state;
 
     /**
      * @var array
-     *
-     * @ORM\Column(name="attributes", type="json")
      */
+    #[ORM\Column(name: 'attributes', type: 'json')]
     private $attributes = array();
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Job", inversedBy="joblogs")
-     * @ORM\JoinColumn(name="job_id", referencedColumnName="id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: \Job::class, inversedBy: 'joblogs')]
+    #[ORM\JoinColumn(name: 'job_id', referencedColumnName: 'id', nullable: false)]
     private $job;
 
     /**

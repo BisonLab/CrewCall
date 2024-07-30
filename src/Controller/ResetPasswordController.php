@@ -20,31 +20,22 @@ use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-use BisonLab\CommonBundle\Controller\CommonController as CommonController;
-
-/**
- * @Route("/reset_password")
- */
-class ResetPasswordController extends CommonController
+#[Route(path: '/reset_password')]
+class ResetPasswordController extends AbstractController
 {
     use ResetPasswordControllerTrait;
 
-    private $resetPasswordHelper;
-    private $entityManager;
-    private $params;
-
-    public function __construct(ResetPasswordHelperInterface $resetPasswordHelper, EntityManagerInterface $entityManager, ParameterBagInterface $params)
-    {
-        $this->resetPasswordHelper = $resetPasswordHelper;
-        $this->entityManager = $entityManager;
-        $this->params = $params;
+    public function __construct(
+        private ResetPasswordHelperInterface $resetPasswordHelper,
+        private EntityManagerInterface $entityManager,
+        private ParameterBagInterface $params
+    ) {
     }
 
     /**
      * Display & process form to request a password reset.
-     *
-     * @Route("", name="app_forgot_password_request")
      */
+    #[Route(path: '', name: 'app_forgot_password_request')]
     public function request(Request $request, MailerInterface $mailer): Response
     {
         $form = $this->createForm(ResetPasswordRequestFormType::class);
@@ -64,9 +55,8 @@ class ResetPasswordController extends CommonController
 
     /**
      * Confirmation page after a user has requested a password reset.
-     *
-     * @Route("/check-email", name="app_check_email")
      */
+    #[Route(path: '/check-email', name: 'app_check_email')]
     public function checkEmail(): Response
     {
         // Generate a fake token if the user does not exist or someone hit this page directly.
@@ -82,9 +72,8 @@ class ResetPasswordController extends CommonController
 
     /**
      * Validates and process the reset URL that the user clicked in their email.
-     *
-     * @Route("/reset/{token}", name="app_reset_password")
      */
+    #[Route(path: '/reset/{token}', name: 'app_reset_password')]
     public function reset(Request $request, UserPasswordHasherInterface $userPasswordHasher, string $token = null): Response
     {
         if ($token) {
