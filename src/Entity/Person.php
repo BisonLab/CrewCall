@@ -1346,7 +1346,7 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
     public function addContext(PersonContext $context)
     {
         $this->contexts[] = $context;
-        $context->setOwner($this) ;
+        $context->setOwner($this);
     }
 
     /**

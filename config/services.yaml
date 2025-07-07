@@ -31,6 +31,11 @@ services:
     #         - [ setContainer, ['@service_container'] ]
     #         - [ setParameterBag, ['@parameter_bag'] ]
 
+    App\Controller\:
+        resource: '../src/Controller/*'
+        autowire: true
+        autoconfigure: true
+
     App\EventListener\:
         resource: '../src/EventListener/*'
         autowire: true

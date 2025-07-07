@@ -27,6 +27,8 @@ doctrine:
 
         entity_managers:
             crewcall:
+                report_fields_where_declared: true
+                validate_xml_mapping: true
                 # To have or not to have?
                 connection: crewcall
                 # auto_mapping: true
@@ -48,6 +50,8 @@ doctrine:
                         alias: GedmoLoggable
                         is_bundle: false
             sakonnin:
+                report_fields_where_declared: true
+                validate_xml_mapping: true
                 # To have or not to have?
                 # naming_strategy: doctrine.orm.naming_strategy.underscore
                 connection: crewcall

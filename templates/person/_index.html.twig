@@ -11,6 +11,7 @@
         <th>Mobile</th>
         <th>Email</th>
         <th>Status</th>
+        <th>Last login</th>
         <th class="selectcol"></th>
     </tr>
 </thead>
@@ -36,6 +37,11 @@
         <td>
         {{ person.statelabel(on_date) }}
         </td>
+{% if person.lastlogin is not empty %}
+        <td>{{ person.lastlogin|date('Y-m-d')}}</td>
+{% else %}
+        <td>&nbsp;</td>
+{% endif %}
         <td> {{ person.id }} </td>
     </tr>
 {% endfor %}
