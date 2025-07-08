@@ -85,7 +85,7 @@ class Location
      * then connect these locations against one or the other.  And I may well
      * do that if this ends up being too odd for the users or code.
      */
-    #[ORM\OneToMany(targetEntity: \Location::class, mappedBy: 'parent', fetch: 'EXTRA_LAZY', cascade: ['persist', 'remove', 'merge'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: \Location::class, mappedBy: 'parent', fetch: 'EXTRA_LAZY', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $children;
 
     /**
@@ -104,7 +104,7 @@ class Location
     #[ORM\OneToMany(targetEntity: \PersonRoleLocation::class, mappedBy: 'location', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $person_role_locations;
 
-    #[ORM\OneToMany(targetEntity: \LocationContext::class, mappedBy: 'owner', cascade: ['persist', 'remove', 'merge'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: \LocationContext::class, mappedBy: 'owner', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $contexts;
 
     public function __construct($options = array())

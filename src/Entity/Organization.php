@@ -93,7 +93,7 @@ class Organization
     #[ORM\OneToMany(targetEntity: \Event::class, mappedBy: 'organization', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $events;
 
-    #[ORM\OneToMany(targetEntity: \OrganizationContext::class, mappedBy: 'owner', cascade: ['persist', 'remove', 'merge'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: \OrganizationContext::class, mappedBy: 'owner', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $contexts;
 
     public function __construct()

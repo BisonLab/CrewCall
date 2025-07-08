@@ -94,7 +94,7 @@ class Event
     #[ORM\OneToMany(targetEntity: \PersonRoleEvent::class, mappedBy: 'event', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $person_role_events;
 
-    #[ORM\OneToMany(targetEntity: \Shift::class, mappedBy: 'event', fetch: 'EXTRA_LAZY', cascade: ['persist', 'remove', 'merge'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: \Shift::class, mappedBy: 'event', fetch: 'EXTRA_LAZY', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[ORM\OrderBy(['start' => 'ASC', 'id' => 'ASC'])]
     private $shifts;
 
@@ -106,7 +106,7 @@ class Event
      * then connect these events against one or the other.  And I may well
      * do that if this ends up being too odd for the users or code.
      */
-    #[ORM\OneToMany(targetEntity: \Event::class, mappedBy: 'parent', cascade: ['persist', 'remove', 'merge'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: \Event::class, mappedBy: 'parent', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[ORM\OrderBy(['start' => 'ASC', 'id' => 'ASC'])]
     private $children;
 

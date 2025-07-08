@@ -205,7 +205,7 @@ class Person implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OrderBy(['from_date' => 'ASC'])]
     private $person_states;
 
-    #[ORM\OneToMany(targetEntity: \PersonContext::class, mappedBy: 'owner', cascade: ['persist', 'remove', 'merge'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: \PersonContext::class, mappedBy: 'owner', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private $contexts;
 
     public function __construct()
