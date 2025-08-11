@@ -17,7 +17,7 @@ $.fn.dataTable.ext.order.intl = function ( locales, options ) {
     }
 };
 
-function setupSortable(sortable_table, selectable) {
+function setupSortable(sortable_table, selectable, printable = false) {
     var options = {};
     if ($(sortable_table).find('>tbody >tr').length > 100) {
         options = {
@@ -47,6 +47,43 @@ function setupSortable(sortable_table, selectable) {
                 "orderable": false
             }]
         };
+    }
+    if (printable) {
+        options["dom"] = 'Bfrtip';
+
+        options["buttons"] = [
+            {
+                "extend": 'print',
+                "exportOptions": {
+                    "columns": ':visible'
+                }
+            },
+            {
+                "extend": 'copy',
+                "exportOptions": {
+                    "columns": ':visible'
+                }
+            },
+            {
+                "extend": 'excel',
+                "exportOptions": {
+                    "columns": ':visible'
+                }
+            },
+            {
+                "extend": 'csv',
+                "exportOptions": {
+                    "columns": ':visible'
+                }
+            },
+            {
+                "extend": 'pdf',
+                "exportOptions": {
+                    "columns": ':visible'
+                }
+            },
+            'colvis'
+        ];
     }
 
     if ($(sortable_table).hasClass("column-searchable")) {
