@@ -11,7 +11,7 @@ OS Packages
  * git zip unzip
  * postgresql (Other DBMSes should work since we do use Doctrine, but they are not tested)
 
- * php-cli php-apcu php-gearman php-pgsql php-json php-curl php-dev pkg-config php-gmp php-intl php-symfony-polyfill-intl-icu php-zip php-bz2 php-xml php-bcmath php-mbstring php-gd
+ * php-cli php-apcu php-gearman php-pgsql php-json php-curl php-dev pkg-config php-gmp php-intl php-symfony-polyfill-intl-icu php-zip php-bz2 php-xml php-bcmath php-mbstring php-gd php-imagick
 
 I'm using apache, but nginx should work aswell. Feel free to try. Please send a report on how it went.
 
@@ -41,6 +41,8 @@ Two files is used for configuration, .env.local and config/packages/custom.yaml
 For now it's a bit random which config option is where.
 
 $ cp .env.local.dist .env.local
+
+Unless you use the CustomBundle (You should use one.)
 
 $ cp config/packages/custom.yaml.dist config/packages/custom.yaml
 
