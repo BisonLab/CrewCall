@@ -23,10 +23,7 @@ class EventRepository extends ServiceEntityRepository
      */
     public function findEvents($options = [])
     {
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('e')
-            ->from($this->_entityName, 'e');
-
+        $qb = $this->createQueryBuilder('e');
         if ($options['parents_only'] ?? false) {
             $qb->andWhere('e.parent is null');
         }
@@ -120,10 +117,8 @@ class EventRepository extends ServiceEntityRepository
     /* This is very common for all repos. Could be in a trait aswell. */
     public function searchByField($field, $value)
     {
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('e')
-            ->from($this->_entityName, 'e')
-            ->where("lower(e." . $field . ") like ?1")
+        $qb = $this->createQueryBuilder('e');
+        $qb->where("lower(e." . $field . ") like ?1")
             ->orWhere("upper(e." . $field . ") like ?2")
             ->setParameter(1, '%' . mb_strtolower($value) . '%')
             ->setParameter(2, '%' . mb_strtoupper($value) . '%');

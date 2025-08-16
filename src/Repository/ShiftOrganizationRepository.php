@@ -23,9 +23,7 @@ class ShiftOrganizationRepository extends ServiceEntityRepository
      */
     public function findJobs($options = [])
     {
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('j')
-            ->from($this->_entityName, 'j')
+        $qb = $this->createQueryBuilder('j')
             ->innerJoin('j.shift', 's');
 
         // This only halfly works, since it doesen't get the children events.

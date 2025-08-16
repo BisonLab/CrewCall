@@ -47,17 +47,13 @@ class PersonRepository extends ServiceEntityRepository implements PasswordUpgrad
         $found = new \Doctrine\Common\Collections\ArrayCollection();
 
         // Had issues with distinct, dropped it.
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('p')
-            ->from($this->_entityName, 'p')
+        $qb = $this->createQueryBuilder('p')
             ->innerJoin('p.person_role_organizations', 'pfo');
         foreach ($qb->getQuery()->getResult() as $per) {
             $found->add($per);
         }
 
-        $qb2 = $this->_em->createQueryBuilder();
-        $qb2->select('p')
-            ->from($this->_entityName, 'p')
+        $qb2 = $this->createQueryBuilder('p')
             ->innerJoin('p.person_role_events', 'pfe');
         foreach ($qb2->getQuery()->getResult() as $per) {
             if ($found->contains($per))
@@ -65,9 +61,7 @@ class PersonRepository extends ServiceEntityRepository implements PasswordUpgrad
             $found->add($per);
         }
 
-        $qb3 = $this->_em->createQueryBuilder();
-        $qb3->select('p')
-            ->from($this->_entityName, 'p')
+        $qb3 = $this->createQueryBuilder('p')
             ->innerJoin('p.person_role_locations', 'pfl');
         foreach ($qb3->getQuery()->getResult() as $per) {
             if ($found->contains($per))
@@ -80,10 +74,8 @@ class PersonRepository extends ServiceEntityRepository implements PasswordUpgrad
 
     public function findByState($state, $from = null, $to = null)
     {
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('p')
-            ->from($this->_entityName, 'p')
-            ->innerJoin('p.person_states', 'ps')
+        $qb = $this->createQueryBuilder('p');
+        $qb->innerJoin('p.person_states', 'ps')
             ->where("ps.state = :state")
             ->setParameter("state", $state);
 
@@ -111,10 +103,8 @@ class PersonRepository extends ServiceEntityRepository implements PasswordUpgrad
     /* This is very common for all repos. Could be in a trait aswell. */
     public function searchByField($field, $value)
     {
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('p')
-            ->from($this->_entityName, 'p')
-            ->where("lower(p." . $field . ") like ?1")
+        $qb = $this->createQueryBuilder('p');
+        $qb->where("lower(p." . $field . ") like ?1")
             ->orWhere("upper(p." . $field . ") like ?2")
             ->setParameter(1, '%' . mb_strtolower($value) . '%')
             ->setParameter(2, '%' . mb_strtoupper($value) . '%');
@@ -132,7 +122,7 @@ class PersonRepository extends ServiceEntityRepository implements PasswordUpgrad
         }
 
         $user->setPassword($newEncodedPassword);
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->persist($user);
+        $this->flush();
     }
 }

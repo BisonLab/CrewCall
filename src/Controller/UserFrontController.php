@@ -61,6 +61,7 @@ class UserFrontController extends AbstractController
         private CcCalendar $ccCalendar,
         private AttributeFormer $attributeFormer,
         private RouterInterface $router,
+        private SakonninMessages $sakonninMessages,
     ) {
     }
 
@@ -83,7 +84,7 @@ class UserFrontController extends AbstractController
      * Everything, and maybe more.
      */
     #[Route(path: '/me', name: 'uf_me', methods: ['GET'])]
-    public function meAction(Request $request)
+    public function meAction(Request $request, CsrfTokenManagerInterface $csrfman)
     {
         $user = $this->getUser();
         if (in_array('application/json',
@@ -94,7 +95,7 @@ class UserFrontController extends AbstractController
             ];
             return new JsonResponse($retarr, 200);
         }
-        $retarr = $this->meJobs($request, true);
+        $retarr = $this->meJobs($request, $csrfman, true);
         $retarr['notes'] = $this->meNotes($request, true);
         $retarr['messages'] = $this->meMessages($request, true);
         $retarr['user'] = $user;

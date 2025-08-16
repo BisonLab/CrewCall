@@ -33,16 +33,14 @@ class FunctionEntityRepository extends \Doctrine\ORM\EntityRepository
 
     public function findNamesWithPeopleCount()
     {
-        $query = $this->_em->createQuery('SELECT fe.id, fe.name, count(pf.id) as people FROM ' . $this->_entityName . ' fe JOIN fe.person_functions pf GROUP BY fe.id');
+        $query = $this->createQuery('SELECT fe.id, fe.name, count(pf.id) as people FROM ' . $this->_entityName . ' fe JOIN fe.person_functions pf GROUP BY fe.id');
         return $result = $query->getResult();
     }
 
     public function findPickableFunctions()
     {
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('f')
-            ->from($this->_entityName, 'f')
-            ->where("f.user_pickable = :user_pickable")
+        $qb = $this->createQueryBuilder('f');
+        $qb->where("f.user_pickable = :user_pickable")
             ->setParameter('user_pickable', true);
         return new ArrayCollection($qb->getQuery()->getResult());
     }
@@ -60,23 +58,21 @@ class FunctionEntityRepository extends \Doctrine\ORM\EntityRepository
             $rsm->addEntityResult('App\Entity\FunctionEntity', 'cf');
             $rsm->addFieldResult('cf', 'id', 'id');
             $sql = "select id from crewcall_function where attributes->>'" . $afield . "'='" . $avalue . "';";
-            $query = $this->_em->createNativeQuery($sql, $rsm);
+            $query = $this->createNativeQuery($sql, $rsm);
             $ids = $query->getResult();
             if ($ids) {
                 // Have to clear the result cache so we can get a complete
                 // entity and not one with just the ID we asked for.
                 // (I'm lazy and not botheres with adding all fields in the
                 // select.
-                $this->_em->clear();
+                $this->clear();
                 // Gotta find the whole object then.
                 return $this->find($ids[0]->getId());
             }
             return null;
         } else {
-            $qb = $this->_em->createQueryBuilder();
-            $qb->select('f')
-                ->from($this->_entityName, 'f')
-                ->where("lower(f." . $field . ") like ?1")
+            $qb = $this->createQueryBuilder('f');
+            $qb->where("lower(f." . $field . ") like ?1")
                 ->orWhere("upper(f." . $field . ") like ?2")
                 ->setParameter(1, '%' . mb_strtolower($value) . '%')
                 ->setParameter(2, '%' . mb_strtoupper($value) . '%');

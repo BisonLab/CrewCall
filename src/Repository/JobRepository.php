@@ -29,10 +29,8 @@ class JobRepository extends ServiceEntityRepository
      */
     public function findJobs($options = [])
     {
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('j')
-            ->from($this->_entityName, 'j')
-            ->innerJoin('j.shift', 's');
+        $qb = $this->createQueryBuilder('j');
+        $qb->innerJoin('j.shift', 's');
 
         // This only halfly works, since it doesen't get the children events.
         // Nesting more than one level of parent/child feels messy.
@@ -141,10 +139,8 @@ class JobRepository extends ServiceEntityRepository
      */
     public function findJobsForPerson(Person $person, $options)
     {
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('j')
-            ->from($this->_entityName, 'j')
-            ->innerJoin('j.shift', 's')
+        $qb = $this->createQueryBuilder('j');
+        $qb->innerJoin('j.shift', 's')
             ->where("j.person = :person")
             ->setParameter('person', $person);
 
@@ -233,10 +229,8 @@ class JobRepository extends ServiceEntityRepository
     public function findByStateForPerson(Person $person, $options)
     {
         $state = $options['state'];
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('j')
-            ->from($this->_entityName, 'j')
-            ->where('j.state = :state')
+        $qb = $this->createQueryBuilder('j');
+        $qb->where('j.state = :state')
             ->andWhere("j.person = :person")
             ->setParameter('state', $state)
             ->setParameter('person', $person);
@@ -278,10 +272,8 @@ class JobRepository extends ServiceEntityRepository
         $person = $job->getPerson();
         $jobstart = $job->getStart();
         $jobend = $job->getEnd();
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('j')
-            ->from($this->_entityName, 'j')
-            ->innerJoin('j.shift', 's')
+        $qb = $this->createQueryBuilder('j');
+        $qb->innerJoin('j.shift', 's')
             ->andWhere("j.person = :person")
             ->setParameter('person', $person);
 

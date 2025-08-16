@@ -9,10 +9,8 @@ class PersonStateRepository extends \Doctrine\ORM\EntityRepository
 {
     public function findByPerson($person, $options = [])
     {
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('ps')
-            ->from($this->_entityName, 'ps')
-            ->where("ps.person = :person")
+        $qb = $this->createQueryBuilder('ps');
+        $qb->where("ps.person = :person")
             ->setParameter("person", $person);
 
         // Between.

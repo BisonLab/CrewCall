@@ -22,9 +22,7 @@ class JobLogRepository extends ServiceEntityRepository
         $person = $joblog->getJob()->getPerson();
         $from = $joblog->getIn();
         $to = $joblog->getOut();
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('jl')
-            ->from($this->_entityName, 'jl')
+        $qb = $this->createQueryBuilder('jl')
             ->innerJoin('jl.job', 'j')
             ->where("j.person = :person")
             ->andWhere('jl.in <= :to')

@@ -32,8 +32,7 @@ class ShiftRepository extends ServiceEntityRepository
                 $from = new \DateTime($options['from']);
         }
 
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('s')->from($this->_entityName, 's');
+        $qb = $this->createQueryBuilder('s');
 
         // We want to include running shifts. In case of late needs.
         // But also have an option not to.
@@ -71,10 +70,8 @@ class ShiftRepository extends ServiceEntityRepository
 
     public function findUpcomingForFunctions(array $functions, $options = array())
     {
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('s')
-            ->from($this->_entityName, 's')
-            ->where("s.function in (:functions)")
+        $qb = $this->createQueryBuilder('s');
+        $qb->where("s.function in (:functions)")
             ->setParameter('functions', $functions);
 
         // Unless there are a set timeframe, use "from now".
