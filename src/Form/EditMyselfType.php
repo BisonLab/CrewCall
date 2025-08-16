@@ -22,7 +22,7 @@ class EditMyselfType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $personfields = $options['personfields'];
         if ($personfields['email']['user_editable'])

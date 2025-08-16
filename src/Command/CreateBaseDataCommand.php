@@ -142,7 +142,7 @@ class CreateBaseDataCommand extends Command
             ),
     );
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDefinition(array())
                 ->setHelp(<<<EOT

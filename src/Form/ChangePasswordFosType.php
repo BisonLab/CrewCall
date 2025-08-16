@@ -16,7 +16,7 @@ use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
  */
 class ChangePasswordFosType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if (!$options['no_current_check']) {
             $builder->add('current_password', PasswordType::class, [

@@ -20,7 +20,7 @@ class ExistingPersonOrganizationType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
            ->add('person', UsernameFormType::class, array('label' => "Search with name, phone number or email address", 'required' => true))

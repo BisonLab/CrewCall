@@ -24,7 +24,7 @@ class CreateUserCommand extends Command
 {
     use \App\Command\CommonCommandFunctions;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument('username', InputArgument::REQUIRED, 'Username')

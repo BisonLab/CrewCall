@@ -14,7 +14,7 @@ class AddressType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         foreach($options['address_elements'] as $elem) {
             // If it guesses, addresslines wil be texareas and that I will not

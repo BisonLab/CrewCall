@@ -21,7 +21,7 @@ class NewPersonOrganizationType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
            ->add('email', EmailType::class, array('label' => "E-mail", 'required' => false))
